@@ -159,7 +159,7 @@ def draw_feed_forward(ax, num_node_list):
     handler = NNPlot(ax)
     num_hidden_layer = len(num_node_list) - 2
     token_list = ['\sigma^z'] + \
-        ['y^{(i)}' for num_node_list in num_node_list[1:-1]] + ['\psi']
+        ['y^{(%s)}'%(i+1) for i in range(num_hidden_layer)] + ['\psi']
     kind_list = ['input'] + ['hidden'] * num_hidden_layer + ['output']
     radius_list = [0.3] + [0.2] * num_hidden_layer + [0.3]
     y_list = 1.5 * np.arange(len(num_node_list))
