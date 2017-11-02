@@ -14,13 +14,13 @@ import pdb
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle, Polygon
 
-__all__ = ['NNPlot', 'draw_rbm', 'draw_feed_forward', 'DynamicPlot',
+__all__ = ['NNPlot', 'DynamicShow',
            'NONE', 'YELLOW', 'GREEN', 'RED', 'BLUE', 'VIOLET', 'NODE_THEME_DICT']
 
 NONE = 'none'
 YELLOW = '#FFFF77'
 GREEN = '#55CC77'
-RED = '#DD3377'
+RED = '#FF6699'
 BLUE = '#3399DD'
 VIOLET = '#DD99DD'
 
@@ -114,64 +114,34 @@ class NNPlot(object):
             self.add_node(self.auto_name(token, i), xy, kind=kind,
                           radius=radius, show_name=show_name)
 
-    def connect_layers(self, start_token, end_token, directed=False):
+    def connect_layers(self, start_token, end_token, one2one=False, directed=False):
         i = 0
         while(self.auto_name(start_token, i) in self.node_dict):
-            j = 0
-            while(self.auto_name(end_token, j) in self.node_dict):
+            if one2one:
                 self.connect(self.auto_name(start_token, i),
-                             self.auto_name(end_token, j), directed=directed)
-                j += 1
+                             self.auto_name(end_token, i), directed=directed)
+            else:
+                j = 0
+                while(self.auto_name(end_token, j) in self.node_dict):
+                    self.connect(self.auto_name(start_token, i),
+                                 self.auto_name(end_token, j), directed=directed)
+                    j += 1
             i += 1
+
+    def text_node_sequence(self, token, text_list, offset=(0,0)):
+        '''
+        add texts for a sequence of nodes.
+        '''
+        for i, name in enumerate(text_list):
+            c = self.node_dict[self.auto_name(token, i)]
+            x, y = c.center + np.array(offset)
+            self.ax.text(x, y, name, va='center', ha='center')
 
     def auto_name(self, token, i):
         return r'$%s_%d$' % (token, i + 1)
 
 
-def draw_rbm(ax, num_node_visible, num_node_hidden):
-    '''
-    draw a restricted boltzmann machine.
-
-    Args:
-        num_node_visible (int), number of visible nodes.
-        num_node_hidden (int), number of hidden nodes.
-    '''
-    handler = NNPlot(ax)
-    # visible layers
-    handler.add_node_sequence(
-        num_node_visible, '\sigma^z', 0, kind='input', radius=0.3)
-
-    # hidden layers
-    handler.add_node_sequence(num_node_hidden, 'h',
-                              1.5, kind='hidden', radius=0.2)
-
-    # connect them
-    handler.connect_layers('\sigma^z', 'h', False)
-
-
-def draw_feed_forward(ax, num_node_list):
-    '''
-    draw a feed forward neural network.
-
-    Args:
-        num_node_list (list<int>): number of nodes in each layer.
-    '''
-    handler = NNPlot(ax)
-    num_hidden_layer = len(num_node_list) - 2
-    token_list = ['\sigma^z'] + \
-        ['y^{(%s)}'%(i+1) for i in range(num_hidden_layer)] + ['\psi']
-    kind_list = ['input'] + ['hidden'] * num_hidden_layer + ['output']
-    radius_list = [0.3] + [0.2] * num_hidden_layer + [0.3]
-    y_list = 1.5 * np.arange(len(num_node_list))
-
-    for n, token, kind, radius, y in zip(num_node_list, token_list, kind_list, radius_list, y_list):
-        handler.add_node_sequence(n, token, y, kind=kind, radius=radius)
-
-    for st, et in zip(token_list[:-1], token_list[1:]):
-        handler.connect_layers(st, et, directed=True)
-
-
-class DynamicPlot():
+class DynamicShow():
     '''
     Dynamic plot context, intended for displaying geometries.
     like removing axes, equal axis, dynamically tune your figure and save it.
@@ -186,9 +156,9 @@ class DynamicPlot():
         ax (Axes): matplotlib Axes instance.
 
     Examples:
-        with DynamicPlot() as dp:
+        with DynamicShow() as ds:
             c = Circle([2, 2], radius=1.0)
-            dp.ax.add_patch(c)
+            ds.ax.add_patch(c)
     '''
 
     def __init__(self, figsize=(6, 4), filename=None):
@@ -205,8 +175,9 @@ class DynamicPlot():
     def __exit__(self, *args):
         plt.axis('equal')
         plt.axis('off')
+        plt.tight_layout()
         if self.filename is not None:
-            print('Press `C` to save figure, `Ctrl+D` to break >>')
+            print('Press `C` to save figure to "%s", `Ctrl+D` to break >>'%self.filename)
             pdb.set_trace()
             plt.savefig(self.filename)
         else:
