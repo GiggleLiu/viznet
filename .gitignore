@@ -1,0 +1,16 @@
+*.pyc
+*~
+*.dat
+*.swp
+*.o
+*.so
+*.pyf
+*.eps
+*.out
+*.aux
+*.log
+*.synctex.gz
+*.npy
+*.dvi
+*.log
+_*.png
