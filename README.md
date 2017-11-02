@@ -5,7 +5,8 @@
     $ python -m viznet.tests.test_netbasic
 ```
 
-I created a theme set Following Neural [Zoo Page](http://www.asimovinstitute.org/neural-network-zoo/), Here is a table of configuration:
+I created a theme for neural network plotting following [Neural Network Zoo Page](http://www.asimovinstitute.org/neural-network-zoo/),
+here is a table of node species:
 
 ![theme_list](docs/images/theme_list.png)
 
