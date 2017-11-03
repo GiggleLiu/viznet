@@ -60,9 +60,9 @@ class NNPlot(object):
         exy = -unit_d * en.radius + exy
         d = exy - sxy
         arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
-                            head_length=8e-2 if directed else 0,
-                            head_width=5e-2, fc='#333333', ec='#333333',
-                            length_includes_head=True, lw=1)
+                            head_length=8e-2 if directed else 0, width=0.01,
+                            head_width=5e-2, fc='#333333',# ec='#333333',
+                            length_includes_head=True, lw=0, edgecolor='none')
 
         self.edge_dict['%s-%s' % (start, end)] = arr
 
@@ -105,6 +105,14 @@ class NNPlot(object):
 
         self.node_dict[name] = c
 
+    def text_node(self, name, text, offset=(0,0)):
+        '''
+        add texts for a sequence of nodes.
+        '''
+        c = self.node_dict[name]
+        x, y = c.center + np.array(offset)
+        self.ax.text(x, y, text, va='center', ha='center')
+
     def add_node_sequence(self, num_node, token, y, kind='basic', radius=0.2, offset=(0, 0), show_name=True):
         '''
         add a sequence of nodes along x-direction.
@@ -132,10 +140,8 @@ class NNPlot(object):
         '''
         add texts for a sequence of nodes.
         '''
-        for i, name in enumerate(text_list):
-            c = self.node_dict[self.auto_name(token, i)]
-            x, y = c.center + np.array(offset)
-            self.ax.text(x, y, name, va='center', ha='center')
+        for i, t in enumerate(text_list):
+            c = self.text_node(self.auto_name(token, i), t, offset)
 
     def auto_name(self, token, i):
         return r'$%s_%d$' % (token, i + 1)

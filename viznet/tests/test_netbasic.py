@@ -30,12 +30,12 @@ def test_draw_feed_forward():
 
 def test_theme_table():
     '''plot a table of node themes'''
-    with DynamicShow((8, 4), filename='_theme_list.png') as d:
+    with DynamicShow((11, 6), filename='_theme_list.png') as d:
         handler = NNPlot(d.ax)
         for i, kind in enumerate(NODE_THEME_DICT.keys()):
-            handler.add_node(name=kind[:2].upper(),
-                             xy=(i // 2, i % 2), kind=kind)
-
+            handler.add_node(name=kind,
+                             xy=(i // 3, i % 3), kind=kind, show_name=False)
+            handler.text_node(kind, kind, offset=(0,-0.4))
 
 if __name__ == '__main__':
     test_theme_table()
