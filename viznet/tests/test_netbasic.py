@@ -15,11 +15,11 @@ def test_draw_rbm():
     ax.axis('off')
 
     pdb.set_trace()
-    plt.savefig('_rbm.png')
+    plt.savefig('_rbm_test.png')
 
 
 def test_draw_rbm_equivalent():
-    with DynamicShow((6, 4), '_rbm.png') as d:
+    with DynamicShow((6, 4), '_rbm_test.png') as d:
         draw_rbm(d.ax, 5, 4)
 
 

@@ -20,7 +20,7 @@ __all__ = ['NNPlot', 'DynamicShow',
 NONE = 'none'
 YELLOW = '#FFFF77'
 GREEN = '#55CC77'
-RED = '#FF6699'
+RED = '#FF6644'
 BLUE = '#3399DD'
 VIOLET = '#DD99DD'
 
@@ -161,7 +161,7 @@ class DynamicShow():
             ds.ax.add_patch(c)
     '''
 
-    def __init__(self, figsize=(6, 4), filename=None):
+    def __init__(self, figsize=(6, 4), filename=None, dpi=300):
         self.figsize = figsize
         self.filename = filename
         self.ax = None
@@ -177,8 +177,8 @@ class DynamicShow():
         plt.axis('off')
         plt.tight_layout()
         if self.filename is not None:
-            print('Press `C` to save figure to "%s", `Ctrl+D` to break >>'%self.filename)
+            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>'%self.filename)
             pdb.set_trace()
-            plt.savefig(self.filename)
+            plt.savefig(self.filename, dpi=300)
         else:
             pdb.set_trace()
