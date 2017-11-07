@@ -7,8 +7,6 @@ feature list:
     3. implementation of simple RBM and Feed forward networks.
 '''
 
-from __future__ import division
-
 import numpy as np
 import pdb
 from matplotlib import pyplot as plt
