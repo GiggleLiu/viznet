@@ -44,10 +44,11 @@ NODE_THEME_DICT = {
 
 
 class NNPlot(object):
-    def __init__(self, ax):
+    def __init__(self, ax, fontsize=12):
         self.ax = ax
         self.node_dict = {}
         self.edge_dict = {}
+        self.fontsize = fontsize
 
     def connect(self, start, end, directed=False):
         '''connect start node and end node'''
@@ -60,8 +61,8 @@ class NNPlot(object):
         exy = -unit_d * en.radius + exy
         d = exy - sxy
         arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
-                            head_length=8e-2 if directed else 0, width=0.01,
-                            head_width=5e-2, fc='#333333',# ec='#333333',
+                            head_length=0.12 if directed else 0, width=0.015,
+                            head_width=8e-2, fc='#333333',# ec='#333333',
                             length_includes_head=True, lw=0, edgecolor='none')
 
         self.edge_dict['%s-%s' % (start, end)] = arr
@@ -82,7 +83,7 @@ class NNPlot(object):
         c = Circle(xy, radius, edgecolor='k',
                    facecolor=color, lw=0.7, zorder=0)
         if show_name:
-            self.ax.text(xy[0], xy[1], name, va='center', ha='center')
+            self.ax.text(xy[0], xy[1], name, va='center', ha='center', fontsize=self.fontsize)
         self.ax.add_patch(c)
 
         # add a geometric patch at the top of circle.
@@ -111,7 +112,7 @@ class NNPlot(object):
         '''
         c = self.node_dict[name]
         x, y = c.center + np.array(offset)
-        self.ax.text(x, y, text, va='center', ha='center')
+        self.ax.text(x, y, text, va='center', ha='center', fontsize=self.fontsize)
 
     def add_node_sequence(self, num_node, token, y, kind='basic', radius=0.2, offset=(0, 0), show_name=True):
         '''
