@@ -8,7 +8,7 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     offset_sign = num_node_hidden/2.-0.5
     # visible layers
     handler.add_node_sequence(
-        num_node_visible, '\sigma^z', 0, kind='input', radius=0.3)
+        num_node_visible, '\sigma^z', offset=(0,0), kind='input', radius=0.3)
 
     # hidden layers
     da, db = 0.8, 1.0
@@ -20,29 +20,29 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     y6 = y5+da
     h1, h1p, h2 = 'h^{(1)}', 'h^{\prime(1)}', 'h^{(2)}'
     handler.add_node_sequence(num_node_hidden, h1,
-                              y1, kind='hidden', radius=0.3, offset=(offset_amplitude,0))
+                              kind='hidden', radius=0.3, offset=(offset_amplitude,y1))
     handler.add_node_sequence(1, h1p,
-                              y1, kind='hidden', radius=0.3, offset=(offset_sign, 0))
+                              kind='hidden', radius=0.3, offset=(offset_sign, y1))
 
     # nonlinear layers
     handler.add_node_sequence(num_node_hidden, '\sigma1',
-                              y2, kind='basic', radius=0.2, show_name=False, offset=(offset_amplitude,0))
+                              kind='basic', radius=0.2, show_name=False, offset=(offset_amplitude,y2))
     handler.add_node_sequence(1, '\cos',
-                              y2, kind='basic', radius=0.2, show_name=False, offset=(offset_sign,0))
+                              kind='basic', radius=0.2, show_name=False, offset=(offset_sign,y2))
     handler.text_node_sequence(r'\sigma1', text_list=[r'$\sigma$'], offset=(-0.3,-0.3))
 
     # linear in amplitude
     handler.add_node_sequence(1, 'linear2',
-                              y3, kind='hidden', radius=0.3, show_name=False, offset=(offset_amplitude,0))
+                              kind='hidden', radius=0.3, show_name=False, offset=(offset_amplitude,y3))
     handler.add_node_sequence(1, '\sigma2',
-                              y4, kind='basic', radius=0.2, show_name=False, offset=(offset_amplitude,0))
+                              kind='basic', radius=0.2, show_name=False, offset=(offset_amplitude,y4))
 
     # output
     sign_txt = r'\frac{\psi}{|\psi|}'
     handler.add_node_sequence(1, r'\times',
-                              y5, kind='basic', radius=0.2, show_name=False, offset=(-0.5,0))
+                              kind='basic', radius=0.2, show_name=False, offset=(-0.5,y5))
     handler.add_node_sequence(1, r'\psi',
-                              y6, kind='output', radius=0.3, show_name=False, offset=(-0.5,0))
+                              kind='output', radius=0.3, show_name=False, offset=(-0.5,y6))
     handler.text_node_sequence(r'\psi', text_list=[r'$\psi$'], offset=(0.,0.))
     handler.text_node_sequence(r'\times', text_list=[r'$\times$'])
     handler.text_node_sequence(r'\cos', text_list=[r'$\cos$'], offset=(-0.3,-0.3))
@@ -64,7 +64,7 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     handler.connect_layers(r'\times', r'\psi', directed=True)
 
 def draw_instance():
-    with DynamicShow((5, 5), '_conv_rbm.png') as d:
+    with DynamicShow((5, 5), '_caizi.png') as d:
         draw_caizi_nn(d.ax, 5, 4)
 
 if __name__ == '__main__':
