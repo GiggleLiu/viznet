@@ -9,6 +9,7 @@ feature list:
 
 import numpy as np
 import pdb
+import numbers
 from matplotlib import pyplot as plt
 from matplotlib.patches import Circle, Polygon
 
@@ -23,33 +24,50 @@ BLUE = '#3399DD'
 VIOLET = '#DD99DD'
 
 NODE_THEME_DICT = {
-    'basic': (NONE, 'none'),
-    'backfed': (YELLOW, 'circle'),
-    'input': (YELLOW, 'none'),
-    'noisy_input': (YELLOW, 'triangle'),
-    'hidden': (GREEN, 'none'),
-    'probablistic_hidden': (GREEN, 'circle'),
-    'spiking_hidden': (GREEN, 'triangle'),
-    'output': (RED, 'none'),
-    'match_input_output': (RED, 'circle'),
-    'recurrent': (BLUE, 'none'),
-    'memory': (BLUE, 'circle'),
-    'different_memory': (BLUE, 'triangle'),
-    'kernel': (VIOLET, 'none'),
-    'convolution': (VIOLET, 'circle'),
-    'pooling': (VIOLET, 'circle'),
+        'invisible': (None, 'none'),
+        'basic': (NONE, 'none'),
+        'backfed': (YELLOW, 'circle'),
+        'input': (YELLOW, 'none'),
+        'noisy_input': (YELLOW, 'triangle'),
+        'hidden': (GREEN, 'none'),
+        'probablistic_hidden': (GREEN, 'circle'),
+        'spiking_hidden': (GREEN, 'triangle'),
+        'output': (RED, 'none'),
+        'match_input_output': (RED, 'circle'),
+        'recurrent': (BLUE, 'none'),
+        'memory': (BLUE, 'circle'),
+        'different_memory': (BLUE, 'triangle'),
+        'kernel': (VIOLET, 'none'),
+        'convolution': (VIOLET, 'circle'),
+        'pooling': (VIOLET, 'circle'),
 }
 
 
 class NNPlot(object):
-    def __init__(self, ax, fontsize=12):
+    '''
+    Args:
+        line_lw (bool, default=1): line width.
+        line_color (bool, default='#333333'): line default color of lines.
+        distance (tuple, default=(1,0)): space between two nodes.
+    '''
+    def __init__(self, ax, fontsize=12, line_lw=1, line_color='#333333', distance=(1,0)):
         self.ax = ax
         self.node_dict = {}
         self.edge_dict = {}
         self.fontsize = fontsize
+        self.line_lw = line_lw
+        self.line_color = line_color
+        self.distance = distance
 
     def connect(self, start, end, directed=False):
-        '''connect start node and end node'''
+        '''
+        connect start node and end node
+
+        Args:
+            start (str): start node name.
+            end (str): end node name.
+            directed (bool, default=False): with arrow if True.
+        '''
         sn = self.node_dict[start]
         en = self.node_dict[end]
         sxy, exy = np.array(sn.center), np.array(en.center)
@@ -58,16 +76,17 @@ class NNPlot(object):
         sxy = unit_d * sn.radius + sxy
         exy = -unit_d * en.radius + exy
         d = exy - sxy
+        lw = self.line_lw
         arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
-                            head_length=0.12 if directed else 0, width=0.015,
-                            head_width=8e-2, fc='#333333',# ec='#333333',
+                            head_length=0.12*lw if directed else 0, width=0.015*lw,
+                            head_width=8e-2*lw, fc=self.line_color,
                             length_includes_head=True, lw=0, edgecolor='none')
 
         self.edge_dict['%s-%s' % (start, end)] = arr
 
     def add_node(self, name, xy, radius=0.2, kind='basic', show_name=True):
         '''
-        add a node
+        add a node.
 
         Args:
             kind (str|tuple): 
@@ -77,11 +96,20 @@ class NNPlot(object):
         if isinstance(kind, str):
             kind = NODE_THEME_DICT[kind]
         color, geo = kind
+        edgecolor = 'k'
+        if color is None:
+            edgecolor = color = 'none'
 
-        c = Circle(xy, radius, edgecolor='k',
+        c = Circle(xy, radius, edgecolor=edgecolor,
                    facecolor=color, lw=0.7, zorder=0)
-        if show_name:
-            self.ax.text(xy[0], xy[1], name, va='center', ha='center', fontsize=self.fontsize)
+        if isinstance(show_name, str):
+            disp_text = show_name
+        elif show_name is True:
+            disp_text = name
+        else:
+            disp_text = ''
+        if disp_text!='':
+            self.ax.text(xy[0], xy[1], disp_text, va='center', ha='center', fontsize=self.fontsize)
         self.ax.add_patch(c)
 
         # add a geometric patch at the top of circle.
@@ -107,21 +135,53 @@ class NNPlot(object):
     def text_node(self, name, text, offset=(0,0)):
         '''
         add texts for a sequence of nodes.
+
+        Args:
+            name (str): name of a node.
+            text (list): the text to be shown.
+            offset (tuple, default=(0,0)): offset in x-y directions.
         '''
         c = self.node_dict[name]
         x, y = c.center + np.array(offset)
         self.ax.text(x, y, text, va='center', ha='center', fontsize=self.fontsize)
 
-    def add_node_sequence(self, num_node, token, y, kind='basic', radius=0.2, offset=(0, 0), show_name=True):
+    def add_node_sequence(self, num_node, token, offset, kind='basic', radius=0.2,
+            show_name=True):
         '''
         add a sequence of nodes along x-direction.
-        '''
-        x_list = np.arange(-num_node / 2. + 0.5, num_node / 2., 1)
-        for i, xy in enumerate(zip(x_list + offset[0], y * np.ones(num_node) + offset[1])):
-            self.add_node(self.auto_name(token, i), xy, kind=kind,
-                          radius=radius, show_name=show_name)
 
-    def connect_layers(self, start_token, end_token, one2one=False, directed=False):
+        Args:
+            num_node (int): number of node to be added.
+            token (int): the token to name this serie of nodes. e.g. token 'x' will generate node serie `$x_1$, $x_2$ ...`.
+            offset (tuple|float): offset in x-y directions. if a number is passed, offset along perpendicular direction with respect to :data:`self.distance`.
+            kind (str, default='basic'): the kind of node, see `NODE_THEME_DICT` for reference.
+            radius (float, default=0.2): the size of ball.
+            show_name (str|bool, default=True): display the name of each node, if str provided, display string.
+
+        Return:
+            list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
+        '''
+        if isinstance(offset, numbers.Number):
+            offset = np.array([-self.distance[1], self.distance[0]])*offset
+        node_name_list = []
+        x_list = np.arange(-num_node / 2. + 0.5, num_node / 2., 1)
+        xylist = np.asarray(self.distance)*x_list[:,None]
+        for i, xy in enumerate(zip(xylist[:,0] + offset[0], xylist[:,1] + offset[1])):
+            node_name = self.auto_name(token, i)
+            self.add_node(node_name, xy, kind=kind,
+                          radius=radius, show_name=show_name)
+            node_name_list.append(node_name)
+        return node_name_list
+
+    def connect_layers(self, start_token, end_token, one2one=False,
+            directed=False):
+        '''
+        Args:
+            start_token (str): the start layer generation token (pointed from).
+            end_token (str): the end layer generation token (pointed to).
+            one2one (bool, default=False): one to one connected if True else all to all.
+            directed (bool, default=False): arrows are directed if True.
+        '''
         i = 0
         while(self.auto_name(start_token, i) in self.node_dict):
             if one2one:
@@ -138,13 +198,46 @@ class NNPlot(object):
     def text_node_sequence(self, token, text_list, offset=(0,0)):
         '''
         add texts for a sequence of nodes.
+
+        Args:
+            token (str): the layer generation token.
+            text_list (list): a list of text.
+            offset (tuple, default=(0,0)): offset in x-y directions.
         '''
         for i, t in enumerate(text_list):
-            c = self.text_node(self.auto_name(token, i), t, offset)
+            self.text_node(self.auto_name(token, i), t, offset)
 
     def auto_name(self, token, i):
+        '''
+        auto-naming system
+
+        Args:
+            token (str): layer generation token.
+            i (int): the id of node in a layer, from 1 to N.
+
+        Return:
+            str: the name of node.
+        '''
         return r'$%s_%d$' % (token, i + 1)
 
+    def context(self, attr, val):
+        '''
+        change attribute in this context.
+
+        Args:
+            attr (str): the attribute to be changed.
+            val (obj): the target value that used in this context.
+
+        Return:
+            obj: Context object.
+        '''
+        oval = getattr(self, attr)
+        class Brush():
+            def __enter__(brush):
+                setattr(self, attr, val)
+            def __exit__(brush, *args):
+                setattr(self, attr, oval)
+        return Brush()
 
 class DynamicShow():
     '''
