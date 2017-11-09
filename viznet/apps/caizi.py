@@ -32,8 +32,8 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     handler.text_node_sequence(r'\sigma1', text_list=[r'$\sigma$'], offset=(-0.3,-0.3))
 
     # linear in amplitude
-    handler.add_node_sequence(1, 'linear2',
-                              y3, kind='hidden', radius=0.3, show_name=False, offset=(offset_amplitude,0))
+    handler.add_node_sequence(1, h2,
+                              y3, kind='hidden', radius=0.3, show_name=True, offset=(offset_amplitude,0))
     handler.add_node_sequence(1, '\sigma2',
                               y4, kind='basic', radius=0.2, show_name=False, offset=(offset_amplitude,0))
 
@@ -57,14 +57,14 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     handler.connect_layers('\sigma^z', h1p, directed=True)
     handler.connect_layers(h1, '\sigma1', directed=True, one2one=True)
     handler.connect_layers(h1p, '\cos', directed=True, one2one=True)
-    handler.connect_layers('\sigma1', 'linear2', directed=True)
-    handler.connect_layers('linear2', '\sigma2', directed=True)
-    handler.connect_layers('\sigma2', r'\times', directed=True)
-    handler.connect_layers('\cos', r'\times', directed=True)
+    handler.connect_layers('\sigma1', h2, directed=True)
+    handler.connect_layers(h2, '\sigma2', directed=True)
+    handler.connect_layers('\sigma2', r'\times', directed=False)
+    handler.connect_layers('\cos', r'\times', directed=False)
     handler.connect_layers(r'\times', r'\psi', directed=True)
 
 def draw_instance():
-    with DynamicShow((5, 5), '_conv_rbm.png') as d:
+    with DynamicShow((5, 5), '_caizi.pdf') as d:
         draw_caizi_nn(d.ax, 5, 4)
 
 if __name__ == '__main__':
