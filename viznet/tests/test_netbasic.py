@@ -4,7 +4,7 @@ import pdb
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ..netbasic import *
+from ..neuralnet import *
 from ..zoo import *
 
 

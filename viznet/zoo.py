@@ -4,7 +4,7 @@ Plots for zoo of nets.
 
 import numpy as np
 
-from .netbasic import NNPlot
+from .neuralnet import NNPlot
 
 __all__ = ['draw_rbm', 'draw_feed_forward']
 

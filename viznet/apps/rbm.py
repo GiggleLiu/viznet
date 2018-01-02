@@ -9,7 +9,7 @@ from ..zoo import *
 def test_draw_rbm():
     num_node_visible = 5
     num_node_hidden = 4
-    with DynamicShow((6, 4), '_rbm.png') as d:
+    with DynamicShow((6, 4), '_rbm.pdf') as d:
         handler = NNPlot(d.ax)
         # visible layers
         handler.add_node_sequence(
