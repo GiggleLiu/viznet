@@ -21,14 +21,14 @@ class NNPlot(object):
         line_color (bool, default='#333333'): line default color of lines.
         distance (tuple, default=(1,0)): space between two nodes.
     '''
-    def __init__(self, ax, fontsize=12, line_lw=1, line_color='#333333', distance=(1,0)):
-        self.ax = ax
-        self.node_dict = {}
-        self.edge_dict = {}
-        self.fontsize = fontsize
-        self.line_lw = line_lw
-        self.line_color = line_color
-        self.distance = distance
+    def __init__(self, ax, fontsize=12, line_lw=1, line_color='#333333', distance=(1, 0)):
+        self.ax= ax
+        self.node_dict= {}
+        self.edge_dict= {}
+        self.fontsize= fontsize
+        self.line_lw= line_lw
+        self.line_color= line_color
+        self.distance= distance
 
     def add_node_sequence(self, num_node, token, offset, kind='basic', radius=0.2,
             show_name=True):
@@ -46,8 +46,8 @@ class NNPlot(object):
         Return:
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
         '''
-        x_list = np.arange(-num_node / 2. + 0.5, num_node / 2., 1)
-        xylist = np.asarray(self.distance)*x_list[:,None]
+        x_list= np.arange(-num_node / 2. + 0.5, num_node / 2., 1)
+        xylist = np.asarray(self.distance) * x_list[:, None]
         return self._add_node_sequence(xylist, token, offset, kind, radius, show_name)
 
     def _add_node_sequence(self, xylist, token, offset, kind, radius, show_name):
@@ -65,10 +65,10 @@ class NNPlot(object):
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
         '''
         if isinstance(offset, numbers.Number):
-            offset = np.array([-self.distance[1], self.distance[0]])*offset
-        node_name_list = []
-        for i, xy in enumerate(zip(xylist[:,0] + offset[0], xylist[:,1] + offset[1])):
-            node_name = self.auto_name(token, i)
+            offset= np.array([-self.distance[1], self.distance[0]]) * offset
+        node_name_list= []
+        for i, xy in enumerate(zip(xylist[:, 0] + offset[0], xylist[:, 1] + offset[1])):
+            node_name= self.auto_name(token, i)
             self.add_node(node_name, xy, kind=kind,
                           radius=radius, show_name=show_name)
             node_name_list.append(node_name)
@@ -84,20 +84,20 @@ class NNPlot(object):
             one2one (bool, default=False): one to one connected if True else all to all.
             directed (bool, default=False): arrows are directed if True.
         '''
-        i = 0
+        i= 0
         while(self.auto_name(start_token, i) in self.node_dict):
             if one2one:
                 self.connect(self.auto_name(start_token, i),
                              self.auto_name(end_token, i), directed=directed)
             else:
-                j = 0
+                j= 0
                 while(self.auto_name(end_token, j) in self.node_dict):
                     self.connect(self.auto_name(start_token, i),
                                  self.auto_name(end_token, j), directed=directed)
                     j += 1
             i += 1
 
-    def text_node_sequence(self, token, text_list, offset=(0,0)):
+    def text_node_sequence(self, token, text_list, offset=(0, 0)):
         '''
         add texts for a sequence of nodes.
 
@@ -133,7 +133,7 @@ class NNPlot(object):
         Return:
             obj: Context object.
         '''
-        oval = getattr(self, attr)
+        oval= getattr(self, attr)
         class Brush():
             def __enter__(brush):
                 setattr(self, attr, val)

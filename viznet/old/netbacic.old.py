@@ -21,7 +21,7 @@ class NNPlot(object):
         line_color (bool, default='#333333'): line default color of lines.
         distance (tuple, default=(1,0)): space between two nodes.
     '''
-    def __init__(self, ax, fontsize=12, line_lw=1, line_color='#333333', distance=(1,0)):
+    def __init__(self, ax, fontsize=12, line_lw=1, line_color='#333333', distance=(1, 0)):
         self.ax = ax
         self.node_dict = {}
         self.edge_dict = {}
@@ -49,8 +49,8 @@ class NNPlot(object):
         d = exy - sxy
         lw = self.line_lw
         arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
-                            head_length=0.12*lw if directed else 0, width=0.015*lw,
-                            head_width=8e-2*lw, fc=self.line_color,
+                            head_length=0.12 * lw if directed else 0, width=0.015 * lw,
+                            head_width=8e-2 * lw, fc=self.line_color,
                             length_includes_head=True, lw=0, edgecolor='none')
 
         self.edge_dict['%s-%s' % (start, end)] = arr
@@ -60,7 +60,7 @@ class NNPlot(object):
         add a node.
 
         Args:
-            kind (str|tuple): 
+            kind (str|tuple):
                 * if it is a string, search NODE_THEME_DICT for a configuration.
                 * if it is a tuple, it should be a (color, geometry) pair.
         '''
@@ -79,8 +79,9 @@ class NNPlot(object):
             disp_text = name
         else:
             disp_text = ''
-        if disp_text!='':
-            self.ax.text(xy[0], xy[1], disp_text, va='center', ha='center', fontsize=self.fontsize)
+        if disp_text != '':
+            self.ax.text(xy[0], xy[1], disp_text, va='center',
+                         ha='center', fontsize=self.fontsize)
         self.ax.add_patch(c)
 
         # add a geometric patch at the top of circle.
@@ -103,7 +104,7 @@ class NNPlot(object):
 
         self.node_dict[name] = c
 
-    def text_node(self, name, text, offset=(0,0)):
+    def text_node(self, name, text, offset=(0, 0)):
         '''
         add texts for a sequence of nodes.
 
@@ -114,7 +115,8 @@ class NNPlot(object):
         '''
         c = self.node_dict[name]
         x, y = c.center + np.array(offset)
-        self.ax.text(x, y, text, va='center', ha='center', fontsize=self.fontsize)
+        self.ax.text(x, y, text, va='center',
+                     ha='center', fontsize=self.fontsize)
 
     def add_node_sequence(self, num_node, token, offset, kind='basic', radius=0.2,
             show_name=True):
@@ -133,7 +135,7 @@ class NNPlot(object):
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
         '''
         x_list = np.arange(-num_node / 2. + 0.5, num_node / 2., 1)
-        xylist = np.asarray(self.distance)*x_list[:,None]
+        xylist= np.asarray(self.distance) * x_list[:, None]
         return self._add_node_sequence(xylist, token, offset, kind, radius, show_name)
 
     def _add_node_sequence(self, xylist, token, offset, kind, radius, show_name):
@@ -151,9 +153,9 @@ class NNPlot(object):
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
         '''
         if isinstance(offset, numbers.Number):
-            offset = np.array([-self.distance[1], self.distance[0]])*offset
+            offset = np.array([-self.distance[1], self.distance[0]]) * offset
         node_name_list = []
-        for i, xy in enumerate(zip(xylist[:,0] + offset[0], xylist[:,1] + offset[1])):
+        for i, xy in enumerate(zip(xylist[:, 0] + offset[0], xylist[:, 1] + offset[1])):
             node_name = self.auto_name(token, i)
             self.add_node(node_name, xy, kind=kind,
                           radius=radius, show_name=show_name)
@@ -183,7 +185,7 @@ class NNPlot(object):
                     j += 1
             i += 1
 
-    def text_node_sequence(self, token, text_list, offset=(0,0)):
+    def text_node_sequence(self, token, text_list, offset=(0, 0)):
         '''
         add texts for a sequence of nodes.
 
@@ -264,7 +266,8 @@ class DynamicShow():
         plt.axis('off')
         plt.tight_layout()
         if self.filename is not None:
-            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>'%self.filename)
+            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
+                  self.filename)
             pdb.set_trace()
             plt.savefig(self.filename, dpi=300)
         else:

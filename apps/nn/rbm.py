@@ -13,10 +13,10 @@ def test_draw_rbm():
         handler = NNPlot(d.ax)
         # visible layers
         handler.add_node_sequence(
-            num_node_visible, '\sigma^z', (0,0), kind='backfed', radius=0.3)
+            num_node_visible, '\sigma^z', (0, 0), kind='backfed', radius=0.3)
         # hidden layers
         handler.add_node_sequence(num_node_hidden, 'h',
-                                  (0,1.5), kind='probablistic_hidden', radius=0.3)
+                                  (0, 1.5), kind='probablistic_hidden', radius=0.3)
         # connect them
         handler.connect_layers('\sigma^z', 'h', False)
 

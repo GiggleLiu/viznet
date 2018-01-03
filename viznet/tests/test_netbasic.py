@@ -4,7 +4,10 @@ import pdb
 import numpy as np
 from matplotlib import pyplot as plt
 
-from ..neuralnet import *
+from ..layerwise import *
+from ..context import DynamicShow
+from ..theme import NODE_THEME_DICT
+from ..brush import *
 from ..zoo import *
 
 
@@ -32,15 +35,21 @@ def test_draw_feed_forward():
 
 def test_theme_table():
     '''plot a table of node themes'''
-    with DynamicShow((11, 6), filename='_theme_list.png') as d:
-        handler = NNPlot(d.ax)
-        for i, kind in enumerate(NODE_THEME_DICT.keys()):
-            handler.add_node(name=kind,
-                             xy=(i // 3, i % 3), kind=kind, show_name=False)
-            handler.text_node(kind, kind, offset=(0,-0.4))
+    genre = [('nn.', 'nn'), ('tn.', 'tn'), ('', '')]
+    for head, token in genre:
+        with DynamicShow((11, 6), filename='_%s_theme_list.png' % token) as d:
+            handler = Layerwise()
+            i = 0
+            for kind in NODE_THEME_DICT.keys():
+                if kind[:3] == head or (kind[:3] not in ['nn.', 'tn.'] and token == ''):
+                    brush = NodeBrush(kind, d.ax)
+                    node = brush >> (i // 3, i % 3)
+                    node.text(kind, 'bottom')
+                    i += 1
+
 
 if __name__ == '__main__':
     test_theme_table()
+    test_draw_feed_forward()
     test_draw_rbm()
     test_draw_rbm_equivalent()
-    test_draw_feed_forward()

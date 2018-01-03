@@ -10,12 +10,14 @@ def test_draw_bm():
     num_node_visible = 6
     with DynamicShow((5, 4), '_bm.pdf') as d:
         handler = NNPlot(d.ax)
-        add_circled_node_sequence(handler, num_node_visible, token='\sigma^z', offset=(0,0), kind='backfed', radius=0.3, show_name=True)
+        add_circled_node_sequence(handler, num_node_visible, token='\sigma^z', offset=(
+            0, 0), kind='backfed', radius=0.3, show_name=True)
         # visible layers
         handler.connect_layers('\sigma^z', '\sigma^z', False)
 
-def add_circled_node_sequence(handler, num_node, token, offset=(0,0), kind='basic', radius=0.2,
-        show_name=True):
+
+def add_circled_node_sequence(handler, num_node, token, offset=(0, 0), kind='basic', radius=0.2,
+                              show_name=True):
     '''
     add a sequence of nodes along x-direction.
 
@@ -30,9 +32,9 @@ def add_circled_node_sequence(handler, num_node, token, offset=(0,0), kind='basi
     Return:
         list: a list of node names, you can visit this node by accesing `handler.node_dict[node_name]`.
     '''
-    theta_list = np.arange(0, 2*np.pi, 2*np.pi/num_node)
-    R = np.linalg.norm(handler.distance)*num_node/np.pi
-    xylist = np.array([np.cos(theta_list), np.sin(theta_list)]).T*R
+    theta_list = np.arange(0, 2 * np.pi, 2 * np.pi / num_node)
+    R = np.linalg.norm(handler.distance) * num_node / np.pi
+    xylist = np.array([np.cos(theta_list), np.sin(theta_list)]).T * R
     return handler._add_node_sequence(xylist, token, offset, kind, radius, show_name)
 
 
