@@ -15,3 +15,8 @@
 *.log
 _*.png
 _*.pdf
+dist/
+build/
+.cache/
+viznet.egg-info/
+__pycache__/

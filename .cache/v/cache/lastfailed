@@ -1,5 +1,0 @@
-{
-  "viznet/tests/test_netbasic.py::test_draw_feed_forward": true,
-  "viznet/tests/test_netbasic.py::test_draw_rbm": true,
-  "viznet/tests/test_netbasis.py": true
-}
