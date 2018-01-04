@@ -1,40 +1,47 @@
-from ..netbasic import DynamicShow, NNPlot
+from viznet import *
 
 
 def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     '''CNN equivalance to RBM'''
-    handler = NNPlot(ax)
+    handler = Layerwise()
+    # brush
+    conv = NodeBrush('nn.convolution', ax)
+    input = NodeBrush('nn.input', ax)
+    output = NodeBrush('nn.output', ax)
+    op = NodeBrush('basic', ax, size='small')
+    de = EdgeBrush('arrow', ax)
+    ude = EdgeBrush('undirected', ax)
+
     # visible layers
-    handler.add_node_sequence(
-        num_node_visible, '\sigma^z', (0, 0), kind='input', radius=0.3)
+    handler.node_sequence('\sigma^z', num_node_visible,
+                          offset=(0, 0), brush=input)
 
     # hidden layers
-    handler.add_node_sequence(num_node_hidden, 'h',
-                              (0, 1.5), kind='convolution', radius=0.3)
+    handler.node_sequence('h', num_node_hidden, offset=(0, 1.5), brush=conv)
 
     # nonlinear layers
-    handler.add_node_sequence(num_node_hidden, 'nonlinear',
-                              (0, 2.3), kind='basic', radius=0.15, show_name=False)
-    handler.text_node_sequence('nonlinear', text_list=[
-                               r'$\log 2\cosh$'], offset=(-0.55, -0.35))
+    handler.node_sequence('nonlinear', num_node_hidden,
+                          offset=(0, 2.3), brush=op)
 
     # sum
-    handler.add_node_sequence(1, '+',
-                              (0, 3.1), kind='basic', radius=0.15, show_name=False)
-    handler.text_node_sequence('+', text_list=[r'$+$'])
+    handler.node_sequence('+', 1, offset=(0, 3.1), brush=op)
 
     # output
-    handler.add_node_sequence(1, r'\psi',
-                              (0, 3.9), kind='output', radius=0.3, show_name=False)
-    handler.text_node_sequence(r'\psi', text_list=[r'$\psi$'], offset=(0, 0.))
-    handler.text_node_sequence(
-        r'\psi', text_list=[r'$\exp$'], offset=(-0.2, -0.5))
+    psi = handler.node_sequence(r'\psi', 1, offset=(0, 3.9), brush=output)
+
+    # text nodes
+    handler.text('\sigma^z')
+    handler.text('h')
+    handler.text(r'\psi', text_list=[r'$\psi$'])
+    handler.text(r'\psi', text_list=[r'$\exp$'], position='left')
+    handler.text('+', text_list=[r'$+$'])
+    handler.text('nonlinear', [r'$\log 2\cosh$'], position='left')
 
     # connect them
-    handler.connect_layers('\sigma^z', 'h', directed=True)
-    handler.connect_layers('h', 'nonlinear', directed=True, one2one=True)
-    handler.connect_layers('nonlinear', '+', directed=False)
-    handler.connect_layers('+', r'\psi', directed=True)
+    handler.connecta2a('\sigma^z', 'h', de)
+    handler.connect121('h', 'nonlinear', de)
+    handler.connecta2a('nonlinear', '+', ude)
+    handler.connect121('+', '\psi', de)
 
 
 def test_conv_rbm():

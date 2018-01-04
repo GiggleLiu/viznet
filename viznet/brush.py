@@ -158,7 +158,7 @@ class EdgeBrush(Brush):
                 mxy = sxy + d / 2. - head_vec / 2.
             else:
                 head_vec = head_length * unit_d
-                exy = exy - head_vec
+                exy = exy - head_vec*1.3
                 mxy = exy
             plt.arrow(mxy[0], mxy[1], 0.01 * d[0], 0.01 * d[1],
                       head_length=head_length, width=0,

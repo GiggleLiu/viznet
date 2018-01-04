@@ -124,49 +124,117 @@ if __name__ == '__main__':
 ## Example B: Restricted Boltzmann Machine
 
 ![theme_list](docs/images/rbm.png)
+To get this graph, you can run the following code
+```python
+import numpy as np
+from viznet import NodeBrush, DynamicShow, Layerwise, EdgeBrush
+
+
+def test_draw_bm():
+    '''Draw a Boltzmann Machine'''
+    num_node_visible = 6
+    with DynamicShow((5, 4), '_bm.pdf') as d:
+        # define brushes
+        node = NodeBrush('nn.backfed', d.ax, size='normal')
+        edge = EdgeBrush('undirected', d.ax)
+
+        node_list = add_circled_node_sequence(
+            num_node_visible, node, radius=1.0, offset=(0, 0))
+
+        # connect all
+        for i, nodei in enumerate(node_list):
+            # add text
+            nodei.text(r'$\sigma_%d$' % i)
+            for nodej in node_list:
+                if nodei is not nodej:
+                    edge >> (nodei, nodej)
+
+
+def add_circled_node_sequence(num_node, brush, radius, offset=(0, 0)):
+    '''
+    add a sequence of nodes placed on a ring.
+
+    Args:
+        num_node (int): number of node to be added.
+        brush (:obj:`NodeBrush`): node brush.
+        radius (float): the raidus of the ring.
+        offset (tuple|float): offset in x-y directions.
+
+    Return:
+        list: a list of nodes
+    '''
+    theta_list = np.arange(0, 2 * np.pi, 2 * np.pi / num_node)
+    R = radius * num_node / np.pi
+    xylist = np.array([np.cos(theta_list), np.sin(theta_list)]).T * R
+
+    node_list = []
+    i = 0
+    for xy in xylist:
+        node_list.append(brush >> xy)
+        i += 1
+    return node_list
+
+
+if __name__ == '__main__':
+    test_draw_bm()
+```
+
 ## Example C: Convolutional Neural Network on quivalence of RBM
 ![theme_list](docs/images/conv_rbm.png)
-The code looks like
+
+In this example, I will use `viznet.Layerwise` utility to manipulate (connect/text) nodes in a layer,
+the code looks like
+
 ```python
-from ..netbasic import DynamicShow, NNPlot
+from viznet import *
 
 def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     '''CNN equivalance to RBM'''
-    handler = NNPlot(ax)
+    handler = Layerwise()
+    # brush
+    conv = NodeBrush('nn.convolution', ax)
+    input = NodeBrush('nn.input', ax)
+    output = NodeBrush('nn.output', ax)
+    op = NodeBrush('basic', ax, size='small')
+    de = EdgeBrush('arrow', ax)
+    ude = EdgeBrush('undirected', ax)
+
     # visible layers
-    handler.add_node_sequence(
-        num_node_visible, '\sigma^z', 0, kind='input', radius=0.3)
+    handler.node_sequence('\sigma^z', num_node_visible, offset=(0, 0), brush=input)
 
     # hidden layers
-    handler.add_node_sequence(num_node_hidden, 'h',
-                              1.5, kind='convolution', radius=0.3)
+    handler.node_sequence('h', num_node_hidden, offset=(0, 1.5), brush=conv)
 
     # nonlinear layers
-    handler.add_node_sequence(num_node_hidden, 'nonlinear',
-                              2.3, kind='basic', radius=0.15, show_name=False)
-    handler.text_node_sequence('nonlinear', text_list=[r'$\log 2\cosh$'],
-                               offset=(-0.6,-0.4))
+    handler.node_sequence('nonlinear', num_node_hidden, offset=(0, 2.3), brush = op)
 
-    # sum, we do not show_name because name automatically generated
-    # will be r"$+_1$" (with subscript)
-    handler.add_node_sequence(1, '+',
-                              3.1, kind='basic', radius=0.15, show_name=False)
-    handler.text_node_sequence('+', text_list=[r'$+$'])
+    # sum
+    handler.node_sequence('+', 1, offset=(0, 3.1), brush = op)
 
     # output
-    handler.add_node_sequence(1, r'\psi',
-                              3.9, kind='output', radius=0.3, show_name=False)
-    handler.text_node_sequence(r'\psi', text_list=[r'$\psi$'], offset=(0,0.))
+    psi = handler.node_sequence(r'\psi', 1, offset=(0, 3.9), brush=output)
+
+    # text nodes
+    handler.text('\sigma^z')
+    handler.text('h')
+    handler.text(r'\psi', text_list=[r'$\psi$'])
+    handler.text(r'\psi', text_list=[r'$\exp$'], position='left')
+    handler.text('+', text_list=[r'$+$'])
+    handler.text('nonlinear', [r'$\log 2\cosh$'], position='left')
 
     # connect them
-    handler.connect_layers('\sigma^z', 'h', directed=True)
-    handler.connect_layers('h', 'nonlinear', directed=True, one2one=True)
-    handler.connect_layers('nonlinear', '+', directed=False)
-    handler.connect_layers('+', r'\psi', directed=True)
+    # all to all connection
+    handler.connecta2a('\sigma^z', 'h', de)
+    # one to one connection
+    handler.connect121('h', 'nonlinear', de)
+    handler.connecta2a('nonlinear', '+', ude)
+    handler.connect121('+', '\psi', de)
+
 
 def test_conv_rbm():
     with DynamicShow((6, 6), '_conv_rbm.png') as d:
         draw_conv_rbm(d.ax, 5, 4)
+
 
 if __name__ == '__main__':
     test_conv_rbm()

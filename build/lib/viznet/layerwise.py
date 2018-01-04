@@ -29,7 +29,7 @@ class Layerwise(object):
         self.edge_dict = {}
         self.distance = distance
 
-    def add_node_sequence(self, token, num_node, brush, offset, auto_name=False):
+    def node_sequence(self, token, num_node, brush, offset):
         '''
         add a sequence of nodes along x-direction.
 
@@ -38,7 +38,6 @@ class Layerwise(object):
             token (int): the token to name this serie of nodes. e.g. token 'x' will generate node serie `$x_1$, $x_2$ ...`.
             offset (tuple|float): offset in x-y directions. if a number is passed, offset along perpendicular direction with respect to :data:`self.distance`.
             brush (NodeBrush): brush instance.
-            auto_name (str|bool, default=True): display automatically generated name of each node, if str provided, display string.
 
         Return:
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
@@ -84,7 +83,7 @@ class Layerwise(object):
         self.edge_dict[start_token + '-' + end_token] = edge_list
         return edge_list
 
-    def text_node_sequence(self, token, text_list, position='center', text_offset=None, color='k', fontsize=None):
+    def text(self, token, text_list=None, position='center', text_offset=None, color='k', fontsize=None):
         '''
         add texts for a sequence of nodes.
 
@@ -93,11 +92,15 @@ class Layerwise(object):
             text_list (list): a list of text.
             position (str): position of texts.
         '''
-        for node in self.node_dict[token]:
-            node.text(self.auto_name(token, i), position=position,
+        node_list = self.node_dict[token]
+        if text_list is None:
+            # use auto name
+            text_list = [self.autoname(token, i) for i in range(len(node_list))]
+        for node, text in zip(node_list, text_list):
+            node.text(text, position=position,
                       text_offset=text_offset, color=color, fontsize=fontsize)
 
-    def auto_name(self, token, i):
+    def autoname(self, token, i):
         '''
         auto-naming system
 
