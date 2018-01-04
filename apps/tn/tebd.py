@@ -2,7 +2,7 @@ from viznet import theme, NodeBrush, EdgeBrush, DynamicShow
 
 
 def tebd():
-    with DynamicShow((6, 4), filename='tebd.png') as ds:
+    with DynamicShow((6, 4), filename='_tebd.png') as ds:
         # define a set of brushes.
         # NodeBrush can place a node at some location, like `node_brush >> (x, y)`,
         # and it will return a Node instance.
