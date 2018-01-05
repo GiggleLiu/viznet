@@ -1,3 +1,15 @@
+'''
+contains default settings for annotate, node, arrow and grid,
+    * annotate_setting
+    * node_setting
+    * arrow_setting
+    * grid_setting
+
+Example:
+    # disable edge for nodes
+    from viznet.setting import node_setting
+    node_setting['lw'] = 0
+'''
 annotate_setting = {
     'fontsize': 12,
     'text_offset': 0.07,

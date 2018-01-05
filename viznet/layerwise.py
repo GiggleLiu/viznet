@@ -19,9 +19,7 @@ __all__ = ['Layerwise']
 class Layerwise(object):
     '''
     Args:
-        line_lw (bool, default=1): line width.
-        line_color (bool, default='#333333'): line default color of lines.
-        distance (tuple, default=(1,0)): space between two nodes.
+        distance (tuple, default=(1,0)): unit of space between two sequence of nodes.
     '''
 
     def __init__(self, distance=(1, 0)):
@@ -34,10 +32,10 @@ class Layerwise(object):
         add a sequence of nodes along x-direction.
 
         Args:
+            token (str): the token to name this serie of nodes. e.g. token 'x' will generate node serie `$x_1$, $x_2$ ...`.
             num_node (int): number of node to be added.
-            token (int): the token to name this serie of nodes. e.g. token 'x' will generate node serie `$x_1$, $x_2$ ...`.
-            offset (tuple|float): offset in x-y directions. if a number is passed, offset along perpendicular direction with respect to :data:`self.distance`.
             brush (NodeBrush): brush instance.
+            offset (tuple|float): offset in x-y directions. if a number is passed, offset along perpendicular direction with respect to :data:`self.distance`.
 
         Return:
             list: a list of node names, you can visit this node by accesing `self.node_dict[node_name]`.
@@ -89,13 +87,17 @@ class Layerwise(object):
 
         Args:
             token (str): the layer generation token.
-            text_list (list): a list of text.
-            position (str): position of texts.
+            text_list (list|None, default=None): a list of text, if None, use "{token}_{i-th}" as text.
+            position ('center'|'left'|'right'|'bottom'|'top', default='center'): position of texts.
+            text_offset (float|None, default=None): offset of text, None to use default.
+            fontsize (int|None, default=None): font size, None to use default.
+            color (str,default='k'): color of texts.
         '''
         node_list = self.node_dict[token]
         if text_list is None:
             # use auto name
-            text_list = [self.autoname(token, i) for i in range(len(node_list))]
+            text_list = [self.autoname(token, i)
+                         for i in range(len(node_list))]
         for node, text in zip(node_list, text_list):
             node.text(text, position=position,
                       text_offset=text_offset, color=color, fontsize=fontsize)

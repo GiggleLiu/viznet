@@ -15,11 +15,16 @@ class Brush(object):
 
 class NodeBrush(Brush):
     '''
+    a brush class used to draw node.
+
     Attributes:
+        style (str): refer keys for `viznet.theme.NODE_THEME_DICT`.
+        ax (:obj:`Axes`): matplotlib Axes instance.
+        color (str|None): the color of painted node by this brush, it will overide theme color if is not `None`.
         size ('huge'|'large'|'normal'|'small'|'tiny'): size of node.
     '''
     size_dict = {
-        'large': 3,
+        'huge': 3,
         'large': 1.3,
         'normal': 1.0,
         'small': 0.7,
@@ -46,6 +51,9 @@ class NodeBrush(Brush):
 
         Args:
             xy (tuple): position.
+
+        Returns:
+            :obj:`Node`: node object.
         '''
         basesize = 0.3
         # color priority: brush color > theme color
@@ -123,6 +131,16 @@ class NodeBrush(Brush):
 
 
 class EdgeBrush(Brush):
+    '''
+    a brush for drawing edges.
+
+    Attributes:
+        style (str): the style of edge, currrently ('directed'|'undirected'|'arrow') are available.
+        ax (:obj:`Axes`): matplotlib Axes instance.
+        lw (float): line width.
+        color (str): the color of painted edge by this brush.
+    '''
+
     def __init__(self, style, ax, lw=1, color='k'):
         self.lw = lw
         self.color = color
@@ -135,6 +153,9 @@ class EdgeBrush(Brush):
 
         Args:
             startend (tuple): start node and end node.
+
+        Returns:
+            :obj:`Edge`: edge object.
         '''
         lw = self.lw
         head_length = arrow_setting['head_length'] * lw
@@ -158,7 +179,7 @@ class EdgeBrush(Brush):
                 mxy = sxy + d / 2. - head_vec / 2.
             else:
                 head_vec = head_length * unit_d
-                exy = exy - head_vec*1.3
+                exy = exy - head_vec * 1.3
                 mxy = exy
             plt.arrow(mxy[0], mxy[1], 0.01 * d[0], 0.01 * d[1],
                       head_length=head_length, width=0,

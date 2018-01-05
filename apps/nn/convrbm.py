@@ -13,7 +13,7 @@ def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     ude = EdgeBrush('undirected', ax)
 
     # visible layers
-    handler.node_sequence('\sigma^z', num_node_visible,
+    handler.node_sequence(r'\sigma^z', num_node_visible,
                           offset=(0, 0), brush=input)
 
     # hidden layers
@@ -30,7 +30,7 @@ def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     psi = handler.node_sequence(r'\psi', 1, offset=(0, 3.9), brush=output)
 
     # text nodes
-    handler.text('\sigma^z')
+    handler.text(r'\sigma^z')
     handler.text('h')
     handler.text(r'\psi', text_list=[r'$\psi$'])
     handler.text(r'\psi', text_list=[r'$\exp$'], position='left')
@@ -38,10 +38,10 @@ def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     handler.text('nonlinear', [r'$\log 2\cosh$'], position='left')
 
     # connect them
-    handler.connecta2a('\sigma^z', 'h', de)
+    handler.connecta2a(r'\sigma^z', 'h', de)
     handler.connect121('h', 'nonlinear', de)
     handler.connecta2a('nonlinear', '+', ude)
-    handler.connect121('+', '\psi', de)
+    handler.connect121('+', r'\psi', de)
 
 
 def test_conv_rbm():

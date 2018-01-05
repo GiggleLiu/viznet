@@ -14,9 +14,17 @@ __all__ = ['Edge', 'Node']
 class EdgeNode(object):
     def text(self, text, position='center', fontsize=None, color='k', text_offset=None):
         '''
+        text an Edge|Node|Pin.
+
         Args:
-            position: position of text, use string 'center'|'left'|'right'|'top','bottom' to specify direction.
-            fontsize (int/None): override default fontsize.
+            text (str): the text shown.
+            position ('center'|'left'|'right'|'top'|'bottom', default='center'): position of text.
+            fontsize (int|None, default=None): override default fontsize.
+            color (str,default='k'): color.
+            text_offset (float|None,default=None): the displacement of text.
+
+        Returns:
+            matplotlib text object.
         '''
         if fontsize is None:
             fontsize = annotate_setting['fontsize']
@@ -51,9 +59,12 @@ class EdgeNode(object):
 
 class Node(EdgeNode):
     '''
+    A patch with shape and style, defines the allowed connection points, and create pins for connection.
+
     Attributes:
-        style (tuple): style.
         obj(Patch): matplotlib patch object.
+        style (tuple): style.
+        ax (:obj:`Axes`): matplotlib Axes instance.
     '''
 
     def __init__(self, obj, style, ax):
@@ -83,7 +94,14 @@ class Node(EdgeNode):
 
     def pin(self, direction, align=None):
         '''
-        get a pin in specific direction.
+        obtain a pin on specific surface.
+
+        Args:
+            direction ('top'|'bottom'|'left'|'right'): specifies the surface to place a pin.
+            align (:obj:`EdgeNode`|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
+
+        Returns:
+            :obj:`Pin`: the pin for wire connection.
         '''
         offset_dict = self._offset_dict
         loc = offset_dict[direction] + self.position
@@ -97,6 +115,7 @@ class Node(EdgeNode):
 
     @property
     def position(self):
+        '''center of a node'''
         shape = self.style[1]
         if isinstance(self.obj, plt.Circle):
             return np.array(self.obj.center)
@@ -167,9 +186,15 @@ class Node(EdgeNode):
 
 class Edge(EdgeNode):
     '''
+    An Edge connecting two `EdgeNode` instance.
+
     Attributes:
-        style (tuple): style.
-        obj(Patch): matplotlib patch object.
+        obj (:obj:`Patch`): matplotlib line object.
+        start_xy (tuple): start position.
+        end_xy (tuple): end position.
+        start (EdgeNode): start node.
+        end (EdgeNode): end node.
+        ax (:obj:`Axes`): matplotlib Axes instance.
     '''
 
     def __init__(self, obj, start_xy, end_xy, start, end, ax):
@@ -204,6 +229,13 @@ class Edge(EdgeNode):
 
 
 class Pin(EdgeNode):
+    '''
+    Simple Dot used for connecting wires.
+
+    Attributes:
+        position (tuple): the position of this dot.
+    '''
+
     def __init__(self, position):
         self.position = position
 

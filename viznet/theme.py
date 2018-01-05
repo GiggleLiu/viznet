@@ -14,7 +14,7 @@ BLUE = '#3399DD'
 VIOLET = '#DD99DD'
 BLACK = '#333333'
 
-# COLOR | SHAPE | INSIDE_SHAPE | SHOW_EDGE
+# COLOR | SHAPE | INSIDE_SHAPE
 NODE_THEME_DICT = {
     'invisible': (None, 'circle', 'none'),
     'basic': (NONE, 'circle', 'none'),
@@ -44,6 +44,13 @@ NODE_THEME_DICT = {
     'tn.mpo21': (BLACK, 'rectangle-2-1', 'none'),
     'tn.mpo12': (BLACK, 'rectangle-1-2', 'none'),
 }
+'''
+A table of theme for nodes.
+values are `COLOR | SHAPE | INSIDE_SHAPE`.
+'''
 
 
 EDGE_THEME_LIST = ['arrow', 'undirected', 'directed']
+'''
+A table of theme for edges.
+'''

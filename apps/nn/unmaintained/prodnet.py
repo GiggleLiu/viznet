@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from viznet import DynamicShow, NodeBrush, EdgeBrush, Layerwise
 
+
 def draw_prodnet(ax, num_node_visible):
     '''CNN to achieve MSR'''
     handler = Layerwise()
@@ -13,16 +14,17 @@ def draw_prodnet(ax, num_node_visible):
     op = NodeBrush('basic', ax, size='small')
     de = EdgeBrush('arrow', ax)
     ude = EdgeBrush('undirected', ax)
- 
+
     # visible layers
-    handler.node_sequence('\sigma', num_node_visible, offset=(0, 0), brush=input)
+    handler.node_sequence('\sigma', num_node_visible,
+                          offset=(0, 0), brush=input)
     handler.text('\sigma')
     for i in [-1, num_node_visible]:
         node = invisible >> (i - num_node_visible / 2. + 0.5, 0)
-        ('$\sigma_%d$' % (i + 1), 
+        ('$\sigma_%d$' % (i + 1),
     for i in range(num_node_visible):
-        A = '$nn_%d$' % (2 * i + 1)
-        B = '$nn_%d$' % (2 * i + 2)
+        A='$nn_%d$' % (2 * i + 1)
+        B='$nn_%d$' % (2 * i + 2)
         with handler.context('fontsize', 10):
             handler.add_node(A, (i - num_node_visible / 2., 1),
                              kind='basic', radius=0.15, show_name=r'x')
