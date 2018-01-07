@@ -1,7 +1,7 @@
-.. _viznet.setting
+.. _viznet.setting:
 
-setting
-========
+viznet.setting
+==================
 
 .. toctree::
 	:maxdepth: 2

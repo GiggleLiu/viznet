@@ -1,7 +1,7 @@
-.. _viznet.theme
+.. _viznet.theme:
 
-theme
-========
+viznet.theme
+==============
 
 .. toctree::
 	:maxdepth: 2
@@ -9,9 +9,8 @@ theme
 Module contents
 ---------------
 
-.. automodule:: viznet.theme
-    :members:
-    :special-members: __init__
-    :show-inheritance:
-    :inherited-members:
-    :imported-members:
+.. autodata:: viznet.theme.NODE_THEME_DICT
+    :annotation:
+
+.. autodata:: viznet.theme.EDGE_THEME_LIST
+    :annotation:

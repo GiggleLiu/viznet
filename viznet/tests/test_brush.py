@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
@@ -78,7 +79,21 @@ def test_tebd():
                 edge >> (pin_r, mpo_list[-1].pin('bottom', align=mps_r))
             mpo_list_pre = mpo_list
 
+def test_pin():
+    with DynamicShow() as ds:
+        # define a set of brushes.
+        size = 'large'
+        mpo = NodeBrush('tn.mpo21', ds.ax, size=size)
+        mps = NodeBrush('tn.mps', ds.ax, size=size)
+        edge = EdgeBrush('directed', ds.ax, lw=2., color='r')
+        n1 = mpo >> (0, 0)
+        n2 = mpo >> (2, 2)
+        n3 = mps >> (1, 3)
+        e1 = edge >> (n1, n2.pin(np.pi/4., align=n1))
+        edge >> (n3.pin(np.pi/2, align=e1), e1.center)
+
 
 if __name__ == '__main__':
-    test_edgenode()
+    test_pin()
+    # test_edgenode()
     # test_tebd()

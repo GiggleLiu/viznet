@@ -107,6 +107,7 @@ class NodeBrush(Brush):
                               facecolor=color, lw=lw, zorder=0)
         else:
             raise
+        node = Node(c, self._style, ax=self.ax)
         self.ax.add_patch(c)
 
         # add a geometric patch at the top of circle.
@@ -127,7 +128,7 @@ class NodeBrush(Brush):
                               edgecolor=edgecolor, facecolor=inner_fc, lw=lw, zorder=-5)
             self.ax.add_patch(loop)
 
-        return Node(c, self._style, ax=self.ax)
+        return node
 
 
 class EdgeBrush(Brush):
@@ -141,11 +142,12 @@ class EdgeBrush(Brush):
         color (str): the color of painted edge by this brush.
     '''
 
-    def __init__(self, style, ax, lw=1, color='k'):
+    def __init__(self, style, ax, lw=1, color='k', zorder=0):
         self.lw = lw
         self.color = color
         self.ax = ax
         self.style = style
+        self.zorder = zorder
 
     def __rshift__(self, startend):
         '''
@@ -167,6 +169,7 @@ class EdgeBrush(Brush):
         sxy = start.get_connection_point(unit_d)
         exy = end.get_connection_point(-unit_d)
         d = exy - sxy
+        unit_d = d / np.linalg.norm(d)
         # arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
         #                    head_length=head_length if self.style=='arrow' else 0, width=0.015*lw,
         #                    head_width=head_width, fc=self.color,
@@ -184,9 +187,9 @@ class EdgeBrush(Brush):
             plt.arrow(mxy[0], mxy[1], 0.01 * d[0], 0.01 * d[1],
                       head_length=head_length, width=0,
                       head_width=head_width, fc=self.color,
-                      length_includes_head=False, lw=lw, edgecolor=self.color)
+                      length_includes_head=False, lw=lw, edgecolor=self.color, zorder=self.zorder)
         # show the line
         arr = self.ax.plot([sxy[0], exy[0]], [
-                           sxy[1], exy[1]], lw=lw, color=self.color)
+                           sxy[1], exy[1]], lw=lw, color=self.color, zorder=self.zorder)
 
         return Edge(arr, sxy, exy, start, end, ax=self.ax)

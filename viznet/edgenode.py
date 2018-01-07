@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .setting import annotate_setting
+from .utils import intersection
 
 __all__ = ['Edge', 'Node']
 
@@ -71,6 +72,7 @@ class Node(EdgeNode):
         self.style = style
         self.obj = obj
         self.ax = ax
+        self.path = obj.get_verts()
 
     @property
     def _offset_dict(self):
@@ -97,20 +99,26 @@ class Node(EdgeNode):
         obtain a pin on specific surface.
 
         Args:
-            direction ('top'|'bottom'|'left'|'right'): specifies the surface to place a pin.
+            direction ('top'|'bottom'|'left'|'right'|float): specifies the surface to place a pin, or theta to specift the direction.
             align (:obj:`EdgeNode`|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
 
         Returns:
             :obj:`Pin`: the pin for wire connection.
         '''
-        offset_dict = self._offset_dict
-        loc = offset_dict[direction] + self.position
-        if align is not None:
-            target = align.position
-            if direction in ['bottom', 'top']:
-                loc[0] = target[0]
-            else:
-                loc[1] = target[1]
+        if isinstance(direction, str):
+            offset_dict = self._offset_dict
+            loc = offset_dict[direction] + self.position
+            if align is not None:
+                target = align.position
+                if direction in ['bottom', 'top']:
+                    loc[0] = target[0]
+                elif direction in ['left', 'right']:
+                    loc[1] = target[1]
+                else:
+                    raise
+        else:
+            loc = intersection(self.path, direction,
+                    align=self.position if align is None else align.position)
         return Pin(loc)
 
     @property
@@ -122,10 +130,8 @@ class Node(EdgeNode):
         elif isinstance(self.obj, plt.Rectangle):
             x, y = self.obj.get_xy()
             return np.array([x + self.obj.get_width() / 2., y + self.obj.get_height() / 2.])
-        elif isinstance(self.obj, plt.Polygon):
-            return self.obj.get_path().vertices[:-1].mean(axis=0)
         else:
-            raise
+            return self.path[:-1].mean(axis=0)
 
     @property
     def height(self):
@@ -135,7 +141,7 @@ class Node(EdgeNode):
         elif isinstance(self.obj, plt.Rectangle):
             return self.obj.get_height()
         elif isinstance(self.obj, plt.Polygon):
-            ys = self.obj.get_path().vertices[:-1, 1]
+            ys = self.path[:-1, 1]
             return abs(ys - ys.mean()).max() * 2
         else:
             raise
@@ -148,7 +154,7 @@ class Node(EdgeNode):
         elif isinstance(self.obj, plt.Rectangle):
             return self.obj.get_width()
         elif isinstance(self.obj, plt.Polygon):
-            xs = self.obj.get_path().vertices[:-1, 0]
+            xs = self.path[:-1, 0]
             return abs(xs - xs.mean()).max() * 2
         else:
             raise
@@ -162,13 +168,7 @@ class Node(EdgeNode):
         if shape == 'circle':
             return self.obj.center + self.obj.radius * direction
         else:
-            if shape == 'square' or shape == 'rectangle':
-                x, y = self.obj.get_xy()
-                w, h = self.obj.get_width(), self.obj.get_height()
-                vertices = np.array(
-                    [(x, y), (x + w, y), (x + w, y + h), (x, y + h), (x, y)])
-            else:
-                vertices = candidates = self.obj.get_path().vertices
+            vertices = candidates = self.path
             # only allowed to connect edge center or vertex.
             edge_centers = (vertices[:-1] + vertices[1:]) / 2.
             candidates = np.concatenate([vertices[:-1], edge_centers], axis=0)
