@@ -20,3 +20,4 @@ build/
 .cache/
 viznet.egg-info/
 __pycache__/
+_deprecated/

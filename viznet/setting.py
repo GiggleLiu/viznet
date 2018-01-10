@@ -54,6 +54,7 @@ global node style setting
 arrow_setting = {
     'head_width': 0.04,
     'head_length': 0.06,
+    'edge_ratio': 0.25,
 }
 '''
 global arrow style setting

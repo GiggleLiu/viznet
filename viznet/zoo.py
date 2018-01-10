@@ -22,7 +22,7 @@ def draw_rbm(ax, num_node_visible, num_node_hidden):
     # visible layers
     nb1 = NodeBrush('nn.backfed', ax)
     nb2 = NodeBrush('nn.probablistic_hidden', ax)
-    eb = EdgeBrush('undirected', ax)
+    eb = EdgeBrush('---', ax)
 
     handler.node_sequence(
         '\sigma^z', num_node_visible, offset=0, brush=nb1)
@@ -54,5 +54,5 @@ def draw_feed_forward(ax, num_node_list):
         handler.node_sequence(token, n, offset=y, brush=b)
 
     for st, et in zip(token_list[:-1], token_list[1:]):
-        eb = EdgeBrush('arrow', ax)
+        eb = EdgeBrush('-->', ax)
         handler.connecta2a(st, et, eb)

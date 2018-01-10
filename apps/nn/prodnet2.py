@@ -10,8 +10,8 @@ def draw_prodnet2(ax, num_node_visible):
     input = NodeBrush('nn.input', ax)
     output = NodeBrush('nn.output', ax)
     op = NodeBrush('basic', ax, size='small')
-    de = EdgeBrush('arrow', ax)
-    ude = EdgeBrush('undirected', ax)
+    de = EdgeBrush('-->', ax)
+    ude = EdgeBrush('---', ax)
 
     da = 0.6
     db = 0.8

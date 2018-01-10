@@ -8,7 +8,7 @@ def test_draw_bm():
     with DynamicShow((5, 4), '_bm.png') as d:
         # define brushes
         node = NodeBrush('nn.backfed', d.ax, size='normal')
-        edge = EdgeBrush('undirected', d.ax)
+        edge = EdgeBrush('---', d.ax)
 
         node_list = add_circled_node_sequence(
             num_node_visible, node, radius=1.0, offset=(0, 0))

@@ -25,7 +25,7 @@ def draw_feed_forward(ax, num_node_list):
         handler.node_sequence(token, n, offset=y, brush=b)
 
     for st, et in zip(token_list[:-1], token_list[1:]):
-        eb = EdgeBrush('arrow', ax)
+        eb = EdgeBrush('-->', ax)
         handler.connecta2a(st, et, eb)
 
 

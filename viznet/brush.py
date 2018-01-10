@@ -136,18 +136,19 @@ class EdgeBrush(Brush):
     a brush for drawing edges.
 
     Attributes:
-        style (str): the style of edge, currrently ('directed'|'undirected'|'arrow') are available.
+        style (str): the style of edge, currrently ('->-'|'---'|'-->'|'-...-'|'>...>') are available.
         ax (:obj:`Axes`): matplotlib Axes instance.
         lw (float): line width.
         color (str): the color of painted edge by this brush.
     '''
 
-    def __init__(self, style, ax, lw=1, color='k', zorder=0):
+    def __init__(self, style, ax, lw=1, color='k', zorder=0, ls='-'):
         self.lw = lw
         self.color = color
         self.ax = ax
         self.style = style
         self.zorder = zorder
+        self.ls = ls
 
     def __rshift__(self, startend):
         '''
@@ -162,6 +163,7 @@ class EdgeBrush(Brush):
         lw = self.lw
         head_length = arrow_setting['head_length'] * lw
         head_width = arrow_setting['head_width'] * lw
+        edge_ratio = arrow_setting['edge_ratio']
         start, end = startend
         sxy, exy = np.array(start.position), np.array(end.position)
         d = exy - sxy
@@ -170,26 +172,34 @@ class EdgeBrush(Brush):
         exy = end.get_connection_point(-unit_d)
         d = exy - sxy
         unit_d = d / np.linalg.norm(d)
-        # arr = self.ax.arrow(sxy[0], sxy[1], d[0], d[1],
-        #                    head_length=head_length if self.style=='arrow' else 0, width=0.015*lw,
-        #                    head_width=head_width, fc=self.color,
-        #                    length_includes_head=True, lw=0, edgecolor='none')
 
         # show the arrow
-        if self.style in ['directed', 'arrow']:
-            head_vec = unit_d * head_length
-            if self.style == 'directed':
-                mxy = sxy + d / 2. - head_vec / 2.
-            else:
-                head_vec = head_length * unit_d
-                exy = exy - head_vec * 1.3
-                mxy = exy
+        head_vec = unit_d * head_length
+        if self.style == '->-':
+            mxys = [sxy + d / 2. - head_vec / 2.]
+        elif self.style == '>...>':
+            mxys = [sxy + d/2.*edge_ratio-head_vec/2., exy-d/2.*edge_ratio-head_vec/2.]
+        elif self.style == '-->':
+            head_vec = head_length * unit_d
+            exy = exy - head_vec * 1.3
+            mxys = [exy]
+        else:
+            mxys = []
+        for mxy in mxys:
             plt.arrow(mxy[0], mxy[1], 0.01 * d[0], 0.01 * d[1],
                       head_length=head_length, width=0,
                       head_width=head_width, fc=self.color,
                       length_includes_head=False, lw=lw, edgecolor=self.color, zorder=self.zorder)
+
         # show the line
-        arr = self.ax.plot([sxy[0], exy[0]], [
-                           sxy[1], exy[1]], lw=lw, color=self.color, zorder=self.zorder)
+        if self.style in ['>...>', '-...-']:
+            lss = [self.ls, '--', self.ls]
+            nodes = [sxy, sxy+d*edge_ratio, exy-d*edge_ratio, exy]
+        else:
+            lss = [self.ls]
+            nodes = [sxy, exy]
+        for ls, sxy, exy in zip(lss, nodes[:-1], nodes[1:]):
+            arr = self.ax.plot([sxy[0], exy[0]], [
+                               sxy[1], exy[1]], lw=lw, color=self.color, zorder=self.zorder, ls=ls)
 
         return Edge(arr, sxy, exy, start, end, ax=self.ax)

@@ -13,7 +13,7 @@ def tebd():
         # invisible node can be used as a placeholder
         invisible_mps = NodeBrush('invisible', ds.ax, size=size)
         mpo21 = NodeBrush('tn.mpo21', ds.ax, size=size)
-        edge = EdgeBrush('undirected', ds.ax, lw=2.)
+        edge = EdgeBrush('---', ds.ax, lw=2.)
 
         # add a sequence of mps nodes, a store them in a list for future use.
         mps_list = []

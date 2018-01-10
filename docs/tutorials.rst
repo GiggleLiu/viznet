@@ -32,7 +32,7 @@ The following code examplify how to draw two nodes and connection them using a d
     >>     brush = NodeBrush('nn.input', ax=d.ax, size='normal')
     >      node1 = brush >> (1,0)  # paint a node at (x=1, y=0)
     >>     node2 = brush >> (2,0)
-    >>     edge = EdgeBrush('directed', ax=d.ax, lw=2)
+    >>     edge = EdgeBrush('->-', ax=d.ax, lw=2)
     >>     edge >> (node1, node2)  # connect two nodes
     >>     node1.text('First', 'center', fontsize=18)  # add text to node1
     >>     node2.text('Second', 'center', fontsize=18)

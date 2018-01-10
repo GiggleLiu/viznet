@@ -78,15 +78,22 @@ values are `COLOR | SHAPE | INSIDE_SHAPE`.
         'tn.mpo': (BLACK, 'square', 'none'),
         'tn.mpo21': (BLACK, 'rectangle-2-1', 'none'),
         'tn.mpo12': (BLACK, 'rectangle-1-2', 'none'),
+        'tn.dia': (BLACK, 'diamond', 'none'),
+
+        'qc.basic': (NONE, 'square', 'none'),
+        'qc.wide': (NONE, 'rectangle-1.3-1', 'none'),
+        'qc.C': (NONE, '', 'dot'),
+        'qc.cross': (NONE, '', 'cross'),
+        'qc.NOT': (NONE, 'circle', 'plus'),
     }
 '''
 
 
-EDGE_THEME_LIST = ['arrow', 'undirected', 'directed']
+EDGE_THEME_LIST = ['->-', '---', '-->', '-...-', '>...>']
 '''
 A table of theme for edges.
 
 .. code-block:: python
 
-    EDGE_THEME_LIST = ['arrow', 'undirected', 'directed']
+    EDGE_THEME_LIST = ['->-', '---', '-->', '-...-', '>...>']
 '''

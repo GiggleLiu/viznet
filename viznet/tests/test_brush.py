@@ -9,7 +9,7 @@ from ..context import DynamicShow
 def test_edgenode():
     with DynamicShow() as ds:
         brush = NodeBrush('nn.input', ds.ax, size='normal')
-        ebrush = EdgeBrush('directed', ds.ax, lw=2, color='r')
+        ebrush = EdgeBrush('->-', ds.ax, lw=2, color='r')
         node1 = brush >> (0.5, 0.5)
         node1.text('center', 'center')
         node2 = brush >> (2.5, 1.5)
@@ -20,7 +20,7 @@ def test_edgenode():
         e1 = ebrush >> (node2, node1)
         e1.text('right-directed', 'right')
 
-        ebrush.style = 'undirected'
+        ebrush.style = '-...-'
         e2 = ebrush >> (node2, node3)
         e2.text('top-undirected', 'top')
 
@@ -28,7 +28,7 @@ def test_edgenode():
         node4 = brush >> (2.5, 2.2)
         node4.text('triangle', color='w')
         ebrush.color = 'g'
-        ebrush.style = 'arrow'
+        ebrush.style = '>...>'
         e3 = ebrush >> (node4, node3)
         e3.text('green-bottom-arrow', 'bottom')
         brush.style = 'tn.tri_d'
@@ -51,8 +51,8 @@ def test_tebd():
         mps = NodeBrush('tn.mps', ds.ax, size=size)
         invisible_mps = NodeBrush('invisible', ds.ax, size=size)
         mpo2 = NodeBrush('tn.mpo21', ds.ax, size=size)
-        edge = EdgeBrush('directed', ds.ax, lw=2.)
-        undirected_edge = EdgeBrush('undirected', ds.ax, lw=2.)
+        edge = EdgeBrush('->-', ds.ax, lw=2.)
+        undirected_edge = EdgeBrush('---', ds.ax, lw=2.)
 
         mps_list = []
         for i in range(8):
@@ -85,7 +85,7 @@ def test_pin():
         size = 'large'
         mpo = NodeBrush('tn.mpo21', ds.ax, size=size)
         mps = NodeBrush('tn.mps', ds.ax, size=size)
-        edge = EdgeBrush('directed', ds.ax, lw=2., color='r')
+        edge = EdgeBrush('->-', ds.ax, lw=2., color='r')
         n1 = mpo >> (0, 0)
         n2 = mpo >> (2, 2)
         n3 = mps >> (1, 3)
@@ -94,6 +94,6 @@ def test_pin():
 
 
 if __name__ == '__main__':
+    test_edgenode()
     test_pin()
-    # test_edgenode()
     # test_tebd()

@@ -11,8 +11,8 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     hidden = NodeBrush('nn.hidden', ax)
     output = NodeBrush('nn.output', ax)
     op = NodeBrush('basic', ax, size='small')
-    de = EdgeBrush('arrow', ax)
-    ude = EdgeBrush('undirected', ax)
+    de = EdgeBrush('-->', ax)
+    ude = EdgeBrush('---', ax)
 
     # parameters
     offset_amplitude = -num_node_hidden / 2.

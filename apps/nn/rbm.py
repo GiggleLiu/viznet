@@ -13,7 +13,7 @@ def test_draw_rbm():
         # visible layers
         nb1 = NodeBrush('nn.backfed', d.ax)
         nb2 = NodeBrush('nn.probablistic_hidden', d.ax)
-        eb = EdgeBrush('undirected', d.ax)
+        eb = EdgeBrush('---', d.ax)
 
         handler.node_sequence(
             '\sigma^z', num_node_visible, offset=0, brush=nb1)

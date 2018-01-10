@@ -9,8 +9,8 @@ def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     input = NodeBrush('nn.input', ax)
     output = NodeBrush('nn.output', ax)
     op = NodeBrush('basic', ax, size='small')
-    de = EdgeBrush('arrow', ax)
-    ude = EdgeBrush('undirected', ax)
+    de = EdgeBrush('-->', ax)
+    ude = EdgeBrush('---', ax)
 
     # visible layers
     handler.node_sequence(r'\sigma^z', num_node_visible,
