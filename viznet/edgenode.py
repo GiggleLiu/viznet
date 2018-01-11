@@ -236,8 +236,15 @@ class Pin(EdgeNode):
         position (tuple): the position of this dot.
     '''
 
-    def __init__(self, position):
+    def __init__(self, position, ax=None):
         self.position = position
+        self._ax = ax
+
+    @property
+    def ax(self):
+        if self._ax is None:
+            return plt.gca()
+        return self._ax
 
     @property
     def width(self):

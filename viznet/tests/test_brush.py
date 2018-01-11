@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pdb
 
 from ..brush import NodeBrush, EdgeBrush
+from ..edgenode import Pin
 from ..context import DynamicShow
 from ..circuit import QuantumCircuit
 
@@ -79,6 +80,16 @@ def test_ghz():
         for i in range(num_bit):
             plt.text(-0.4, i, r'$\vert0\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
 
+def test_edge():
+    edge_list = ['-', '..-','->--','<=>', '===->', '->-....-<-']
+    with DynamicShow(figsize=(6,3)) as ds:
+        for i, style in enumerate(edge_list):
+            edge = EdgeBrush(style, ds.ax)
+            p1 = Pin((0,-i*0.1))
+            p2 = Pin((1,-i*0.1))
+            edge >> (p1, p2)
+            p1.text(style, 'left')
+
 def test_tebd():
     # remove the edges for nodes
     from ..setting import node_setting
@@ -135,6 +146,7 @@ def test_pin():
 
 
 if __name__ == '__main__':
+    test_edge()
     test_ghz()
     test_edgenode()
     test_pin()

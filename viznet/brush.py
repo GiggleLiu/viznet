@@ -161,8 +161,8 @@ class NodeBrush(Brush):
                     exy_list = [(xy[0], xy[1]+radi)]
                 else:
                     radi_  = radi/np.sqrt(2.)
-                    sxy_list = [(xy[0]-radi_, xy[1]-radi_), (xy[0]+radi_, xy[1]+radi_)]
-                    exy_list = [(xy[0]+radi_, xy[1]-radi_), (xy[0]-radi_, xy[1]+radi_)]
+                    sxy_list = [(xy[0]-radi_, xy[1]-radi_), (xy[0]+radi_, xy[1]-radi_)]
+                    exy_list = [(xy[0]+radi_, xy[1]+radi_), (xy[0]-radi_, xy[1]+radi_)]
                 for sxy, exy in zip(sxy_list, exy_list):
                     plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],color=inner_ec, lw=inner_lw,zorder=101)
             elif inner_geo == 'measure':
@@ -225,7 +225,7 @@ class EdgeBrush(Brush):
         unit_d = d / np.linalg.norm(d)
         sxy = start.get_connection_point(unit_d)
         exy = end.get_connection_point(-unit_d)
-        d = exy - sxy
+        d = np.asarray(exy) - sxy
         unit_d = d / np.linalg.norm(d)
 
         # get arrow locations.
@@ -245,7 +245,7 @@ class EdgeBrush(Brush):
         for st, mxy in arrow_locs:
             sign = 1 if st == '>' else -1
             mxy = mxy-sign*head_vec*0.6
-            plt.arrow(mxy[0], mxy[1], sign*0.01 * d[0], sign*0.01 * d[1],
+            plt.arrow(mxy[0], mxy[1], sign*1e-8 * d[0], sign*1e-8 * d[1],
                       head_length=head_length, width=0,
                       head_width=head_width, fc=self.color,
                       length_includes_head=False, lw=lw, edgecolor=self.color, zorder=self.zorder)

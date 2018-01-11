@@ -45,7 +45,22 @@ The following code examplify how to draw two nodes and connection them using a d
 .. image:: images/tn_theme_list.png
     :align: center
 
-:class: `EdgeBrush` has three different styles, 'directed', 'undirected', 'arrow', you can set color and width of your line for this :class:`EdgeBrush`.
+.. image:: images/qc_theme_list.png
+    :align: center
+
+:class:`EdgeBrush` take a string as style, this must must be composed of characters in [ - | . | = | > | < ],
+        - '-': solid line,
+        - '=': double solid line,
+        - '.': dashed line,
+        - '>': arrow towards end of line, no length,
+        - '<': arrow towards start of line, no length.
+
+For example,
+
+.. image:: images/lines.png
+    :align: center
+
+Also, you can set color and width of your line for this :class:`EdgeBrush` by passing arguments into construction method.
 
 :obj:`ds.ax` is nothing but a :obj:`matplotlib.Axes` instance. Now, your canvas looks like
 

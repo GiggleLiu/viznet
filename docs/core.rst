@@ -1,4 +1,4 @@
-.. _viznet
+.. _viznet:
 
 viznet
 ========

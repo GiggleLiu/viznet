@@ -50,3 +50,22 @@ The output is
 
 .. image:: images/tebd.png
     :align: center
+
+
+The fourth example is a quantum circuit
+
+.. literalinclude:: ../apps/qc/ghz.py
+	:tab-width: 2
+
+.. code-block:: bash
+
+	$ python apps/qc/ghz.py
+
+The output is 
+
+.. image:: images/ghz4.png
+    :align: center
+
+Here, we used the :class:`QuantumCircuit` instance :obj:`handler` to help us build the circuit.
+`gate` method of :obj:`handler` take brush(es) as first argument and line(lines) as second argument.
+`handler.x` decide the `x` axis of this gate.
