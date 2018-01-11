@@ -21,14 +21,14 @@ class NodeBrush(Brush):
         style (str): refer keys for `viznet.theme.NODE_THEME_DICT`.
         ax (:obj:`Axes`): matplotlib Axes instance.
         color (str|None): the color of painted node by this brush, it will overide theme color if is not `None`.
-        size ('huge'|'large'|'normal'|'small'|'tiny'): size of node.
+        size ('huge'|'large'|'normal'|'small'|'tiny'|tuple|float): size of node.
     '''
     size_dict = {
-        'huge': 3,
-        'large': 1.3,
-        'normal': 1.0,
-        'small': 0.7,
-        'tiny': 0.3,
+        'huge': 0.9,
+        'large': 0.39,
+        'normal': 0.3,
+        'small': 0.21,
+        'tiny': 0.09,
     }
 
     def __init__(self, style, ax, color=None, size='normal'):
@@ -55,7 +55,6 @@ class NodeBrush(Brush):
         Returns:
             :obj:`Node`: node object.
         '''
-        basesize = 0.3
         # color priority: brush color > theme color
         color, geo, inner_geo = self._style
         if self.color is not None:
@@ -66,22 +65,35 @@ class NodeBrush(Brush):
         inner_fc = node_setting['inner_facecolor']
         inner_ec = node_setting['inner_edgecolor']
         inner_lw = node_setting['inner_lw']
-        size = self._size
+        basesize = node_setting['basesize']
+
+        # the size of node
+        if isinstance(self.size, str):
+            size = self._size
+        else:
+            size = self.size
+        if isinstance(size, tuple):
+            if geo == 'rectangle':
+                size = (size[0]*basesize, size[1]*basesize)
+            else:
+                raise
+        elif geo == 'rectangle' and not isinstance(size, tuple):
+            size = (size*basesize,)*2
+        else:
+            size = size*basesize
 
         if color is None:
             color = 'none'
             edgecolor = 'none'
 
         if geo == 'circle':
-            c = plt.Circle(xy, basesize * size, edgecolor=edgecolor,
+            c = plt.Circle(xy, size, edgecolor=edgecolor,
                            facecolor=color, lw=lw, zorder=0)
         elif geo == 'square':
-            a = size * 2 * basesize
-            xy = xy[0] - a / 2., xy[1] - a / 2.
-            c = plt.Rectangle(xy, a, a, edgecolor=edgecolor,
+            xy = xy[0] - size, xy[1] - size
+            c = plt.Rectangle(xy, 2*size, 2*size, edgecolor=edgecolor,
                               facecolor=color, lw=lw, zorder=0)
         elif geo[:8] == 'triangle':
-            r = size * basesize
             tri_path = np.array(
                 [[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [0, 1]])
             if geo == 'triangle-d':
@@ -94,17 +106,32 @@ class NodeBrush(Brush):
                 pass
             else:
                 raise
-            c = plt.Polygon(xy=tri_path * r + xy, edgecolor=edgecolor,
+            c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
+                            facecolor=color, lw=0.7, zorder=0)
+        elif geo == 'diamond':
+            dia_path = np.array([[-1,0], [0,-1], [1,0], [0,1]])
+            c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=0.7, zorder=0)
         elif geo[:9] == 'rectangle':
             match_res = re.match(r'rectangle-(\d)-(\d)', geo)
-            width = size * 2 * basesize + \
-                grid_setting['grid_width'] * (int(match_res.group(1)) - 1)
-            height = size * 2 * basesize + \
-                grid_setting['grid_height'] * (int(match_res.group(2)) - 1)
-            xy = xy[0] - width / 2., xy[1] - height / 2.
-            c = plt.Rectangle(xy, width, height, edgecolor=edgecolor,
+            if match_res:
+                width = size * 2 + \
+                    grid_setting['grid_width'] * (int(match_res.group(1)) - 1)
+                height = size * 2 + \
+                    grid_setting['grid_height'] * (int(match_res.group(2)) - 1)
+            elif geo == 'rectangle-golden':
+                height = size*2
+                width = height*1.3
+            elif geo == 'rectangle':
+                width = size[0]*2
+                height = size[1]*2
+            else:
+                raise
+            xy_ = xy[0] - width / 2., xy[1] - height / 2.
+            c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor,
                               facecolor=color, lw=lw, zorder=0)
+        elif geo == '':
+            c = plt.Circle(xy, 0, edgecolor='none', facecolor='none')
         else:
             raise
         node = Node(c, self._style, ax=self.ax)
@@ -113,18 +140,44 @@ class NodeBrush(Brush):
         # add a geometric patch at the top of circle.
         if inner_geo != 'none':
             if inner_geo == 'circle':
-                g = plt.Circle(xy, 0.7 * basesize * size, edgecolor=inner_ec,
+                g = plt.Circle(xy, 0.7 * size, edgecolor=inner_ec,
                                facecolor=inner_fc, lw=inner_lw, zorder=101)
+                self.ax.add_patch(g)
             elif inner_geo == 'triangle':
                 g = plt.Polygon(xy=np.array([[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [
-                    0, 1]]) * 0.7 * basesize * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=101)
+                    0, 1]]) * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=101)
+                self.ax.add_patch(g)
+            elif inner_geo == 'dot':
+                g = plt.Circle(xy, 0.15 * size, edgecolor=inner_ec,
+                               facecolor=inner_ec, lw=inner_lw, zorder=101)
+                self.ax.add_patch(g)
+            elif inner_geo in ['cross', 'plus', 'vbar']:
+                radi = size
+                if inner_geo == 'plus':
+                    sxy_list = [(xy[0]-radi, xy[1]), (xy[0], xy[1]-radi)]
+                    exy_list = [(xy[0]+radi, xy[1]), (xy[0], xy[1]+radi)]
+                elif inner_geo == 'vbar':
+                    sxy_list = [(xy[0], xy[1]-radi)]
+                    exy_list = [(xy[0], xy[1]+radi)]
+                else:
+                    radi_  = radi/np.sqrt(2.)
+                    sxy_list = [(xy[0]-radi_, xy[1]-radi_), (xy[0]+radi_, xy[1]+radi_)]
+                    exy_list = [(xy[0]+radi_, xy[1]-radi_), (xy[0]-radi_, xy[1]+radi_)]
+                for sxy, exy in zip(sxy_list, exy_list):
+                    plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],color=inner_ec, lw=inner_lw,zorder=101)
+            elif inner_geo == 'measure':
+                sxy, exy = (xy[0], xy[1]-height*0.4), (xy[0]+width*0.35, xy[1]+height*0.35)
+                plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],color=inner_ec, lw=inner_lw,zorder=101)
+                x = np.linspace(-width*0.4, width*0.4, 100)
+                radi = height*0.5
+                y = radi**2-x**2
+                plt.plot(x+xy[0], y+xy[1]-radi*0.4,color=inner_ec, lw=inner_lw,zorder=101)
             else:
                 raise ValueError('Inner Geometry %s not defined!' % geo)
-            self.ax.add_patch(g)
 
         # for BLUE nodes, add a self-loop (Stands for Recurrent Unit)
         if color == BLUE and self.style[:3] == 'nn.':
-            loop = plt.Circle((xy[0], xy[1] + 1.2 * basesize * size), 0.5 * basesize * size,
+            loop = plt.Circle((xy[0], xy[1] + 1.2 * size), 0.5 * size,
                               edgecolor=edgecolor, facecolor=inner_fc, lw=lw, zorder=-5)
             self.ax.add_patch(loop)
 
@@ -136,19 +189,21 @@ class EdgeBrush(Brush):
     a brush for drawing edges.
 
     Attributes:
-        style (str): the style of edge, currrently ('->-'|'---'|'-->'|'-...-'|'>...>') are available.
+        style (str): the style of edge, must be a combination of ('>'|'<'|'-'|'.').
+            * '>', right arrow
+            * '<', left arrow,
+            * '-', line,
+            * '.', dashed line.
         ax (:obj:`Axes`): matplotlib Axes instance.
         lw (float): line width.
         color (str): the color of painted edge by this brush.
     '''
-
-    def __init__(self, style, ax, lw=1, color='k', zorder=0, ls='-'):
+    def __init__(self, style, ax, lw=1, color='k', zorder=0):
         self.lw = lw
         self.color = color
         self.ax = ax
         self.style = style
         self.zorder = zorder
-        self.ls = ls
 
     def __rshift__(self, startend):
         '''
@@ -173,33 +228,59 @@ class EdgeBrush(Brush):
         d = exy - sxy
         unit_d = d / np.linalg.norm(d)
 
-        # show the arrow
+        # get arrow locations.
+        arrow_locs = []
+        segs = []
+        for s in self.style:
+            if s in ['>', '<']:
+                arrow_locs.append([s, len(segs)])
+            else:
+                segs.append(s)
         head_vec = unit_d * head_length
-        if self.style == '->-':
-            mxys = [sxy + d / 2. - head_vec / 2.]
-        elif self.style == '>...>':
-            mxys = [sxy + d/2.*edge_ratio-head_vec/2., exy-d/2.*edge_ratio-head_vec/2.]
-        elif self.style == '-->':
-            head_vec = head_length * unit_d
-            exy = exy - head_vec * 1.3
-            mxys = [exy]
-        else:
-            mxys = []
-        for mxy in mxys:
-            plt.arrow(mxy[0], mxy[1], 0.01 * d[0], 0.01 * d[1],
+        vec_d = d-head_vec*1.2
+        num_segs = len(segs)
+        for al in arrow_locs:
+            al[1] = al[1]*vec_d/max(num_segs,1)+sxy+0.6*head_vec
+        # show the arrow
+        for st, mxy in arrow_locs:
+            sign = 1 if st == '>' else -1
+            mxy = mxy-sign*head_vec*0.6
+            plt.arrow(mxy[0], mxy[1], sign*0.01 * d[0], sign*0.01 * d[1],
                       head_length=head_length, width=0,
                       head_width=head_width, fc=self.color,
                       length_includes_head=False, lw=lw, edgecolor=self.color, zorder=self.zorder)
 
-        # show the line
-        if self.style in ['>...>', '-...-']:
-            lss = [self.ls, '--', self.ls]
-            nodes = [sxy, sxy+d*edge_ratio, exy-d*edge_ratio, exy]
-        else:
-            lss = [self.ls]
-            nodes = [sxy, exy]
-        for ls, sxy, exy in zip(lss, nodes[:-1], nodes[1:]):
-            arr = self.ax.plot([sxy[0], exy[0]], [
-                               sxy[1], exy[1]], lw=lw, color=self.color, zorder=self.zorder, ls=ls)
+        # get the line locations.
+        uni = d/num_segs
+        lines = []
+        end = start = sxy
+        seg_pre = ''
+        for seg in segs:
+            if seg!=seg_pre and seg_pre!='':
+                lines.append([seg_pre, start, end])
+                start = end
+            seg_pre = seg
+            end = end+uni
+        lines.append([seg, start, end])
+        # fix end of line
+        if self.style[-1] in ['<', '>']:
+            lines[-1][2]-=head_vec
+        if self.style[0] in ['<', '>']:
+            lines[0][1]+=head_vec
+
+        # show the lines.
+        for ls, sxy, exy in lines:
+            if ls == '=':
+                perp_d = np.array([-unit_d[1], unit_d[0]])
+                offset = perp_d*head_width*0.4
+                sxys = [(sxy+offset, exy+offset), (sxy-offset, exy-offset)]
+                ls = '-'
+            else:
+                sxys = [(sxy, exy)]
+            if ls == '.':
+                ls = '--'
+            for sxy_, exy_ in sxys:
+                arr = self.ax.plot([sxy_[0], exy_[0]], [
+                                   sxy_[1], exy_[1]], lw=lw, color=self.color, zorder=self.zorder, ls=ls)
 
         return Edge(arr, sxy, exy, start, end, ax=self.ax)
