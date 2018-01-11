@@ -2,9 +2,8 @@
 
 viznet
 ===========
-viznet is intended for scientific programming,
-with complex number support and periodic boundary condition and most importantly,
-extensible.
+**viznet** is a flexible framework based on matplotlib.
+it is intended for plotting neural networks, tensor networks and quantum circuits.
 
 Our project repo is https://github.com/GiggleLiu/viznet
 
