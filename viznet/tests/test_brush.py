@@ -78,7 +78,7 @@ def test_ghz():
 
         # text |0>s
         for i in range(num_bit):
-            plt.text(-0.4, i, r'$\vert0\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
+            plt.text(-0.4, -i, r'$\vert0\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
 
 def test_edge():
     edge_list = ['-', '..-','->--','<=>', '===->', '->-....-<-']
@@ -146,8 +146,8 @@ def test_pin():
 
 
 if __name__ == '__main__':
-    test_edge()
     test_ghz()
+    test_edge()
     test_edgenode()
     test_pin()
-    # test_tebd()
+    test_tebd()

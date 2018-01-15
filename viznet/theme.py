@@ -19,6 +19,7 @@ NODE_THEME_DICT = {
     'invisible': (None, 'circle', 'none'),
     'basic': (NONE, 'circle', 'none'),
     'box': (NONE, 'rectangle', 'none'),
+    'pin': (None, '', 'none'),
 
     'nn.backfed': (YELLOW, 'circle', 'circle'),
     'nn.input': (YELLOW, 'circle', 'none'),

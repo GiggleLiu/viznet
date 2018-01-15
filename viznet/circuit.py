@@ -26,12 +26,12 @@ class QuantumCircuit(object):
         num_bit (int): number of bits.
     '''
 
-    def __init__(self, ax, num_bit):
-        self.x = 0
-        self.node_dict = dict(zip(range(num_bit), [[Pin((0,i))] for i in range(num_bit)]))
-        self.edge = EdgeBrush('---', ax)
+    def __init__(self, ax, num_bit, x=0,  **kwargs):
+        self.x = x
+        self.node_dict = dict(zip(range(num_bit), [[Pin((self.x,-i))] for i in range(num_bit)]))
+        self.edge = EdgeBrush('---', ax, **kwargs)
 
-    def gate(self, brush, position, text=None):
+    def gate(self, brush, position, text=None, fontsize=18):
         '''
         place a gate at specific position.
         '''
@@ -48,7 +48,7 @@ class QuantumCircuit(object):
 
         node_pre = None
         for b, y in zip(brush, position_node):
-            node = b >> (self.x, y)
+            node = b >> (self.x, -y)
 
             # connect nodes
             if node_pre is not None:
@@ -67,4 +67,4 @@ class QuantumCircuit(object):
                     self.edge >> (prenode, lnode)
 
         if text is not None:
-            node.text(text, fontsize=18)
+            node.text(text, fontsize=fontsize)

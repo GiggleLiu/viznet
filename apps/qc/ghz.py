@@ -36,7 +36,7 @@ def ghz4():
 
         # text |0>s
         for i in range(num_bit):
-            plt.text(-0.5, i, r'$\left\vert0\right\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
+            plt.text(-0.5, -i, r'$\left\vert0\right\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
 
 if __name__ == '__main__':
     ghz4()
