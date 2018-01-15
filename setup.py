@@ -10,23 +10,22 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
     LONG_DESCRIPTION = f.read()
 MAINTAINER = 'Giggle Liu',
 MAINTAINER_EMAIL = 'cacate0129@gmail.com',
-URL = 'https://gitlab.theory.iphy.ac.cn/codes/viznet'
+URL = 'https://github.com/GiggleLiu/viznet'
 LICENSE = 'MIT'
 DOWNLOAD_URL = URL
 PACKAGE_NAME = 'viznet'
 EXTRA_INFO = dict(
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 5 - Production/Stable",
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT',
+        'License :: OSI Approved :: MIT License',
         'Topic :: Scientific/Engineering',
         'Topic :: Software Development',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
         'Operating System :: Unix',
         'Operating System :: MacOS',
-        'Programming Language :: Fortran',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',

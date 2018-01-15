@@ -6,6 +6,11 @@ It is based on and compatible with matplotlib. The theme brush (for both node an
 
 ## To Install
 ```bash
+    $ pip install viznet
+```
+
+or for the latest version
+```bash
     $ git clone https://github.com/GiggleLiu/viznet.git
     $ cd viznet
     $ pip install -r requirements.txt
@@ -20,8 +25,10 @@ It is based on and compatible with matplotlib. The theme brush (for both node an
     $ python apps/qc/ghz.py     # example on quantum circuit
 ```
 you will get something like
-<img src="docs/images/bm.png" width="40%"><img src="docs/images/tebd.png" width="50%">
-<img src="docs/images/ghz4.png" width="50%">
+
+Boltzmann Machine | TEBD | quantum circuit
+:-----------:|:---------:|:-------------------:
+![](docs/images/bm.png)|![](docs/images/tebd.png)|![](docs/images/ghz4.png)
 
 The theme for neural network follows from [Neural Network Zoo Page](http://www.asimovinstitute.org/neural-network-zoo/),
 
