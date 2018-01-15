@@ -26,9 +26,13 @@ or for the latest version
 ```
 you will get something like
 
-Boltzmann Machine | TEBD | quantum circuit
-:-----------:|:---------:|:-------------------:
-![](docs/images/bm.png)|![](docs/images/tebd.png)|![](docs/images/ghz4.png)
+Boltzmann Machine       | TEBD                      
+----------------------- | -------------------------
+![](docs/images/bm.png) | ![](docs/images/tebd.png)
+
+| quantum circuit           |
+| --------------------------|
+| ![](docs/images/ghz4.png) |
 
 The theme for neural network follows from [Neural Network Zoo Page](http://www.asimovinstitute.org/neural-network-zoo/),
 
