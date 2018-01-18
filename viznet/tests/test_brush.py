@@ -49,46 +49,49 @@ def test_ghz():
         NOT = NodeBrush('qc.NOT', ds.ax, size='small')
         END = NodeBrush('qc.end', ds.ax)
         M = NodeBrush('qc.measure', ds.ax)
-        BOX = NodeBrush('box',ds.ax,size=(0.5,2.0))
+        BOX = NodeBrush('box', ds.ax, size=(0.5, 2.0))
 
         handler = QuantumCircuit(ds.ax, num_bit=4)
-        handler.x+=0.5
+        handler.x += 0.5
         handler.gate(basic, 0, 'X')
-        for i in range(1,num_bit):
+        for i in range(1, num_bit):
             handler.gate(basic, i, 'H')
-        handler.x+=1
-        handler.gate((C, NOT), (1,0))
-        handler.gate((C, NOT), (3,2))
-        handler.x+=0.7
-        handler.gate((C, NOT), (2,0))
-        handler.x+=0.7
-        handler.gate((C, NOT), (3,2))
-        handler.x+=1
+        handler.x += 1
+        handler.gate((C, NOT), (1, 0))
+        handler.gate((C, NOT), (3, 2))
+        handler.x += 0.7
+        handler.gate((C, NOT), (2, 0))
+        handler.x += 0.7
+        handler.gate((C, NOT), (3, 2))
+        handler.x += 1
         for i in range(num_bit):
             handler.gate(basic, i, 'H')
-        handler.x+=1
-        handler.gate(BOX, (0,1,2,3), '$e^{-iHt}$')
-        handler.x+=1
+        handler.x += 1
+        handler.gate(BOX, (0, 1, 2, 3), '$e^{-iHt}$')
+        handler.x += 1
         for i in range(num_bit):
             handler.gate(M, i)
         handler.edge.ls = '='
-        handler.x+=0.8
+        handler.x += 0.8
         for i in range(num_bit):
             handler.gate(END, i)
 
         # text |0>s
         for i in range(num_bit):
-            plt.text(-0.4, -i, r'$\vert0\rangle_{Q_%d}$'%i,va = 'center', ha='center', fontsize=18)
+            plt.text(-0.4, -i, r'$\vert0\rangle_{Q_%d}$' %
+                     i, va='center', ha='center', fontsize=18)
+
 
 def test_edge():
-    edge_list = ['-', '..-','->--','<=>', '===->', '->-....-<-']
-    with DynamicShow(figsize=(6,3)) as ds:
+    edge_list = ['-', '..-', '->--', '<=>', '===->', '->-....-<-']
+    with DynamicShow(figsize=(6, 3)) as ds:
         for i, style in enumerate(edge_list):
             edge = EdgeBrush(style, ds.ax)
-            p1 = Pin((0,-i*0.1))
-            p2 = Pin((1,-i*0.1))
+            p1 = Pin((0, -i * 0.1))
+            p2 = Pin((1, -i * 0.1))
             edge >> (p1, p2)
             p1.text(style, 'left')
+
 
 def test_tebd():
     # remove the edges for nodes
@@ -130,6 +133,7 @@ def test_tebd():
                 edge >> (pin_r, mpo_list[-1].pin('bottom', align=mps_r))
             mpo_list_pre = mpo_list
 
+
 def test_pin():
     with DynamicShow() as ds:
         # define a set of brushes.
@@ -141,8 +145,8 @@ def test_pin():
         n1 = mpo >> (0, 0)
         n2 = mpo >> (2, 2)
         n3 = mps >> (1, 3)
-        e1 = edge1 >> (n1, n2.pin(np.pi/4., align=n1))
-        edge2 >> (n3.pin(np.pi/2, align=e1), e1.center)
+        e1 = edge1 >> (n1, n2.pin(np.pi / 4., align=n1))
+        edge2 >> (n3.pin(np.pi / 2, align=e1), e1.center)
 
 
 if __name__ == '__main__':

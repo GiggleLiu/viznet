@@ -5,6 +5,7 @@ Plots for zoo of nets.
 import numpy as np
 from viznet import Layerwise, NodeBrush, EdgeBrush, DynamicShow
 
+
 def draw_feed_forward(ax, num_node_list):
     '''
     draw a feed forward neural network.
@@ -32,6 +33,7 @@ def draw_feed_forward(ax, num_node_list):
 def real_bp():
     with DynamicShow((6, 6), '_feed_forward.png') as d:
         draw_feed_forward(d.ax, num_node_list=[5, 4, 1])
+
 
 if __name__ == '__main__':
     real_bp()

@@ -99,11 +99,11 @@ class Node(EdgeNode):
         obtain a pin on specific surface.
 
         Args:
-            direction ('top'|'bottom'|'left'|'right'|float): specifies the surface to place a pin, or theta to specift the direction.
-            align (:obj:`EdgeNode`|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
+            direction ('top'\|'bottom'\|'left'\|'right'\|float): specifies the surface to place a pin, or theta to specift the direction.
+            align (:obj:`viznet.EdgeNode`\|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
 
         Returns:
-            :obj:`Pin`: the pin for wire connection.
+            :obj:`viznet.Pin`: the pin for wire connection.
         '''
         if isinstance(direction, str):
             offset_dict = self._offset_dict
@@ -118,7 +118,7 @@ class Node(EdgeNode):
                     raise
         else:
             loc = intersection(self.path, direction,
-                    align=self.position if align is None else align.position)
+                               align=self.position if align is None else align.position)
         return Pin(loc)
 
     @property

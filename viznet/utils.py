@@ -21,6 +21,7 @@ def rotate(vec, theta):
                     [np.sin(theta), np.cos(theta)]])
     return mat.dot(np.transpose(vec)).T
 
+
 def intersection(line, theta, align):
     '''
     get the intersection point from direction specified by theta.
@@ -34,8 +35,8 @@ def intersection(line, theta, align):
         tuple: the nearest intersection point.
     '''
     # rotate to y-axis
-    rotated_line = rotate(line, np.pi/2.-theta)
-    rotated_xy = rotate(align, np.pi/2.-theta)
+    rotated_line = rotate(line, np.pi / 2. - theta)
+    rotated_xy = rotate(align, np.pi / 2. - theta)
 
     # get segments
     p_pre = rotated_line[0]
@@ -66,5 +67,5 @@ def intersection(line, theta, align):
 
     # interpolate x
     index = np.argmin(ys)
-    p = rotate([x, ys[index]], theta-np.pi/2)
+    p = rotate([x, ys[index]], theta - np.pi / 2)
     return p

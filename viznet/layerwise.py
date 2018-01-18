@@ -32,7 +32,7 @@ class Layerwise(object):
         add a sequence of nodes along x-direction.
 
         Args:
-            token (str): the token to name this serie of nodes. e.g. token 'x' will generate node serie `$x_1$, $x_2$ ...`.
+            token (str): the token to name this serie of nodes. e.g. token 'x' will generate node serie :math:`x_1, x_2 \ldots`.
             num_node (int): number of node to be added.
             brush (NodeBrush): brush instance.
             offset (tuple|float): offset in x-y directions. if a number is passed, offset along perpendicular direction with respect to :data:`self.distance`.

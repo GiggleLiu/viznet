@@ -28,7 +28,8 @@ class QuantumCircuit(object):
 
     def __init__(self, ax, num_bit, x=0,  **kwargs):
         self.x = x
-        self.node_dict = dict(zip(range(num_bit), [[Pin((self.x,-i))] for i in range(num_bit)]))
+        self.node_dict = dict(
+            zip(range(num_bit), [[Pin((self.x, -i))] for i in range(num_bit)]))
         self.edge = EdgeBrush('---', ax, **kwargs)
 
     def gate(self, brush, position, text=None, fontsize=18):
@@ -42,9 +43,9 @@ class QuantumCircuit(object):
             return_list = True
         if not hasattr(position, '__iter__'):
             position = (position,)
-        if len(brush) == 1 and len(position)>1:
+        if len(brush) == 1 and len(position) > 1:
             position_node = (np.mean(position),)
-        elif len(brush)>1 and len(position)>1 and len(brush)!=len(position):
+        elif len(brush) > 1 and len(position) > 1 and len(brush) != len(position):
             raise ValueError()
         else:
             position_node = position

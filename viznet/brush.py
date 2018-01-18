@@ -39,7 +39,11 @@ class NodeBrush(Brush):
 
     @property
     def _size(self):
-        return self.size_dict[self.size]
+        if isinstance(self.size, str):
+            size = self.size_dict[self.size]
+        else:
+            size = self.size
+        return size
 
     @property
     def _style(self):
@@ -68,19 +72,16 @@ class NodeBrush(Brush):
         basesize = node_setting['basesize']
 
         # the size of node
-        if isinstance(self.size, str):
-            size = self._size
-        else:
-            size = self.size
+        size = self._size
         if isinstance(size, tuple):
             if geo == 'rectangle':
-                size = (size[0]*basesize, size[1]*basesize)
+                size = (size[0] * basesize, size[1] * basesize)
             else:
                 raise
         elif geo == 'rectangle' and not isinstance(size, tuple):
-            size = (size*basesize,)*2
+            size = (size * basesize,) * 2
         else:
-            size = size*basesize
+            size = size * basesize
 
         if color is None:
             color = 'none'
@@ -91,7 +92,7 @@ class NodeBrush(Brush):
                            facecolor=color, lw=lw, zorder=0)
         elif geo == 'square':
             xy = xy[0] - size, xy[1] - size
-            c = plt.Rectangle(xy, 2*size, 2*size, edgecolor=edgecolor,
+            c = plt.Rectangle(xy, 2 * size, 2 * size, edgecolor=edgecolor,
                               facecolor=color, lw=lw, zorder=0)
         elif geo[:8] == 'triangle':
             tri_path = np.array(
@@ -109,7 +110,7 @@ class NodeBrush(Brush):
             c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=0.7, zorder=0)
         elif geo == 'diamond':
-            dia_path = np.array([[-1,0], [0,-1], [1,0], [0,1]])
+            dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=0.7, zorder=0)
         elif geo[:9] == 'rectangle':
@@ -120,11 +121,11 @@ class NodeBrush(Brush):
                 height = size * 2 + \
                     grid_setting['grid_height'] * (int(match_res.group(2)) - 1)
             elif geo == 'rectangle-golden':
-                height = size*2
-                width = height*1.3
+                height = size * 2
+                width = height * 1.3
             elif geo == 'rectangle':
-                width = size[0]*2
-                height = size[1]*2
+                width = size[0] * 2
+                height = size[1] * 2
             else:
                 raise
             xy_ = xy[0] - width / 2., xy[1] - height / 2.
@@ -154,24 +155,30 @@ class NodeBrush(Brush):
             elif inner_geo in ['cross', 'plus', 'vbar']:
                 radi = size
                 if inner_geo == 'plus':
-                    sxy_list = [(xy[0]-radi, xy[1]), (xy[0], xy[1]-radi)]
-                    exy_list = [(xy[0]+radi, xy[1]), (xy[0], xy[1]+radi)]
+                    sxy_list = [(xy[0] - radi, xy[1]), (xy[0], xy[1] - radi)]
+                    exy_list = [(xy[0] + radi, xy[1]), (xy[0], xy[1] + radi)]
                 elif inner_geo == 'vbar':
-                    sxy_list = [(xy[0], xy[1]-radi)]
-                    exy_list = [(xy[0], xy[1]+radi)]
+                    sxy_list = [(xy[0], xy[1] - radi)]
+                    exy_list = [(xy[0], xy[1] + radi)]
                 else:
-                    radi_  = radi/np.sqrt(2.)
-                    sxy_list = [(xy[0]-radi_, xy[1]-radi_), (xy[0]+radi_, xy[1]-radi_)]
-                    exy_list = [(xy[0]+radi_, xy[1]+radi_), (xy[0]-radi_, xy[1]+radi_)]
+                    radi_ = radi / np.sqrt(2.)
+                    sxy_list = [(xy[0] - radi_, xy[1] - radi_),
+                                (xy[0] + radi_, xy[1] - radi_)]
+                    exy_list = [(xy[0] + radi_, xy[1] + radi_),
+                                (xy[0] - radi_, xy[1] + radi_)]
                 for sxy, exy in zip(sxy_list, exy_list):
-                    plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],color=inner_ec, lw=inner_lw,zorder=101)
+                    plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],
+                             color=inner_ec, lw=inner_lw, zorder=101)
             elif inner_geo == 'measure':
-                sxy, exy = (xy[0], xy[1]-height*0.4), (xy[0]+width*0.35, xy[1]+height*0.35)
-                plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],color=inner_ec, lw=inner_lw,zorder=101)
-                x = np.linspace(-width*0.4, width*0.4, 100)
-                radi = height*0.5
-                y = radi**2-x**2
-                plt.plot(x+xy[0], y+xy[1]-radi*0.4,color=inner_ec, lw=inner_lw,zorder=101)
+                sxy, exy = (xy[0], xy[1] - height * 0.4), (xy[0] +
+                                                           width * 0.35, xy[1] + height * 0.35)
+                plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],
+                         color=inner_ec, lw=inner_lw, zorder=101)
+                x = np.linspace(-width * 0.4, width * 0.4, 100)
+                radi = height * 0.5
+                y = radi**2 - x**2
+                plt.plot(x + xy[0], y + xy[1] - radi * 0.4,
+                         color=inner_ec, lw=inner_lw, zorder=101)
             else:
                 raise ValueError('Inner Geometry %s not defined!' % geo)
 
@@ -198,6 +205,7 @@ class EdgeBrush(Brush):
         lw (float): line width.
         color (str): the color of painted edge by this brush.
     '''
+
     def __init__(self, style, ax, lw=1, color='k', zorder=0):
         self.lw = lw
         self.color = color
@@ -237,43 +245,44 @@ class EdgeBrush(Brush):
             else:
                 segs.append(s)
         head_vec = unit_d * head_length
-        vec_d = d-head_vec*1.2
+        vec_d = d - head_vec * 1.2
         num_segs = len(segs)
         for al in arrow_locs:
-            al[1] = al[1]*vec_d/max(num_segs,1)+sxy+0.6*head_vec
+            al[1] = al[1] * vec_d / max(num_segs, 1) + sxy + 0.6 * head_vec
         # show the arrow
         for st, mxy in arrow_locs:
             sign = 1 if st == '>' else -1
-            mxy = mxy-sign*head_vec*0.6
-            plt.arrow(mxy[0], mxy[1], sign*1e-8 * d[0], sign*1e-8 * d[1],
+            mxy = mxy - sign * head_vec * 0.6
+            plt.arrow(mxy[0], mxy[1], sign * 1e-8 * d[0], sign * 1e-8 * d[1],
                       head_length=head_length, width=0,
                       head_width=head_width, fc=self.color,
                       length_includes_head=False, lw=lw, edgecolor=self.color, zorder=self.zorder)
 
         # get the line locations.
-        uni = d/num_segs
+        uni = d / num_segs
         lines = []
         end = start = sxy
         seg_pre = ''
         for seg in segs:
-            if seg!=seg_pre and seg_pre!='':
+            if seg != seg_pre and seg_pre != '':
                 lines.append([seg_pre, start, end])
                 start = end
             seg_pre = seg
-            end = end+uni
+            end = end + uni
         lines.append([seg, start, end])
         # fix end of line
         if self.style[-1] in ['<', '>']:
-            lines[-1][2]-=head_vec
+            lines[-1][2] -= head_vec
         if self.style[0] in ['<', '>']:
-            lines[0][1]+=head_vec
+            lines[0][1] += head_vec
 
         # show the lines.
         for ls, sxy, exy in lines:
             if ls == '=':
                 perp_d = np.array([-unit_d[1], unit_d[0]])
-                offset = perp_d*head_width*0.4
-                sxys = [(sxy+offset, exy+offset), (sxy-offset, exy-offset)]
+                offset = perp_d * head_width * 0.4
+                sxys = [(sxy + offset, exy + offset),
+                        (sxy - offset, exy - offset)]
                 ls = '-'
             else:
                 sxys = [(sxy, exy)]

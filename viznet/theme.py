@@ -59,4 +59,3 @@ NODE_THEME_DICT = {
 A table of theme for nodes.
 values are `COLOR | SHAPE | INNER_SHAPE`.
 '''
-
