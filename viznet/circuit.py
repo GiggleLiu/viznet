@@ -35,9 +35,12 @@ class QuantumCircuit(object):
         '''
         place a gate at specific position.
         '''
-        if not isinstance(brush, tuple):
+        if not hasattr(brush, '__iter__'):
             brush = (brush,)
-        if not isinstance(position, tuple):
+            return_list = False
+        else:
+            return_list = True
+        if not hasattr(position, '__iter__'):
             position = (position,)
         if len(brush) == 1 and len(position)>1:
             position_node = (np.mean(position),)
@@ -46,17 +49,16 @@ class QuantumCircuit(object):
         else:
             position_node = position
 
-        node_pre = None
+        node_list = []
         for b, y in zip(brush, position_node):
             node = b >> (self.x, -y)
 
             # connect nodes
-            if node_pre is not None:
-                self.edge >> (node_pre, node)
+            if len(node_list) >= 1:
+                self.edge >> (node_list[-1], node)
             if position_node is position:
                 self.edge >> (self.node_dict[y][-1], node)
                 self.node_dict[y].append(node)
-                node_pre = node
             else:
                 for y in position:
                     prenode = self.node_dict[y][-1]
@@ -65,6 +67,8 @@ class QuantumCircuit(object):
                     self.node_dict[y].append(lnode)
                     self.node_dict[y].append(rnode)
                     self.edge >> (prenode, lnode)
+            node_list.append(node)
 
         if text is not None:
             node.text(text, fontsize=fontsize)
+        return node_list if return_list else node_list[0]
