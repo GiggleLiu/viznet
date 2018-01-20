@@ -2,6 +2,7 @@ import pdb
 import numpy as np
 import re
 import matplotlib.pyplot as plt
+from matplotlib import patches
 
 from .edgenode import Edge, Node
 from .theme import NODE_THEME_DICT, BLUE
@@ -113,24 +114,31 @@ class NodeBrush(Brush):
             dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=0.7, zorder=0)
-        elif geo[:9] == 'rectangle':
-            match_res = re.match(r'rectangle-(\d)-(\d)', geo)
+        elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
+            remain = geo[9:]
+            match_res = re.match(r'-(\d)-(\d)', remain)
             if match_res:
                 width = size * 2 + \
                     grid_setting['grid_width'] * (int(match_res.group(1)) - 1)
                 height = size * 2 + \
                     grid_setting['grid_height'] * (int(match_res.group(2)) - 1)
-            elif geo == 'rectangle-golden':
+            elif remain == '-golden':
                 height = size * 2
                 width = height * 1.3
-            elif geo == 'rectangle':
+            elif remain == '':
                 width = size[0] * 2
                 height = size[1] * 2
             else:
                 raise
             xy_ = xy[0] - width / 2., xy[1] - height / 2.
-            c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor,
-                              facecolor=color, lw=lw, zorder=0)
+            if geo[:9] == 'rectangle':
+                c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor,
+                                  facecolor=color, lw=lw, zorder=0)
+            else:
+                pad = 0.15*min(width, height)
+                c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=0,
+                                  edgecolor=edgecolor, facecolor=color, lw=lw,
+                                  boxstyle=patches.BoxStyle("Round", pad=pad))
         elif geo == '':
             c = plt.Circle(xy, 0, edgecolor='none', facecolor='none')
         else:
