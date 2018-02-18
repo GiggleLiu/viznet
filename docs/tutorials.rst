@@ -89,10 +89,11 @@ Now, your canvas looks like
 .. image:: images/fig1.png
     :align: center
 
-Layerwise operations and quantum circuits
--------------------------------------------
-One to one and all to all connection between different layers in neural network are frequently used APIs.
+Cluster-wise operations and quantum circuits
+----------------------------------------------
+Cluster operations like one to one connections and all to all connections between different layers in neural network are frequently used APIs.
+
 For a quantum circuit, we also have a facility :class:`viznet.QuantumCircuit` to help us build it easily.
 
-These contents are advanced and optional, you can read some examples under `path/to/viznet/apps/nn/` and `path/to/viznet/apps/qc/` to learn about them.
-Or refer :ref:`examples` chapter of this documentation if you didn't clone this repository.
+Read some examples under `path/to/viznet/apps/nn/` and `path/to/viznet/apps/qc/` to learn about them.
+Also, :ref:`examples` chapter of this documentation gives some examples.

@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     '''CaiZi R-Theta Network'''
-    handler = Layerwise()
     # brush
     conv = NodeBrush('nn.convolution', ax)
     input = NodeBrush('nn.input', ax)
@@ -18,7 +17,7 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     offset_amplitude = -num_node_hidden / 2.
     offset_sign = num_node_hidden / 2. - 0.5
     # visible layers
-    handler.node_sequence('\sigma^z', num_node_visible, input, offset=(0, 0))
+    sigma = node_sequence(input, num_node_visible, center=(0, 0))
 
     # hidden layers
     da, db = 0.8, 1.0
@@ -28,51 +27,47 @@ def draw_caizi_nn(ax, num_node_visible, num_node_hidden):
     y4 = y3 + da
     y5 = y4 + da + 0.3
     y6 = y5 + da
-    h1, h1p, h2 = 'h^{(1)}', 'h^{\prime(1)}', 'h^{(2)}'
-    handler.node_sequence(h1, num_node_hidden, hidden,
-                          offset=(offset_amplitude, y1))
-    handler.node_sequence(h1p, 1, hidden, offset=(offset_sign, y1))
+    h1_text, h1p_text, h2_text = 'h^{(1)}', '$h^{\prime(1)}$', '$h^{(2)}$'
+    h1 = node_sequence(hidden, num_node_hidden,
+                          center=(offset_amplitude, y1))
+    h1p = hidden >> (offset_sign, y1)
 
     # nonlinear layers
-    handler.node_sequence('\sigma1', num_node_hidden, op,
-                          offset=(offset_amplitude, y2))
-    handler.node_sequence('\cos', 1, op,
-                          offset=(offset_sign, y2))
-    handler.text(r'\sigma1', text_list=[r'$\sigma$'], position='left')
+    sigma1 = node_sequence(op, num_node_hidden,
+                          center=(offset_amplitude, y2))
+    cos = op >> (offset_sign, y2)
 
     # linear in amplitude
-    handler.node_sequence(h2, 1, hidden, offset=(offset_amplitude, y3))
-    handler.node_sequence('\sigma2', 1, op,
-                          offset=(offset_amplitude, y4))
+    h2 = hidden >> (offset_amplitude, y3)
+    sigma2 = op >> (offset_amplitude, y4)
 
     # output
     sign_txt = r'\frac{\psi}{|\psi|}'
-    handler.node_sequence(r'\times', 1, op, offset=(-0.5, y5))
-    handler.node_sequence(r'\psi', 1, output, offset=(-0.5, y6))
-    handler.text(h1)
-    handler.text(h1p)
-    handler.text(h2)
-    handler.text(r'\psi', text_list=[r'$\psi$'])
-    handler.text(r'\times', text_list=[r'$\times$'])
-    handler.text(
-        r'\cos', text_list=[r'$\cos$'], position='left')
-    handler.text(r'\sigma2', text_list=[
-        r'$\sigma$'], position='left')
+    times = op >> (-0.5, y5)
+    psi = output >> (-0.5, y6)
+    for node_list, base_string in zip([sigma, h1], ['\sigma^z', h1_text]):
+        for i, node in enumerate(node_list):
+            node.text('$%s_%d$'%(base_string, i))
+    h1p.text(h1p_text)
+    h2.text(h2_text)
+    psi.text(r'$\psi$')
+    times.text(r'$\times$')
+    cos.text(r'$\cos$', position='left')
+    sigma1[0].text(r'$\sigma$', position='left')
 
-    handler.fontsize = 10
-    handler.text(r'\cos', text_list=[r'$%s$' % sign_txt])
-    handler.text(r'\sigma2', text_list=[r'$|\psi|$'])
+    cos.text(r'$%s$' % sign_txt, fontsize=10)
+    sigma2.text(r'$|\psi|$')
 
     # connect them
-    handler.connecta2a('\sigma^z', h1, de)
-    handler.connecta2a('\sigma^z', h1p, de)
-    handler.connect121(h1, '\sigma1', de)
-    handler.connect121(h1p, '\cos', de)
-    handler.connecta2a('\sigma1', h2, de)
-    handler.connecta2a(h2, '\sigma2', de)
-    handler.connecta2a('\sigma2', r'\times', ude)
-    handler.connecta2a('\cos', r'\times', ude)
-    handler.connecta2a(r'\times', r'\psi', de)
+    connecta2a(sigma, h1, de)
+    connecta2a(sigma, [h1p], de)
+    connect121(h1, sigma1, de)
+    connecta2a(sigma1, [h2], de)
+    de >> (h1p, cos)
+    de >> (h2, sigma2)
+    ude >> (sigma2, times)
+    ude >> (cos, times)
+    de >> (times, psi)
 
 
 def draw_instance():

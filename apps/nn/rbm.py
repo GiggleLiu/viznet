@@ -9,24 +9,24 @@ def test_draw_rbm():
     num_node_visible = 5
     num_node_hidden = 4
     with DynamicShow((6, 4), '_rbm.pdf') as d:
-        handler = Layerwise()
         # visible layers
         nb1 = NodeBrush('nn.backfed', d.ax)
         nb2 = NodeBrush('nn.probablistic_hidden', d.ax)
         eb = EdgeBrush('---', d.ax)
 
-        handler.node_sequence(
-            '\sigma^z', num_node_visible, offset=0, brush=nb1)
+        sigma = node_sequence(nb1, num_node_visible, center=(0, 0))
 
         # hidden layers
-        handler.node_sequence('h', num_node_hidden, offset=1, brush=nb2)
+        h = node_sequence(nb2, num_node_hidden, center=(0, 1))
 
-        # automatic text node sequence
-        handler.text('h')
-        handler.text('\sigma^z')
+        # text node sequence
+        for i, node in enumerate(h):
+            node.text(r'$h_%d$'%i)
+        for i, node in enumerate(sigma):
+            node.text(r'$\sigma^z_%d$'%i)
 
         # connect them
-        handler.connecta2a('\sigma^z', 'h', eb)
+        connecta2a(sigma, h, eb)
 
 
 if __name__ == '__main__':

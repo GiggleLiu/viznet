@@ -3,7 +3,7 @@ Plots for zoo of nets.
 '''
 
 import numpy as np
-from viznet import Layerwise, NodeBrush, EdgeBrush, DynamicShow
+from viznet import connecta2a, node_sequence, NodeBrush, EdgeBrush, DynamicShow
 
 
 def draw_feed_forward(ax, num_node_list):
@@ -13,7 +13,6 @@ def draw_feed_forward(ax, num_node_list):
     Args:
         num_node_list (list<int>): number of nodes in each layer.
     '''
-    handler = Layerwise()
     num_hidden_layer = len(num_node_list) - 2
     token_list = ['\sigma^z'] + \
         ['y^{(%s)}' % (i + 1) for i in range(num_hidden_layer)] + ['\psi']
@@ -21,13 +20,14 @@ def draw_feed_forward(ax, num_node_list):
     radius_list = [0.3] + [0.2] * num_hidden_layer + [0.3]
     y_list = 1.5 * np.arange(len(num_node_list))
 
-    for n, token, kind, radius, y in zip(num_node_list, token_list, kind_list, radius_list, y_list):
+    seq_list = []
+    for n, kind, radius, y in zip(num_node_list, kind_list, radius_list, y_list):
         b = NodeBrush(kind, ax)
-        handler.node_sequence(token, n, offset=y, brush=b)
+        seq_list.append(node_sequence(b, n, center=(0, y)))
 
-    for st, et in zip(token_list[:-1], token_list[1:]):
-        eb = EdgeBrush('-->', ax)
-        handler.connecta2a(st, et, eb)
+    eb = EdgeBrush('-->', ax)
+    for st, et in zip(seq_list[:-1], seq_list[1:]):
+        connecta2a(st, et, eb)
 
 
 def real_bp():

@@ -3,7 +3,6 @@ from viznet import *
 
 def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     '''CNN equivalance to RBM'''
-    handler = Layerwise()
     # brush
     conv = NodeBrush('nn.convolution', ax)
     input = NodeBrush('nn.input', ax)
@@ -13,35 +12,34 @@ def draw_conv_rbm(ax, num_node_visible, num_node_hidden):
     ude = EdgeBrush('---', ax)
 
     # visible layers
-    handler.node_sequence(r'\sigma^z', num_node_visible,
-                          offset=(0, 0), brush=input)
+    sigma = node_sequence(input, num_node_visible, center=(0, 0))
 
     # hidden layers
-    handler.node_sequence('h', num_node_hidden, offset=(0, 1.5), brush=conv)
+    h = node_sequence(conv, num_node_hidden, center=(0, 1.5))
 
     # nonlinear layers
-    handler.node_sequence('nonlinear', num_node_hidden,
-                          offset=(0, 2.3), brush=op)
+    nonlinear = node_sequence(op, num_node_hidden, center=(0, 2.3))
 
     # sum
-    handler.node_sequence('+', 1, offset=(0, 3.1), brush=op)
+    sum_op = op >> (0, 3.1)
 
     # output
-    psi = handler.node_sequence(r'\psi', 1, offset=(0, 3.9), brush=output)
+    psi = output >> (0, 3.9)
 
     # text nodes
-    handler.text(r'\sigma^z')
-    handler.text('h')
-    handler.text(r'\psi', text_list=[r'$\psi$'])
-    handler.text(r'\psi', text_list=[r'$\exp$'], position='left')
-    handler.text('+', text_list=[r'$+$'])
-    handler.text('nonlinear', [r'$\log 2\cosh$'], position='left')
+    for node_list, base_string in zip([sigma, h], ['\sigma^z', 'h']):
+        for i, node in enumerate(node_list):
+            node.text('$%s_%d$'%(base_string, i))
+    nonlinear[0].text(r'$\log 2\cosh$', position='left')
+    psi.text(r'$\psi$')
+    psi.text(r'$\exp$', position='left')
+    sum_op.text(r'$+$')
 
     # connect them
-    handler.connecta2a(r'\sigma^z', 'h', de)
-    handler.connect121('h', 'nonlinear', de)
-    handler.connecta2a('nonlinear', '+', ude)
-    handler.connect121('+', r'\psi', de)
+    connecta2a(sigma, h, de)
+    connect121(h, nonlinear, de)
+    connecta2a(nonlinear, [sum_op], ude)
+    de >> (sum_op, psi)
 
 
 def test_conv_rbm():

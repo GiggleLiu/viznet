@@ -1,5 +1,5 @@
 import numpy as np
-from viznet import NodeBrush, DynamicShow, Layerwise, EdgeBrush
+from viznet import NodeBrush, DynamicShow, EdgeBrush
 
 
 def test_draw_bm():

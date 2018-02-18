@@ -32,11 +32,12 @@ class NodeBrush(Brush):
         'tiny': 0.09,
     }
 
-    def __init__(self, style, ax, color=None, size='normal'):
+    def __init__(self, style, ax, color=None, size='normal', zorder=0):
         self.style = style
         self.size = size
         self.ax = ax
         self.color = color
+        self.zorder = zorder
 
     @property
     def _size(self):
@@ -62,6 +63,8 @@ class NodeBrush(Brush):
         '''
         # color priority: brush color > theme color
         color, geo, inner_geo = self._style
+        if color is None:
+            edgecolor = 'none'
         if self.color is not None:
             color = self.color
 
@@ -86,15 +89,14 @@ class NodeBrush(Brush):
 
         if color is None:
             color = 'none'
-            edgecolor = 'none'
 
         if geo == 'circle':
             c = plt.Circle(xy, size, edgecolor=edgecolor,
-                           facecolor=color, lw=lw, zorder=0)
+                           facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == 'square':
             xy = xy[0] - size, xy[1] - size
             c = plt.Rectangle(xy, 2 * size, 2 * size, edgecolor=edgecolor,
-                              facecolor=color, lw=lw, zorder=0)
+                              facecolor=color, lw=lw, zorder=self.zorder)
         elif geo[:8] == 'triangle':
             tri_path = np.array(
                 [[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [0, 1]])
@@ -109,11 +111,11 @@ class NodeBrush(Brush):
             else:
                 raise
             c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
-                            facecolor=color, lw=0.7, zorder=0)
+                            facecolor=color, lw=0.7, zorder=self.zorder)
         elif geo == 'diamond':
             dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
-                            facecolor=color, lw=0.7, zorder=0)
+                            facecolor=color, lw=0.7, zorder=self.zorder)
         elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
             remain = geo[9:]
             match_res = re.match(r'-(\d)-(\d)', remain)
@@ -133,10 +135,10 @@ class NodeBrush(Brush):
             xy_ = xy[0] - width / 2., xy[1] - height / 2.
             if geo[:9] == 'rectangle':
                 c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor,
-                                  facecolor=color, lw=lw, zorder=0)
+                                  facecolor=color, lw=lw, zorder=self.zorder)
             else:
                 pad = 0.15*min(width, height)
-                c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=0,
+                c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=self.zorder,
                                   edgecolor=edgecolor, facecolor=color, lw=lw,
                                   boxstyle=patches.BoxStyle("Round", pad=pad))
         elif geo == '':
@@ -150,15 +152,15 @@ class NodeBrush(Brush):
         if inner_geo != 'none':
             if inner_geo == 'circle':
                 g = plt.Circle(xy, 0.7 * size, edgecolor=inner_ec,
-                               facecolor=inner_fc, lw=inner_lw, zorder=101)
+                               facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
                 self.ax.add_patch(g)
             elif inner_geo == 'triangle':
                 g = plt.Polygon(xy=np.array([[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [
-                    0, 1]]) * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=101)
+                    0, 1]]) * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
                 self.ax.add_patch(g)
             elif inner_geo == 'dot':
                 g = plt.Circle(xy, 0.15 * size, edgecolor=inner_ec,
-                               facecolor=inner_ec, lw=inner_lw, zorder=101)
+                               facecolor=inner_ec, lw=inner_lw, zorder=self.zorder+1)
                 self.ax.add_patch(g)
             elif inner_geo in ['cross', 'plus', 'vbar']:
                 radi = size
@@ -176,17 +178,17 @@ class NodeBrush(Brush):
                                 (xy[0] - radi_, xy[1] + radi_)]
                 for sxy, exy in zip(sxy_list, exy_list):
                     plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],
-                             color=inner_ec, lw=inner_lw, zorder=101)
+                             color=inner_ec, lw=inner_lw, zorder=self.zorder+1)
             elif inner_geo == 'measure':
                 sxy, exy = (xy[0], xy[1] - height * 0.4), (xy[0] +
                                                            width * 0.35, xy[1] + height * 0.35)
                 plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],
-                         color=inner_ec, lw=inner_lw, zorder=101)
+                         color=inner_ec, lw=inner_lw, zorder=self.zorder+1)
                 x = np.linspace(-width * 0.4, width * 0.4, 100)
                 radi = height * 0.5
                 y = radi**2 - x**2
                 plt.plot(x + xy[0], y + xy[1] - radi * 0.4,
-                         color=inner_ec, lw=inner_lw, zorder=101)
+                         color=inner_ec, lw=inner_lw, zorder=self.zorder+1)
             else:
                 raise ValueError('Inner Geometry %s not defined!' % geo)
 
@@ -298,6 +300,10 @@ class EdgeBrush(Brush):
                 ls = '--'
             for sxy_, exy_ in sxys:
                 arr = self.ax.plot([sxy_[0], exy_[0]], [
-                                   sxy_[1], exy_[1]], lw=lw, color=self.color, zorder=self.zorder, ls=ls)
+                                   sxy_[1], exy_[1]], lw=lw, color=self.color,
+                                   zorder=self.zorder, ls=ls, solid_capstyle='round')
 
         return Edge(arr, sxy, exy, start, end, ax=self.ax)
+
+def _arrow_loc(lines, segs):
+    pass

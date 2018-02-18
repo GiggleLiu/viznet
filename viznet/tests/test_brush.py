@@ -6,6 +6,7 @@ from ..brush import NodeBrush, EdgeBrush
 from ..edgenode import Pin
 from ..context import DynamicShow
 from ..circuit import QuantumCircuit
+from ..cluster import node_ring
 
 
 def test_edgenode():
@@ -148,6 +149,60 @@ def test_pin():
         e1 = edge1 >> (n1, n2.pin(np.pi / 4., align=n1))
         edge2 >> (n3.pin(np.pi / 2, align=e1), e1.center)
 
+
+def test_connect():
+    with TestShow(grid=(2,3), num_node=2) as ts:
+        ax, (n1, n2) = ts.ax((0, 0), num_node = 2, style='tn.mpo')
+        edge >> (n1, n2)
+
+class TestShow():
+    '''
+    Dynamic plot context, intended for displaying geometries.
+    like removing axes, equal axis, dynamically tune your figure and save it.
+
+    Args:
+        figsize (tuple, default=(6,4)): figure size.
+        filename (filename, str): filename to store generated figure, if None, it will not save a figure.
+
+    Attributes:
+        figsize (tuple, default=(6,4)): figure size.
+        filename (filename, str): filename to store generated figure, if None, it will not save a figure.
+        ax (Axes): matplotlib Axes instance.
+
+    Examples:
+        with DynamicShow() as ds:
+            c = Circle([2, 2], radius=1.0)
+            ds.ax.add_patch(c)
+    '''
+
+    def __init__(self, figsize=(6, 4), filename=None, dpi=300, grid=(1,1), num_node=2):
+        self.figsize = figsize
+        self.filename = filename
+        self.grid = grid
+        self.num_node = num_node
+
+    def ax(self, ij, num_node=0, style='basic'):
+        ax = plt.subplot(self.gs.__getitem__(ij))
+        node_list = node_ring(NodeBrush(style, ax), self.num_node, (0,0), 1.0)
+        return ax, node_list
+
+    def __enter__(self):
+        plt.ion()
+        plt.figure(figsize=self.figsize)
+        gs = plt.GridSpec(self.grid)
+        return self
+
+    def __exit__(self, *args):
+        plt.axis('equal')
+        plt.axis('off')
+        plt.tight_layout()
+        if self.filename is not None:
+            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
+                  self.filename)
+            pdb.set_trace()
+            plt.savefig(self.filename, dpi=300)
+        else:
+            pdb.set_trace()
 
 if __name__ == '__main__':
     test_ghz()
