@@ -247,6 +247,27 @@ class Pin(EdgeNode):
         self.position = position
         self._ax = ax
 
+    def __iter__(self):
+        return self.position.__iter__()
+
+    def __add__(self, target):
+        return Pin([a+b for a,b in zip(self, target)], ax=self.ax)
+
+    def __radd__(self, target):
+        return Pin([a+b for a,b in zip(self, target)], ax=self.ax)
+
+    def __iadd__(self, target):
+        self.position = [a+b for a,b in zip(self, target)]
+
+    def __mul__(self, target):
+        return Pin([a*target for a in self], self.ax)
+
+    def __rmul__(self, target):
+        return Pin([a*target for a in self], self.ax)
+
+    def __imul__(self, target):
+        self.position = [a*target for a in self]
+
     @property
     def ax(self):
         if self._ax is None:

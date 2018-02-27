@@ -32,7 +32,7 @@ class NodeBrush(Brush):
         'tiny': 0.09,
     }
 
-    def __init__(self, style, ax, color=None, size='normal', zorder=0):
+    def __init__(self, style, ax=None, color=None, size='normal', zorder=0):
         self.style = style
         self.size = size
         self.ax = ax
@@ -67,6 +67,7 @@ class NodeBrush(Brush):
             edgecolor = 'none'
         if self.color is not None:
             color = self.color
+        ax = plt.gca() if self.ax is None else self.ax
 
         lw = node_setting['lw']
         edgecolor = node_setting['edgecolor']
@@ -89,6 +90,7 @@ class NodeBrush(Brush):
 
         if color is None:
             color = 'none'
+            edgecolor = 'none'
 
         if geo == 'circle':
             c = plt.Circle(xy, size, edgecolor=edgecolor,
@@ -145,23 +147,23 @@ class NodeBrush(Brush):
             c = plt.Circle(xy, 0, edgecolor='none', facecolor='none')
         else:
             raise
-        node = Node(c, self._style, ax=self.ax)
-        self.ax.add_patch(c)
+        node = Node(c, self._style, ax=ax)
+        ax.add_patch(c)
 
         # add a geometric patch at the top of circle.
         if inner_geo != 'none':
             if inner_geo == 'circle':
                 g = plt.Circle(xy, 0.7 * size, edgecolor=inner_ec,
                                facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
-                self.ax.add_patch(g)
+                ax.add_patch(g)
             elif inner_geo == 'triangle':
                 g = plt.Polygon(xy=np.array([[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [
                     0, 1]]) * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
-                self.ax.add_patch(g)
+                ax.add_patch(g)
             elif inner_geo == 'dot':
                 g = plt.Circle(xy, 0.15 * size, edgecolor=inner_ec,
                                facecolor=inner_ec, lw=inner_lw, zorder=self.zorder+1)
-                self.ax.add_patch(g)
+                ax.add_patch(g)
             elif inner_geo in ['cross', 'plus', 'vbar']:
                 radi = size
                 if inner_geo == 'plus':
@@ -196,7 +198,7 @@ class NodeBrush(Brush):
         if color == BLUE and self.style[:3] == 'nn.':
             loop = plt.Circle((xy[0], xy[1] + 1.2 * size), 0.5 * size,
                               edgecolor=edgecolor, facecolor=inner_fc, lw=lw, zorder=-5)
-            self.ax.add_patch(loop)
+            ax.add_patch(loop)
 
         return node
 
@@ -216,7 +218,7 @@ class EdgeBrush(Brush):
         color (str): the color of painted edge by this brush.
     '''
 
-    def __init__(self, style, ax, lw=1, color='k', zorder=0):
+    def __init__(self, style, ax=None, lw=1, color='k', zorder=0):
         self.lw = lw
         self.color = color
         self.ax = ax
@@ -233,6 +235,7 @@ class EdgeBrush(Brush):
         Returns:
             :obj:`Edge`: edge object.
         '''
+        ax = plt.gca() if self.ax is None else self.ax
         lw = self.lw
         head_length = arrow_setting['head_length'] * lw
         head_width = arrow_setting['head_width'] * lw
@@ -299,11 +302,11 @@ class EdgeBrush(Brush):
             if ls == '.':
                 ls = '--'
             for sxy_, exy_ in sxys:
-                arr = self.ax.plot([sxy_[0], exy_[0]], [
+                arr = ax.plot([sxy_[0], exy_[0]], [
                                    sxy_[1], exy_[1]], lw=lw, color=self.color,
                                    zorder=self.zorder, ls=ls, solid_capstyle='round')
 
-        return Edge(arr, sxy, exy, start, end, ax=self.ax)
+        return Edge(arr, sxy, exy, start, end, ax=ax)
 
 def _arrow_loc(lines, segs):
     pass
