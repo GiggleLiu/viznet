@@ -1,5 +1,5 @@
 # viznet - a network visualization toolbox
-
+![](docs/images/viznetlogo.jpg)
 viznet is designed for visualizing networks composed of nodes and edges, e.g. tensor networks, neural networks and quantum circuits. 
 
 It is based on and compatible with matplotlib. The theme brush (for both node and edge) makes the design itself interesting, getting you free from fine tuning the node and wire parameters for hours.

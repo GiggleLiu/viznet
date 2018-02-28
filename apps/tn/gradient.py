@@ -9,6 +9,7 @@ dy = 0.9
 edge = viznet.EdgeBrush('-')
 dot = viznet.NodeBrush('pin')
 hbar = viznet.NodeBrush('tn.mpo21', color=facecolor)
+box = viznet.NodeBrush('box', color=facecolor, size=(0.8,0.4))
 mpo = viznet.NodeBrush('tn.mpo', color=facecolor)
 invis = viznet.NodeBrush('invisible')
 invis_mini = viznet.NodeBrush('invisible', size='small')
@@ -26,9 +27,30 @@ def connect_ldots(node1, node2):
     edge >> (inter, node2)
 
 class Gradient():
+    def fig0(self, ext='pdf'):
+        # the matric of positions
+        dxs = [0, 1, ldots_span]
+        xs = np.cumsum(dxs)
+
+        node_list = []
+        with viznet.DynamicShow(figsize=(6,3), filename='_fig0.%s'%ext) as ds:
+            for i, x in enumerate(xs):
+                node_list.append(mpo>>(x, 0))
+
+            # horizontal lines
+            for i in range(len(xs)-1):
+                if i == 1:
+                    connect_ldots(node_list[i], node_list[i+1])
+                else:
+                    edge >> (node_list[i], node_list[i+1])
+
+            # vertical lines
+            for node in node_list:
+                leg(node, 'bottom', offset=(0, -leg_length))
+
     def fig1(self, ext='pdf'):
-        with viznet.DynamicShow(figsize=(3,2), filename='fig1.%s'%ext) as ds:
-            mpo2 = hbar >> (0.5, 0)
+        with viznet.DynamicShow(figsize=(3,2), filename='_fig1.%s'%ext) as ds:
+            mpo2 = box >> (0.5, 0)
             leg(mpo2, 'left', (-leg_length, 0))
             leg(mpo2, 'right', (leg_length, 0))
             for i in range(2):
@@ -38,7 +60,7 @@ class Gradient():
     def fig2(self, ext='pdf'):
         nrow, ncol = 2, 3
         nodes = np.zeros([nrow, ncol], dtype='O')
-        with viznet.DynamicShow(figsize=(5,3), filename='fig2.%s'%ext) as ds:
+        with viznet.DynamicShow(figsize=(5,3), filename='_fig2.%s'%ext) as ds:
             for i in range(nrow):
                 for j in range(ncol):
                     nodes[i, j] = mpo >> (j*ldots_span, i)
@@ -57,7 +79,7 @@ class Gradient():
         node_list = []
         dxs = [0, ldots_span, 1, 1, 1, ldots_span]
         xs = np.cumsum(dxs)
-        with viznet.DynamicShow(figsize=(6,3), filename='fig3.%s'%ext) as ds:
+        with viznet.DynamicShow(figsize=(6,3), filename='_fig3.%s'%ext) as ds:
             for i, x in enumerate(xs):
                 if i == 2 or i==3:
                     brush = invis
@@ -80,7 +102,7 @@ class Gradient():
         node_list2 = []
         dxs = [0, ldots_span, 1, 1, 1, ldots_span]
         xs = np.cumsum(dxs)
-        with viznet.DynamicShow(figsize=(6,3), filename='fig4.%s'%ext) as ds:
+        with viznet.DynamicShow(figsize=(6,3), filename='_fig4.%s'%ext) as ds:
             for i, x in enumerate(xs):
                 if i == 2 or i==3:
                     brush = invis
@@ -115,7 +137,7 @@ class Gradient():
         ys = -np.cumsum(dys)
         nodes = np.zeros([len(xs), len(ys)], dtype='O')
 
-        with viznet.DynamicShow(figsize=(6,3), filename='fig5.%s'%ext) as ds:
+        with viznet.DynamicShow(figsize=(6,3), filename='_fig5.%s'%ext) as ds:
             for i, x in enumerate(xs):
                 if x==0:
                     brush = dot
