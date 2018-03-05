@@ -113,11 +113,11 @@ class NodeBrush(Brush):
             else:
                 raise
             c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
-                            facecolor=color, lw=0.7, zorder=self.zorder)
+                            facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == 'diamond':
             dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
-                            facecolor=color, lw=0.7, zorder=self.zorder)
+                            facecolor=color, lw=lw, zorder=self.zorder)
         elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
             remain = geo[9:]
             match_res = re.match(r'-(\d)-(\d)', remain)
@@ -304,7 +304,7 @@ class EdgeBrush(Brush):
             for sxy_, exy_ in sxys:
                 arr = ax.plot([sxy_[0], exy_[0]], [
                                    sxy_[1], exy_[1]], lw=lw, color=self.color,
-                                   zorder=self.zorder, ls=ls, solid_capstyle='round')
+                                   zorder=self.zorder, ls=ls, solid_capstyle='butt')
 
         return Edge(arr, sxy, exy, start, end, ax=ax)
 

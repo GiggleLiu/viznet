@@ -10,7 +10,7 @@ from matplotlib import patches
 from .setting import annotate_setting
 from .utils import intersection
 
-__all__ = ['Edge', 'Node']
+__all__ = ['Edge', 'Node', 'Pin']
 
 
 class EdgeNode(object):
