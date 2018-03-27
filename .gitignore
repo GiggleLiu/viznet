@@ -15,6 +15,7 @@
 *.log
 _*.png
 _*.pdf
+_*.svg
 dist/
 build/
 .cache/

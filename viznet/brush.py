@@ -32,12 +32,13 @@ class NodeBrush(Brush):
         'tiny': 0.09,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', zorder=0):
+    def __init__(self, style, ax=None, color=None, size='normal', zorder=0, rotate=0.):
         self.style = style
         self.size = size
         self.ax = ax
         self.color = color
         self.zorder = zorder
+        self.rotate = rotate
 
     @property
     def _size(self):
@@ -79,11 +80,11 @@ class NodeBrush(Brush):
         # the size of node
         size = self._size
         if isinstance(size, tuple):
-            if geo == 'rectangle':
+            if geo in ['rectangle', 'routangle']:
                 size = (size[0] * basesize, size[1] * basesize)
             else:
                 raise
-        elif geo == 'rectangle' and not isinstance(size, tuple):
+        elif geo in ['routangle', 'rectangle'] and not isinstance(size, tuple):
             size = (size * basesize,) * 2
         else:
             size = size * basesize
@@ -112,10 +113,12 @@ class NodeBrush(Brush):
                 pass
             else:
                 raise
+            tri_path = rotate(tri_path, self.rotate)
             c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == 'diamond':
             dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
+            dia_path = rotate(dia_path, self.rotate)
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
                             facecolor=color, lw=lw, zorder=self.zorder)
         elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
@@ -157,8 +160,9 @@ class NodeBrush(Brush):
                                facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
                 ax.add_patch(g)
             elif inner_geo == 'triangle':
-                g = plt.Polygon(xy=np.array([[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [
-                    0, 1]]) * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
+                tri_path = np.array([[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [0, 1]])
+                tri_path = rotate(tri_path, self.rotate)
+                g = plt.Polygon(xy= tri_path * 0.7 * size + xy, edgecolor=inner_ec, facecolor=inner_fc, lw=inner_lw, zorder=self.zorder+1)
                 ax.add_patch(g)
             elif inner_geo == 'dot':
                 g = plt.Circle(xy, 0.15 * size, edgecolor=inner_ec,
@@ -167,17 +171,19 @@ class NodeBrush(Brush):
             elif inner_geo in ['cross', 'plus', 'vbar']:
                 radi = size
                 if inner_geo == 'plus':
-                    sxy_list = [(xy[0] - radi, xy[1]), (xy[0], xy[1] - radi)]
-                    exy_list = [(xy[0] + radi, xy[1]), (xy[0], xy[1] + radi)]
+                    sxy_list = [(- radi, 0), (0, - radi)]
+                    exy_list = [(radi, 0), (0, radi)]
                 elif inner_geo == 'vbar':
-                    sxy_list = [(xy[0], xy[1] - radi)]
-                    exy_list = [(xy[0], xy[1] + radi)]
+                    sxy_list = [(0, - radi)]
+                    exy_list = [(0, radi)]
                 else:
                     radi_ = radi / np.sqrt(2.)
-                    sxy_list = [(xy[0] - radi_, xy[1] - radi_),
-                                (xy[0] + radi_, xy[1] - radi_)]
-                    exy_list = [(xy[0] + radi_, xy[1] + radi_),
-                                (xy[0] - radi_, xy[1] + radi_)]
+                    sxy_list = [(- radi_, - radi_),
+                                (radi_, - radi_)]
+                    exy_list = [(radi_, radi_),
+                                (- radi_, radi_)]
+                sxy_list = rotate(sxy_list, self.rotate) + xy
+                exy_list = rotate(exy_list, self.rotate) + xy
                 for sxy, exy in zip(sxy_list, exy_list):
                     plt.plot([sxy[0], exy[0]], [sxy[1], exy[1]],
                              color=inner_ec, lw=inner_lw, zorder=self.zorder+1)

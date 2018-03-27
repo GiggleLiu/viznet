@@ -54,6 +54,8 @@ NODE_THEME_DICT = {
     'qc.NOT': (NONE, 'circle', 'plus'),
     'qc.measure': (NONE, 'rectangle-golden', 'measure'),
     'qc.end': (None, '', 'vbar'),
+
+    'art.rbox': (NONE, 'routangle', 'none'),
 }
 '''
 A table of theme for nodes.
