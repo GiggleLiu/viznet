@@ -12,7 +12,7 @@ def ghz4():
         END = NodeBrush('qc.end', ds.ax)
         M = NodeBrush('qc.measure', ds.ax)
 
-        handler = QuantumCircuit(ds.ax, num_bit=4)
+        handler = QuantumCircuit(num_bit=4)
         handler.x += 0.5
         handler.gate(basic, 0, 'X')
         for i in range(1, num_bit):

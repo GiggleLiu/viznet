@@ -66,7 +66,7 @@ For example,
 
 Also, you can set color and width of your line for this :class:`EdgeBrush` by passing arguments into construction method.
 
-:obj:`ds.ax` is nothing but a :obj:`matplotlib.Axes` instance. Now, your canvas looks like
+:obj:`ds.ax` is nothing but a :obj:`matplotlib.Axes` instance, use `plt.gca()` by default. Now, your canvas looks like
 
 .. image:: images/fig0.png
     :align: center
@@ -79,7 +79,7 @@ Let's continue the above example,
 
 .. code-block:: python
 
-    >>     mpo21 = NodeBrush('tn.mpo21', d.ax, size='normal')
+    >>     mpo21 = NodeBrush('tn.mpo21', ax=d.ax, size='normal')
     >>     node3 = mpo21 >> (1.5, 1.0)
     >>     left_bottom_pin = node3.pin('bottom', align=node1)
     >>     edge >> (left_bottom_pin, node1)

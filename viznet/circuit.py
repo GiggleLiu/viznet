@@ -26,7 +26,7 @@ class QuantumCircuit(object):
         num_bit (int): number of bits.
     '''
 
-    def __init__(self, ax, num_bit, x=0,  **kwargs):
+    def __init__(self, num_bit, ax=None, x=0,  **kwargs):
         self.x = x
         self.node_dict = dict(
             zip(range(num_bit), [[Pin((self.x, -i))] for i in range(num_bit)]))
