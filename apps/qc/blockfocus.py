@@ -18,10 +18,10 @@ def focus(handler, lines):
         handler.node_dict[j].append(pi)
         handler.edge >> (opos, pi)
 
-def ghz4():
-    '''4 bit GHZ circuit, applicable on ibmqx4 circuit.'''
+def blockfocus():
+    '''illustration of block-focus scheme.'''
     num_bit = 6
-    with DynamicShow((5, 3), '_blockfocus.pdf') as ds:
+    with DynamicShow((5, 3), '_blockfocus.png') as ds:
         basic = NodeBrush('qc.basic')
         C = NodeBrush('qc.C')
         NOT = NodeBrush('qc.NOT', size='small')
@@ -35,7 +35,9 @@ def ghz4():
         for i in range(1, num_bit):
             handler.gate(basic, i, 'H')
         handler.x += 0.8
-        handler.focus([4, 2, 1, 3])
+        with handler.block(block, 0, num_bit-1, pad_x=0.05) as b:
+            handler.focus([4, 2, 1, 3])
+        b[0].text('focus', 'top')
         handler.x += 0.8
 
         # entangler block
@@ -61,9 +63,9 @@ def ghz4():
 
         # text |0>s
         for i in range(num_bit):
-            plt.text(-0.5, -i, r'$\left\vert0\right\rangle_{Q_%d}$' %
-                     i, va='center', ha='center', fontsize=18)
+            plt.text(-0.5, -i, r'$\left\vert0\right\rangle$'
+                     , va='center', ha='center', fontsize=16)
 
 
 if __name__ == '__main__':
-    ghz4()
+    blockfocus()

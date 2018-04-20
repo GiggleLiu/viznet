@@ -83,7 +83,7 @@ class QuantumCircuit(object):
             node.text(text, fontsize=fontsize)
         return node_list if return_list else node_list[0]
 
-    def block(self, boxbrush, linestart, lineend):
+    def block(self, boxbrush, linestart, lineend, pad_x=0.2, pad_y=0.2):
         '''
         strike out a block.
 
@@ -91,11 +91,12 @@ class QuantumCircuit(object):
             boxbrush (NodeBrush): a brush of style 'box', 'art.rbox' or something rectangular.
             linestart (int): the starting line.
             lineend (int): the ending line > starting line.
+            pad_x (float): x padding between gates and box.
+            pad_y (float): y padding between gates and box.
 
         Returns:
             context: context that return boxes.
         '''
-        pad = 0.2 * self.line_space
         class Context():
             def __enter__(ctx, *args):
                 ctx.xstart = self.x
@@ -108,7 +109,7 @@ class QuantumCircuit(object):
                     return False
                 xend = self.x
                 xstart = ctx.xstart
-                boxbrush.size = ((xend - xstart)/2. + 2*pad, (lineend - linestart)/2.*self.line_space + 2*pad)
+                boxbrush.size = ((xend - xstart)/2. + 2*pad_x, (lineend - linestart)/2.*self.line_space + 2*pad_y)
                 b = boxbrush >> ((xstart+xend)/2., -(linestart + lineend)/2.*self.line_space)
                 self.boxes.append(b)
                 return True
