@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Circle, Polygon
 
 from .edgenode import Pin
-from .brush import EdgeBrush
+from .brush import EdgeBrush, NodeBrush
 
 __all__ = ['QuantumCircuit']
 
@@ -25,23 +25,32 @@ class QuantumCircuit(object):
         ax: matplotlib.pyplot.Axes.
         num_bit (int): number of bits.
     '''
+    line_space = 1.0
 
     def __init__(self, num_bit, ax=None, x=0,  **kwargs):
         self.x = x
         self.node_dict = dict(
-            zip(range(num_bit), [[Pin((self.x, -i))] for i in range(num_bit)]))
+            zip(range(num_bit), [[Pin(self.get_position(i))] for i in range(num_bit)]))
         self.edge = EdgeBrush('---', ax, **kwargs)
+
+    @property
+    def num_bit(self):
+        return len(self.node_dict)
+
+    def get_position(self, line):
+        '''get the position of specific line'''
+        return (self.x, -line*self.line_space)
 
     def gate(self, brush, position, text=None, fontsize=18):
         '''
         place a gate at specific position.
         '''
-        if not hasattr(brush, '__iter__'):
+        if not hasattr(brush, '__len__'):
             brush = (brush,)
             return_list = False
         else:
             return_list = True
-        if not hasattr(position, '__iter__'):
+        if not hasattr(position, '__len__'):
             position = (position,)
         if len(brush) == 1 and len(position) > 1:
             position_node = (np.mean(position),)
@@ -52,7 +61,7 @@ class QuantumCircuit(object):
 
         node_list = []
         for b, y in zip(brush, position_node):
-            node = b >> (self.x, -y)
+            node = b >> self.get_position(y)
 
             # connect nodes
             if len(node_list) >= 1:
@@ -73,3 +82,57 @@ class QuantumCircuit(object):
         if text is not None:
             node.text(text, fontsize=fontsize)
         return node_list if return_list else node_list[0]
+
+    def block(self, boxbrush, linestart, lineend):
+        '''
+        strike out a block.
+
+        Args:
+            boxbrush (NodeBrush): a brush of style 'box', 'art.rbox' or something rectangular.
+            linestart (int): the starting line.
+            lineend (int): the ending line > starting line.
+
+        Returns:
+            context: context that return boxes.
+        '''
+        pad = 0.2 * self.line_space
+        class Context():
+            def __enter__(ctx, *args):
+                ctx.xstart = self.x
+                self.boxes = []
+                return self.boxes
+
+            def __exit__(ctx, type, value, tb):
+                if tb is not None:
+                    print(tb)
+                    return False
+                xend = self.x
+                xstart = ctx.xstart
+                boxbrush.size = ((xend - xstart)/2. + 2*pad, (lineend - linestart)/2.*self.line_space + 2*pad)
+                b = boxbrush >> ((xstart+xend)/2., -(linestart + lineend)/2.*self.line_space)
+                self.boxes.append(b)
+                return True
+        return Context()
+
+    def focus(self, lines):
+        '''
+        focus to target lines
+
+        Args:
+            lines (list): the target lines to put up.
+        '''
+        alllines = range(self.num_bit)
+        pin = NodeBrush('pin')
+        old_positions = []
+        for i in range(self.num_bit):
+            old_positions.append(self.gate(pin, i))
+
+        lmap = np.append(lines, np.setdiff1d(alllines, lines))
+        self.x += 0.8
+        pins = []
+        for opos, j in zip(old_positions, lmap):
+            pi = Pin(self.get_position(j))
+            self.node_dict[j].append(pi)
+            self.edge >> (opos, pi)
+            pins.append(pi)
+        return pins

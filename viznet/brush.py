@@ -32,13 +32,14 @@ class NodeBrush(Brush):
         'tiny': 0.09,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', zorder=0, rotate=0.):
+    def __init__(self, style, ax=None, color=None, size='normal', zorder=0, rotate=0., ls='-'):
         self.style = style
         self.size = size
         self.ax = ax
         self.color = color
         self.zorder = zorder
         self.rotate = rotate
+        self.ls = ls
 
     @property
     def _size(self):
@@ -71,6 +72,7 @@ class NodeBrush(Brush):
         ax = plt.gca() if self.ax is None else self.ax
 
         lw = node_setting['lw']
+        ls = self.ls
         edgecolor = node_setting['edgecolor']
         inner_fc = node_setting['inner_facecolor']
         inner_ec = node_setting['inner_edgecolor']
@@ -94,11 +96,11 @@ class NodeBrush(Brush):
             edgecolor = 'none'
 
         if geo == 'circle':
-            c = plt.Circle(xy, size, edgecolor=edgecolor,
+            c = plt.Circle(xy, size, edgecolor=edgecolor, ls=ls,
                            facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == 'square':
             xy = xy[0] - size, xy[1] - size
-            c = plt.Rectangle(xy, 2 * size, 2 * size, edgecolor=edgecolor,
+            c = plt.Rectangle(xy, 2 * size, 2 * size, edgecolor=edgecolor, ls=ls,
                               facecolor=color, lw=lw, zorder=self.zorder)
         elif geo[:8] == 'triangle':
             tri_path = np.array(
@@ -114,12 +116,12 @@ class NodeBrush(Brush):
             else:
                 raise
             tri_path = rotate(tri_path, self.rotate)
-            c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor,
+            c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor, ls=ls,
                             facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == 'diamond':
             dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
             dia_path = rotate(dia_path, self.rotate)
-            c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor,
+            c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor, ls=ls,
                             facecolor=color, lw=lw, zorder=self.zorder)
         elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
             remain = geo[9:]
@@ -139,15 +141,15 @@ class NodeBrush(Brush):
                 raise
             xy_ = xy[0] - width / 2., xy[1] - height / 2.
             if geo[:9] == 'rectangle':
-                c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor,
+                c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor, ls=ls,
                                   facecolor=color, lw=lw, zorder=self.zorder)
             else:
                 pad = 0.15*min(width, height)
                 c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=self.zorder,
-                                  edgecolor=edgecolor, facecolor=color, lw=lw,
+                                  edgecolor=edgecolor, facecolor=color, lw=lw, ls=ls,
                                   boxstyle=patches.BoxStyle("Round", pad=pad))
         elif geo == '':
-            c = plt.Circle(xy, 0, edgecolor='none', facecolor='none')
+            c = plt.Circle(xy, 0, edgecolor='none', facecolor='none', ls=ls)
         else:
             raise
         node = Node(c, self._style, ax=ax)
