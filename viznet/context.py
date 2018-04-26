@@ -35,7 +35,9 @@ class DynamicShow():
         self.ax = plt.gca()
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, exc_type, exc_val, traceback):
+        if traceback is not None:
+            return False
         plt.axis('equal')
         plt.axis('off')
         plt.tight_layout()
@@ -46,3 +48,4 @@ class DynamicShow():
             plt.savefig(self.filename, dpi=300)
         else:
             pdb.set_trace()
+        return True

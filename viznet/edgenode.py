@@ -101,7 +101,7 @@ class Node(EdgeNode):
 
         Args:
             direction ('top'\|'bottom'\|'left'\|'right'\|float): specifies the surface to place a pin, or theta to specift the direction.
-            align (:obj:`viznet.EdgeNode`\|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
+            align (:obj:`viznet.EdgeNode`\|tuple|None, default=None): align y-axis for 'left' and 'right' pin, x-axis for 'top' and 'bottom' pin.
 
         Returns:
             :obj:`viznet.Pin`: the pin for wire connection.
@@ -119,7 +119,7 @@ class Node(EdgeNode):
                     raise
         else:
             loc = intersection(self.path, direction,
-                               align=self.position if align is None else align.position)
+                               align=self.position if align is None else (align.position if isinstance(align, EdgeNode) else align))
         return Pin(loc)
 
     @property
@@ -235,38 +235,25 @@ class Edge(EdgeNode):
         return Pin(self.start_xy)
 
 
-class Pin(EdgeNode):
+class Pin(np.ndarray, EdgeNode):
     '''
     Simple Dot used for connecting wires.
-
-    Attributes:
-        position (tuple): the position of this dot.
     '''
+    __array_priority__ = 0  # if it is >0, __str__ will not work.
 
-    def __init__(self, position, ax=None):
-        self.position = position
-        self._ax = ax
+    def __new__(subtype, param, ax=None, *args, **kwargs):
+        if isinstance(param, subtype):
+            obj = param
+        else:
+            dim = np.ndim(param)
+            obj = np.asarray(param, *args, **kwargs).view(subtype)
+        obj._ax = ax
+        return obj
 
-    def __iter__(self):
-        return self.position.__iter__()
-
-    def __add__(self, target):
-        return Pin([a+b for a,b in zip(self, target)], ax=self.ax)
-
-    def __radd__(self, target):
-        return Pin([a+b for a,b in zip(self, target)], ax=self.ax)
-
-    def __iadd__(self, target):
-        self.position = [a+b for a,b in zip(self, target)]
-
-    def __mul__(self, target):
-        return Pin([a*target for a in self], self.ax)
-
-    def __rmul__(self, target):
-        return Pin([a*target for a in self], self.ax)
-
-    def __imul__(self, target):
-        self.position = [a*target for a in self]
+    def __array_finalize__(self, obj):
+        if obj is None:
+            return
+        self._ax = obj._ax if hasattr(obj, '_ax') else None
 
     @property
     def ax(self):
@@ -283,4 +270,8 @@ class Pin(EdgeNode):
         return 0.
 
     def get_connection_point(self, *arg, **kwargs):
-        return self.position
+        return tuple(self)
+
+    @property
+    def position(self):
+        return tuple(self)

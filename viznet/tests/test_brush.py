@@ -151,9 +151,39 @@ def test_pin():
 
 
 def test_connect():
+    edge = EdgeBrush('->', lw=2., color='r')
     with TestShow(grid=(2,3), num_node=2) as ts:
         ax, (n1, n2) = ts.ax((0, 0), num_node = 2, style='tn.mpo')
         edge >> (n1, n2)
+        edge >> (n1, (3, 3))
+
+def test_grid():
+    from ..grid import Grid
+    grid = Grid((2.0, 1.2), offset=(2,2))
+    brush = grid.node_brush('basic')
+    edge = EdgeBrush('->', lw=2., color='r')
+    box = NodeBrush('art.rbox')
+
+    # define an mpo
+    mpo10 = grid.node_brush('art.rbox', color='g').gridwise(1, 0)
+    mpo11 = grid.node_brush('art.rbox', color='g').gridwise(1, 1)
+
+    brushes = []
+    with DynamicShow() as ds:
+        for i in range(4):
+            for j in range(4):
+                brushes.append(brush >> (i, j))
+        for i in range(15):
+            edge >> (brushes[i], brushes[i+1])
+        grid.block(box, [1,1], [2,2])
+
+        # generate two mpos
+        A = mpo10 >> (4.5, 0)
+        B = mpo11 >> (4.5, 2.5)
+
+        # connect left legs.
+        edge >> (A.pin('top', align = grid[4, 0]), B.pin('bottom', align = grid[4, 0]))
+        edge >> (B.pin('bottom', align = grid[5, 0]), A.pin('top', align = grid[5, 0]))
 
 class TestShow():
     '''
@@ -189,10 +219,12 @@ class TestShow():
     def __enter__(self):
         plt.ion()
         plt.figure(figsize=self.figsize)
-        gs = plt.GridSpec(self.grid)
+        self.gs = plt.GridSpec(*self.grid)
         return self
 
-    def __exit__(self, *args):
+    def __exit__(self, exc_type, exc_val, traceback):
+        if traceback is not None:
+            return False
         plt.axis('equal')
         plt.axis('off')
         plt.tight_layout()
@@ -205,8 +237,10 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
+    test_pin()
+    test_tebd()
+    test_grid()
+    test_connect()
     test_ghz()
     test_edge()
     test_edgenode()
-    test_pin()
-    test_tebd()

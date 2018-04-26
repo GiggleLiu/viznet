@@ -1,30 +1,26 @@
-from viznet import theme, EdgeBrush, DynamicShow, Grid
+from viznet import theme, NodeBrush, EdgeBrush, DynamicShow
 
 
 def tebd():
-    # define a grid with grid space dx = 1, and dy = 1.
-    grid = Grid((1, 1))
-
-    # define a set of brushes.
-    # NodeBrush can place a node at some location, like `node_brush >> (x, y)`,
-    # and it will return a Node instance.
-    # EdgeBrush can connect two Nodes (or Pin as a special Node),
-    # like `edge_brush >> node_a, node_b`, and will return an Edge instance.
-    size = 'normal'
-    mps = grid.node_brush('tn.mps', size=size)
-    # invisible node can be used as a placeholder
-    invisible_mps = grid.node_brush('invisible', size=size)
-    # define a two site mpo, which will occupy 1 column, 0 rows.
-    mpo21 = grid.node_brush('tn.mpo', size=size).gridwise(1, 0)
-    edge = EdgeBrush('-', lw=2.)
-
     with DynamicShow((6, 4), filename='_tebd.png') as ds:
+        # define a set of brushes.
+        # NodeBrush can place a node at some location, like `node_brush >> (x, y)`,
+        # and it will return a Node instance.
+        # EdgeBrush can connect two Nodes (or Pin as a special Node),
+        # like `edge_brush >> node_a, node_b`, and will return an Edge instance.
+        size = 'normal'
+        mps = NodeBrush('tn.mps', ds.ax, size=size)
+        # invisible node can be used as a placeholder
+        invisible_mps = NodeBrush('invisible', ds.ax, size=size)
+        mpo21 = NodeBrush('tn.mpo21', ds.ax, size=size)
+        edge = EdgeBrush('---', ds.ax, lw=2.)
+
         # add a sequence of mps nodes, a store them in a list for future use.
         mps_list = []
         for i in range(8):
-            mps_list.append(mps >> grid[i, 0])
+            mps_list.append(mps >> (i, 0))
             mps_list[-1].text(r'$\sigma_%d$' % i, position='bottom')
-        mps_list.append(invisible_mps >> grid[i + 1, 0])
+        mps_list.append(invisible_mps >> (i + 1, 0))
 
         # add mpo and connect nodes
         for layer in range(4):
@@ -36,7 +32,8 @@ def tebd():
             for i, (mps_l, mps_r) in enumerate(zip(mps_list[start::2],
                                                    mps_list[start + 1::2])):
                 # place an two site mpo slightly above the center of two mps nodes
-                mpo_list.append(mpo21 >> grid[(mps_l.position + mps_r.position) / 2. + (0, layer + 1)])
+                mpo_list.append(mpo21 >> (mps_l.position +
+                                          mps_r.position) / 2. + (0, layer + 1))
                 if layer == 0:
                     # if this is the first mpo layer, connect mps and newly added mpo.
                     pin_l = mps_l

@@ -35,7 +35,7 @@ def blockfocus():
         for i in range(1, num_bit):
             handler.gate(basic, i, 'H')
         handler.x += 0.8
-        with handler.block(block, 0, num_bit-1, pad_x=0.05) as b:
+        with handler.block(block, 0, num_bit-1, pad_x=0.1) as b:
             handler.focus([4, 2, 1, 3])
         b[0].text('focus', 'top')
         handler.x += 0.8

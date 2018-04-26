@@ -24,11 +24,13 @@ class QuantumCircuit(object):
     Args:
         ax: matplotlib.pyplot.Axes.
         num_bit (int): number of bits.
+        y0 (float): the y offset.
     '''
     line_space = 1.0
 
-    def __init__(self, num_bit, ax=None, x=0,  **kwargs):
+    def __init__(self, num_bit, ax=None, x=0, y0=0, **kwargs):
         self.x = x
+        self.y0 = y0
         self.node_dict = dict(
             zip(range(num_bit), [[Pin(self.get_position(i))] for i in range(num_bit)]))
         self.edge = EdgeBrush('---', ax, **kwargs)
@@ -37,9 +39,10 @@ class QuantumCircuit(object):
     def num_bit(self):
         return len(self.node_dict)
 
-    def get_position(self, line):
+    def get_position(self, line, x=None):
         '''get the position of specific line'''
-        return (self.x, -line*self.line_space)
+        if x is None: x=self.x
+        return (x, self.y0-line*self.line_space)
 
     def gate(self, brush, position, text=None, fontsize=18):
         '''
@@ -83,7 +86,7 @@ class QuantumCircuit(object):
             node.text(text, fontsize=fontsize)
         return node_list if return_list else node_list[0]
 
-    def block(self, boxbrush, linestart, lineend, pad_x=0.2, pad_y=0.2):
+    def block(self, boxbrush, linestart, lineend, pad_x=0.35, pad_y=0.35):
         '''
         strike out a block.
 
@@ -109,7 +112,7 @@ class QuantumCircuit(object):
                     return False
                 xend = self.x
                 xstart = ctx.xstart
-                boxbrush.size = ((xend - xstart)/2. + 2*pad_x, (lineend - linestart)/2.*self.line_space + 2*pad_y)
+                boxbrush.size = ((xend - xstart)/2. + pad_x, (lineend - linestart)/2.*self.line_space + pad_y)
                 b = boxbrush >> ((xstart+xend)/2., -(linestart + lineend)/2.*self.line_space)
                 self.boxes.append(b)
                 return True

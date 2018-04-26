@@ -42,7 +42,7 @@ NODE_THEME_DICT = {
     'tn.tri_d': (BLACK, 'triangle-d', 'none'),
     'tn.tri_l': (BLACK, 'triangle-l', 'none'),
     'tn.tri_r': (BLACK, 'triangle-r', 'none'),
-    'tn.mpo': (BLACK, 'square', 'none'),
+    'tn.mpo': (BLACK, 'rectangle', 'none'),
     'tn.mpo21': (BLACK, 'rectangle-2-1', 'none'),
     'tn.mpo12': (BLACK, 'rectangle-1-2', 'none'),
     'tn.dia': (BLACK, 'diamond', 'none'),

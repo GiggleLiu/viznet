@@ -12,7 +12,7 @@ def ghz4():
         END = NodeBrush('qc.end', ds.ax)
         M = NodeBrush('qc.measure', ds.ax)
 
-        handler = QuantumCircuit(num_bit=4)
+        handler = QuantumCircuit(num_bit=4, y0=2.)
         handler.x += 0.5
         handler.gate(basic, 0, 'X')
         for i in range(1, num_bit):
@@ -37,7 +37,7 @@ def ghz4():
 
         # text |0>s
         for i in range(num_bit):
-            plt.text(-0.5, -i, r'$\left\vert0\right\rangle_{Q_%d}$' %
+            plt.text(*handler.get_position(i, x=-0.5), r'$\left\vert0\right\rangle_{Q_%d}$' %
                      i, va='center', ha='center', fontsize=18)
 
 

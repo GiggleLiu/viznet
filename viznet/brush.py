@@ -4,7 +4,7 @@ import re
 import matplotlib.pyplot as plt
 from matplotlib import patches
 
-from .edgenode import Edge, Node
+from .edgenode import Edge, Node, Pin
 from .theme import NODE_THEME_DICT, BLUE
 from .utils import rotate
 from .setting import node_setting, arrow_setting, grid_setting
@@ -81,7 +81,7 @@ class NodeBrush(Brush):
 
         # the size of node
         size = self._size
-        if isinstance(size, tuple):
+        if isinstance(size, (tuple, list, np.ndarray)):
             if geo in ['rectangle', 'routangle']:
                 size = (size[0] * basesize, size[1] * basesize)
             else:
@@ -238,7 +238,7 @@ class EdgeBrush(Brush):
         connect start node and end node
 
         Args:
-            startend (tuple): start node and end node.
+            startend (tuple): start node (position) and end node (position).
 
         Returns:
             :obj:`Edge`: edge object.
@@ -248,12 +248,20 @@ class EdgeBrush(Brush):
         head_length = arrow_setting['head_length'] * lw
         head_width = arrow_setting['head_width'] * lw
         edge_ratio = arrow_setting['edge_ratio']
+
+        # get start position and end position
         start, end = startend
+        if isinstance(start, tuple):
+            start = Pin(start)
+        if isinstance(end, tuple):
+            end = Pin(end)
         sxy, exy = np.array(start.position), np.array(end.position)
         d = exy - sxy
         unit_d = d / np.linalg.norm(d)
         sxy = start.get_connection_point(unit_d)
         exy = end.get_connection_point(-unit_d)
+
+        # the distance and unit distance
         d = np.asarray(exy) - sxy
         unit_d = d / np.linalg.norm(d)
 
