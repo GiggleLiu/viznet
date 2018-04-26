@@ -8,7 +8,7 @@ ldots_span = 1.7
 dy = 0.9
 edge = viznet.EdgeBrush('-')
 dot = viznet.NodeBrush('pin')
-hbar = viznet.NodeBrush('tn.mpo21', color=facecolor)
+hbar = viznet.NodeBrush('tn.mpo', color=facecolor); hbar.size = (0.7, 0.3)
 box = viznet.NodeBrush('box', color=facecolor, size=(0.8,0.4))
 mpo = viznet.NodeBrush('tn.mpo', color=facecolor)
 invis = viznet.NodeBrush('invisible')

@@ -105,7 +105,8 @@ def test_tebd():
         size = 'large'
         mps = NodeBrush('tn.mps', ds.ax, size=size)
         invisible_mps = NodeBrush('invisible', ds.ax, size=size)
-        mpo2 = NodeBrush('tn.mpo21', ds.ax, size=size)
+        mpo2 = NodeBrush('tn.mpo', ds.ax, size=size)
+        mpo2.size = (0.7, 0.3)
         edge = EdgeBrush('->-', ds.ax, lw=2.)
         undirected_edge = EdgeBrush('---', ds.ax, lw=2.)
 
@@ -139,7 +140,7 @@ def test_pin():
     with DynamicShow() as ds:
         # define a set of brushes.
         size = 'large'
-        mpo = NodeBrush('tn.mpo21', ds.ax, size=size)
+        mpo = NodeBrush('tn.mpo', ds.ax, size=size)
         mps = NodeBrush('tn.mps', ds.ax, size=size)
         edge1 = EdgeBrush('->', ds.ax, lw=2., color='r')
         edge2 = EdgeBrush('<->', ds.ax, lw=2., color='r')

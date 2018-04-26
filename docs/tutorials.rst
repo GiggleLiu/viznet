@@ -79,7 +79,8 @@ Let's continue the above example,
 
 .. code-block:: python
 
-    >>     mpo21 = NodeBrush('tn.mpo21', ax=d.ax, size='normal')
+    >>     mpo21 = NodeBrush('tn.mpo', ax=d.ax, size='normal')
+    >>     mpo21.size = (0.7, 0.3)
     >>     node3 = mpo21 >> (1.5, 1.0)
     >>     left_bottom_pin = node3.pin('bottom', align=node1)
     >>     edge >> (left_bottom_pin, node1)

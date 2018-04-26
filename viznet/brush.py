@@ -7,7 +7,7 @@ from matplotlib import patches
 from .edgenode import Edge, Node, Pin
 from .theme import NODE_THEME_DICT, BLUE
 from .utils import rotate
-from .setting import node_setting, arrow_setting, grid_setting
+from .setting import node_setting, arrow_setting
 
 
 class Brush(object):
@@ -70,6 +70,7 @@ class NodeBrush(Brush):
         if self.color is not None:
             color = self.color
         ax = plt.gca() if self.ax is None else self.ax
+        is_rect = geo[:9] == 'rectangle'
 
         lw = node_setting['lw']
         ls = self.ls
@@ -82,11 +83,11 @@ class NodeBrush(Brush):
         # the size of node
         size = self._size
         if isinstance(size, (tuple, list, np.ndarray)):
-            if geo in ['rectangle', 'routangle']:
+            if is_rect:
                 size = (size[0] * basesize, size[1] * basesize)
             else:
                 raise
-        elif geo in ['routangle', 'rectangle'] and not isinstance(size, tuple):
+        elif is_rect and not isinstance(size, tuple):
             size = (size * basesize,) * 2
         else:
             size = size * basesize
@@ -123,31 +124,23 @@ class NodeBrush(Brush):
             dia_path = rotate(dia_path, self.rotate)
             c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor, ls=ls,
                             facecolor=color, lw=lw, zorder=self.zorder)
-        elif geo[:9] == 'rectangle' or geo[:9] == 'routangle':
+        elif is_rect or geo == 'golden':
             remain = geo[9:]
-            match_res = re.match(r'-(\d)-(\d)', remain)
-            if match_res:
-                width = size * 2 + \
-                    grid_setting['grid_width'] * (int(match_res.group(1)) - 1)
-                height = size * 2 + \
-                    grid_setting['grid_height'] * (int(match_res.group(2)) - 1)
-            elif remain == '-golden':
+            if geo == 'golden':
                 height = size * 2
                 width = height * 1.3
-            elif remain == '':
+            else:
                 width = size[0] * 2
                 height = size[1] * 2
-            else:
-                raise
             xy_ = xy[0] - width / 2., xy[1] - height / 2.
-            if geo[:9] == 'rectangle':
-                c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor, ls=ls,
-                                  facecolor=color, lw=lw, zorder=self.zorder)
-            else:
+            if remain == '-round':
                 pad = 0.15*min(width, height)
                 c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=self.zorder,
                                   edgecolor=edgecolor, facecolor=color, lw=lw, ls=ls,
                                   boxstyle=patches.BoxStyle("Round", pad=pad))
+            else:
+                c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor, ls=ls,
+                                  facecolor=color, lw=lw, zorder=self.zorder)
         elif geo == '':
             c = plt.Circle(xy, 0, edgecolor='none', facecolor='none', ls=ls)
         else:
@@ -255,7 +248,7 @@ class EdgeBrush(Brush):
             start = Pin(start)
         if isinstance(end, tuple):
             end = Pin(end)
-        sxy, exy = np.array(start.position), np.array(end.position)
+        sxy, exy = np.asarray(start.position), np.asarray(end.position)
         d = exy - sxy
         unit_d = d / np.linalg.norm(d)
         sxy = start.get_connection_point(unit_d)
@@ -324,5 +317,12 @@ class EdgeBrush(Brush):
 
         return Edge(arr, sxy, exy, start, end, ax=ax)
 
-def _arrow_loc(lines, segs):
+class CLinkBrush(Brush):
+    '''a C style link between two edges.'''
+    pass
+
+def basicline_handler(theme_code):
+    pass
+
+def basicnode_handler(theme_code):
     pass

@@ -22,7 +22,7 @@ class Grid(object):
     Args:
         dxy (tuple): space in x, y directions.
         ax: matplotlib.pyplot.Axes.
-        num_bit (int): number of bits.
+        offset (tuple): the global offset.
     '''
     line_space = 1.0
 
@@ -31,10 +31,16 @@ class Grid(object):
         self.offset = np.asarray(offset)
 
     def __getitem__(self, ij):
-        '''get the position of specific site.'''
+        '''get the pin of specific site.'''
         return Pin(self.offset+self.dxy*ij)
 
     def node_brush(self, *args, **kwargs):
+        '''
+        get the brush defined on grid, location/size of this node is relative to grid space. see `NodeBrush` for parameter details.
+        
+        Returns:
+            GridNodeBrush: a NodeBrush defined on Grid.
+        '''
         brush = GridNodeBrush(self, *args, **kwargs)
         return brush
 
@@ -44,13 +50,13 @@ class Grid(object):
 
         Args:
             brush (NodeBrush): a brush of style 'box', 'art.rbox' or something rectangular.
-            linestart (int): the starting line.
-            lineend (int): the ending line > starting line.
+            ij1 (tuple): left-bottom site.
+            ij2 (tuple): top-right site.
             pad_x (float): x padding between gates and box.
             pad_y (float): y padding between gates and box.
 
         Returns:
-            context: context that return boxes.
+            Node: the node of Box.
         '''
         xy = self[ij1]
         xy2 = self[ij2]
@@ -71,7 +77,7 @@ class GridNodeBrush(NodeBrush):
 
     def gridwise(self, i, j):
         '''
-        resize a node grid-wise
+        resize a rectangular node grid-wise
 
         Args:
             i (int): number of columns.

@@ -43,19 +43,17 @@ NODE_THEME_DICT = {
     'tn.tri_l': (BLACK, 'triangle-l', 'none'),
     'tn.tri_r': (BLACK, 'triangle-r', 'none'),
     'tn.mpo': (BLACK, 'rectangle', 'none'),
-    'tn.mpo21': (BLACK, 'rectangle-2-1', 'none'),
-    'tn.mpo12': (BLACK, 'rectangle-1-2', 'none'),
     'tn.dia': (BLACK, 'diamond', 'none'),
 
     'qc.basic': (NONE, 'square', 'none'),
-    'qc.wide': (NONE, 'rectangle-golden', 'none'),
+    'qc.wide': (NONE, 'golden', 'none'),
     'qc.C': (None, '', 'dot'),
     'qc.cross': (None, '', 'cross'),
     'qc.NOT': (NONE, 'circle', 'plus'),
-    'qc.measure': (NONE, 'rectangle-golden', 'measure'),
+    'qc.measure': (NONE, 'golden', 'measure'),
     'qc.end': (None, '', 'vbar'),
 
-    'art.rbox': (NONE, 'routangle', 'none'),
+    'art.rbox': (NONE, 'rectangle-round', 'none'),
 }
 '''
 A table of theme for nodes.

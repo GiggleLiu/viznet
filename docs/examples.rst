@@ -37,7 +37,7 @@ The output is
 .. image:: images/feed_forward_example.png
     :align: center
 
-The third example is tensor network TEBD algorithm
+The third example is tensor network TEBD algorithm, it is also a good example to learn the grid system.
 
 .. literalinclude:: ../apps/tn/tebd.py
 	:tab-width: 2

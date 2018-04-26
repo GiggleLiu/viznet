@@ -3,7 +3,6 @@ contains default settings for annotate, node, arrow and grid,
     * annotate_setting
     * node_setting
     * arrow_setting
-    * grid_setting
 
 Example:
     # disable edge for nodes
@@ -42,12 +41,4 @@ arrow_setting = {
 }
 '''
 global arrow style setting
-'''
-
-grid_setting = {
-    'grid_width': 1,
-    'grid_height': 1,
-}
-'''
-plot grid (default space between two nodes) setting
 '''
