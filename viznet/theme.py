@@ -38,10 +38,6 @@ NODE_THEME_DICT = {
 
     'tn.mps': (BLACK, 'circle', 'none'),
     'tn.tri': (BLACK, 'triangle', 'none'),
-    'tn.tri_u': (BLACK, 'triangle-u', 'none'),
-    'tn.tri_d': (BLACK, 'triangle-d', 'none'),
-    'tn.tri_l': (BLACK, 'triangle-l', 'none'),
-    'tn.tri_r': (BLACK, 'triangle-r', 'none'),
     'tn.mpo': (BLACK, 'rectangle', 'none'),
     'tn.dia': (BLACK, 'diamond', 'none'),
 
@@ -52,6 +48,7 @@ NODE_THEME_DICT = {
     'qc.NOT': (NONE, 'circle', 'plus'),
     'qc.measure': (NONE, 'golden', 'measure'),
     'qc.end': (None, '', 'vbar'),
+    'qc.box': (NONE, 'rectangle', 'none'),
 
     'art.rbox': (NONE, 'rectangle-round', 'none'),
 }

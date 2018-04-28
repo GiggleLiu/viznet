@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pdb
 
-from ..brush import NodeBrush, EdgeBrush
+from ..brush import NodeBrush, EdgeBrush, CLinkBrush
 from ..edgenode import Pin
 from ..context import DynamicShow
 from ..circuit import QuantumCircuit
@@ -34,7 +34,8 @@ def test_edgenode():
         ebrush.style = '->-.....->-'
         e3 = ebrush >> (node4, node3)
         e3.text('green-bottom-arrow', 'bottom')
-        brush.style = 'tn.tri_d'
+        brush.style = 'tn.tri'
+        brush.rotate = np.pi
         brush.size = 'tiny'
         ebrush.lw = 1
         node5 = brush >> (1.2, 0.)
@@ -44,15 +45,14 @@ def test_edgenode():
 
 def test_ghz():
     num_bit = 4
+    handler = QuantumCircuit(num_bit=4)
+    basic = NodeBrush('qc.basic')
+    C = NodeBrush('qc.C')
+    NOT = NodeBrush('qc.NOT', size='small')
+    END = NodeBrush('qc.end')
+    M = NodeBrush('qc.measure')
+    BOX = handler.boxbrush(4)
     with DynamicShow() as ds:
-        basic = NodeBrush('qc.basic', ds.ax)
-        C = NodeBrush('qc.C', ds.ax)
-        NOT = NodeBrush('qc.NOT', ds.ax, size='small')
-        END = NodeBrush('qc.end', ds.ax)
-        M = NodeBrush('qc.measure', ds.ax)
-        BOX = NodeBrush('box', ds.ax, size=(0.5, 2.0))
-
-        handler = QuantumCircuit(num_bit=4)
         handler.x += 0.5
         handler.gate(basic, 0, 'X')
         for i in range(1, num_bit):
@@ -85,13 +85,23 @@ def test_ghz():
 
 def test_edge():
     edge_list = ['-', '..-', '->--', '<=>', '===->', '->-....-<-']
-    with DynamicShow(figsize=(6, 3)) as ds:
+    clink_list = ['->', '<->', '>.>']
+    offsets = [(), (-0.2, 0.2), (0.15, 0.3, -0.3)]
+    with DynamicShow(figsize=(8, 6)) as ds:
         for i, style in enumerate(edge_list):
             edge = EdgeBrush(style, ds.ax)
             p1 = Pin((0, -i * 0.1))
             p2 = Pin((1, -i * 0.1))
-            edge >> (p1, p2)
-            p1.text(style, 'left')
+            ei = edge >> (p1, p2)
+            p1.text('"%s"'%style, 'left')
+            if i == 0: ei.text('EdgeBrush', 'top')
+        for j, (style, offset) in enumerate(zip(clink_list, offsets)):
+            p1 = Pin((0, -i * 0.1 - (j+1)*0.3))
+            p2 = Pin((1, -i * 0.1 - (j+1)*0.3))
+            clink = CLinkBrush(style, color='r', roundness=0.05, offsets=offset)
+            ei = clink >> (p1, p2)
+            if j == 0: ei.text('CLinkBrush', 'top')
+            p1.text('"%s", %s'%(style, str(offset)), 'left')
 
 
 def test_tebd():
@@ -238,10 +248,10 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
+    test_edge()
+    test_ghz()
+    test_edgenode()
     test_pin()
     test_tebd()
     test_grid()
     test_connect()
-    test_ghz()
-    test_edge()
-    test_edgenode()

@@ -140,3 +140,14 @@ class QuantumCircuit(object):
             self.edge >> (opos, pi)
             pins.append(pi)
         return pins
+
+    def boxbrush(self, num_line, style='qc.box', width=0.5, **kwargs):
+        '''
+        create a box brush that across multiple lines.
+
+        Args:
+            num_line (int): number of lines.
+            width (float): the width.
+        '''
+        bb = NodeBrush(style, size=(width, (num_line-1)*self.line_space/2.+0.3), **kwargs)
+        return bb

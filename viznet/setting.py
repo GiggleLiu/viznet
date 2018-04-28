@@ -2,7 +2,7 @@
 contains default settings for annotate, node, arrow and grid,
     * annotate_setting
     * node_setting
-    * arrow_setting
+    * edge_setting
 
 Example:
     # disable edge for nodes
@@ -34,11 +34,11 @@ node_setting = {
 global node style setting
 '''
 
-arrow_setting = {
-    'head_width': 0.04,
-    'head_length': 0.06,
-    'edge_ratio': 0.25,
+edge_setting = {
+    'arrow_head_width': 0.04,
+    'arrow_head_length': 0.06,
+    'doubleline_space': 0.016,
 }
 '''
-global arrow style setting
+global edge style setting
 '''

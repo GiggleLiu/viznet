@@ -64,16 +64,29 @@ class Node(EdgeNode):
     A patch with shape and style, defines the allowed connection points, and create pins for connection.
 
     Attributes:
-        obj(Patch): matplotlib patch object.
+        objs(list): a list matplotlib patch object, with the first the primary object.
         style (tuple): style.
-        ax (:obj:`Axes`): matplotlib Axes instance.
     '''
 
-    def __init__(self, obj, style, ax):
+    def __init__(self, objs, style):
         self.style = style
-        self.obj = obj
-        self.ax = ax
-        self.path = obj.get_verts()
+        self.objs = objs
+        obj = objs[0]
+        trans = obj.get_transform()
+        path = trans.transform_path(obj.get_path())
+        if obj.axes is not None:
+            path = obj.axes.transData.inverted().transform_path(path)
+        self.path = path.vertices
+
+    @property
+    def obj(self):
+        '''get the primary object.'''
+        return self.objs[0]
+
+    @property
+    def ax(self):
+        '''get the primary object.'''
+        return self.obj.axes
 
     @property
     def _offset_dict(self):
@@ -208,8 +221,8 @@ class Edge(EdgeNode):
         self.obj = obj
         self.start = start
         self.end = end
-        self.start_xy = start_xy
-        self.end_xy = end_xy
+        self.start_xy = np.asarray(start_xy)
+        self.end_xy = np.asarray(end_xy)
         self.ax = ax
 
     @property
