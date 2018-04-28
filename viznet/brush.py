@@ -11,8 +11,10 @@ from .theme import NODE_THEME_DICT, BLUE
 from .utils import rotate
 from .setting import node_setting, edge_setting
 
+__all__ = ['Brush', 'NodeBrush', 'EdgeBrush', 'CLinkBrush']
 
 class Brush(object):
+    '''Base Class of brushes.'''
     pass
 
 

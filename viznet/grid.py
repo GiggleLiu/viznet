@@ -17,6 +17,8 @@ from .edgenode import Pin
 from .brush import EdgeBrush, NodeBrush
 from .setting import node_setting
 
+__all__ = ['Grid', 'GridNodeBrush']
+
 class Grid(object):
     '''
     Args:

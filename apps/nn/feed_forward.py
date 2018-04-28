@@ -1,7 +1,3 @@
-'''
-Plots for zoo of nets.
-'''
-
 import numpy as np
 from viznet import connecta2a, node_sequence, NodeBrush, EdgeBrush, DynamicShow
 

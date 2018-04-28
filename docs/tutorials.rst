@@ -33,15 +33,18 @@ The following code examplify how to draw two nodes and connection them using a d
 
     >> from viznet import NodeBrush, EdgeBrush, DynamicShow
     >> with DynamicShow() as d:
-    >>     brush = NodeBrush('nn.input', ax=d.ax, size='normal')
+    >>     brush = NodeBrush('nn.input', size='normal')
     >      node1 = brush >> (1,0)  # paint a node at (x=1, y=0)
     >>     node2 = brush >> (2,0)
-    >>     edge = EdgeBrush('->-', ax=d.ax, lw=2)
+    >>     edge = EdgeBrush('->-', lw=2)
     >>     edge >> (node1, node2)  # connect two nodes
     >>     node1.text('First', 'center', fontsize=18)  # add text to node1
     >>     node2.text('Second', 'center', fontsize=18)
 
-:class:`DynamicShow` is a utility class that automatically equalize axes and then remove axes to make graph clean. :class:`NodeBrush` take the style string as its first argument, besides `basic` and `invisible` styles, styles for neural network (nn.) and tensor network (tn.) are defined as
+:class:`DynamicShow` is a utility class that automatically equalize axes and then remove axes to make graph clean. :class:`NodeBrush` take the style string as its first argument, besides elementary styles like `basic` and `invisible` styles, styles for neural network (nn.) and tensor network (tn.) are defined as
+
+.. image:: images/theme_list.png
+    :align: center
 
 .. image:: images/nn_theme_list.png
     :align: center
@@ -52,7 +55,7 @@ The following code examplify how to draw two nodes and connection them using a d
 .. image:: images/qc_theme_list.png
     :align: center
 
-:class:`EdgeBrush` take a string as style, this must must be composed of characters in [ - | . | = | > | < ],
+:class:`EdgeBrush` (or :class:`CLinkBrush`, the curvy edge class) take a string as style, this must must be composed of characters in [ - | . | = | > | < ],
         - '-': solid line,
         - '=': double solid line,
         - '.': dashed line,
@@ -64,9 +67,9 @@ For example,
 .. image:: images/lines.png
     :align: center
 
-Also, you can set color and width of your line for this :class:`EdgeBrush` by passing arguments into construction method.
+In this example, the :class:`CLinkBrush` instances use the roundness of `0.2` (default is `0`) to round the turning points, while the grow directions of lines are controled by offsets.
 
-:obj:`ds.ax` is nothing but a :obj:`matplotlib.Axes` instance, use `plt.gca()` by default. Now, your canvas looks like
+Also, you can set color and width of your line for this :class:`EdgeBrush` by passing arguments into construction method.
 
 .. image:: images/fig0.png
     :align: center
@@ -79,7 +82,7 @@ Let's continue the above example,
 
 .. code-block:: python
 
-    >>     mpo21 = NodeBrush('tn.mpo', ax=d.ax, size='normal')
+    >>     mpo21 = NodeBrush('tn.mpo', size='normal')
     >>     mpo21.size = (0.7, 0.3)
     >>     node3 = mpo21 >> (1.5, 1.0)
     >>     left_bottom_pin = node3.pin('bottom', align=node1)
@@ -90,11 +93,13 @@ Now, your canvas looks like
 .. image:: images/fig1.png
     :align: center
 
-Cluster-wise operations and quantum circuits
+More
 ----------------------------------------------
 Cluster operations like one to one connections and all to all connections between different layers in neural network are frequently used APIs.
 
 For a quantum circuit, we also have a facility :class:`viznet.QuantumCircuit` to help us build it easily.
+
+To learn more, you may go through :download:`this notebook <viznet_basic.ipynb>`.
 
 Read some examples under `path/to/viznet/apps/nn/` and `path/to/viznet/apps/qc/` to learn about them.
 Also, :ref:`examples` chapter of this documentation gives some examples.
