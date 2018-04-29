@@ -65,13 +65,13 @@ class QuantumCircuit(object):
         for b, line, t in zip(brush, position, text):
             # get the position to place bits, and the aplied bits.
             if isinstance(line, slice):
-                y = (line.stop - line.start)/2. + 0.5
+                y = (line.stop + line.start)/2. - 0.5
                 line = line_all[line]
             elif hasattr(line, '__len__'):
                 if len(line) == 1:
                     line = y = line[0]
                 else:
-                    y = np.mean(position)
+                    y = np.mean(line)
             else:
                 y = line
 

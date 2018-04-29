@@ -16,14 +16,17 @@ def test_codes():
     handler.x += 0.6
     with DynamicShow() as ds:
         vizcode(handler, '/C(2)--/NOT(3);')
+        vizcode(handler, '/G(1:3,$x,y$, 0.3&0.3)')
+        vizcode(handler, '/Swap(3&5);')
         vizcode(handler, '/End(0:6)')
 
 def test_parse():
     with open(os.path.dirname(__file__)+'/test.yaml') as f:
         datamap = yaml.safe_load(f)
     print(datamap)
-    parsecircuit(datamap)
+    with DynamicShow(figsize=(6,6)) as ds:
+        parsecircuit(datamap)
 
 if __name__ == '__main__':
+    test_parse()
     test_codes()
-    #test_parse()
