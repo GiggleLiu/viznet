@@ -44,46 +44,59 @@ class QuantumCircuit(object):
         if x is None: x=self.x
         return (x, self.y0-line*self.line_space)
 
-    def gate(self, brush, position, text=None, fontsize=18):
+    def gate(self, brush, position, text='', fontsize=18):
         '''
         place a gate at specific position.
         '''
         if not hasattr(brush, '__len__'):
-            brush = (brush,)
+            brush = [brush]
+            position = [position]
+            text = [text]
             return_list = False
         else:
             return_list = True
-        if not hasattr(position, '__len__'):
-            position = (position,)
-        if len(brush) == 1 and len(position) > 1:
-            position_node = (np.mean(position),)
-        elif len(brush) > 1 and len(position) > 1 and len(brush) != len(position):
-            raise ValueError()
-        else:
-            position_node = position
+            if not isinstance(text, (list, tuple)):
+                text = [text]*len(brush)
+        if len(brush) != len(position) or len(text)!=len(brush):
+            raise ValueError('number of gate-position-text mismatch!')
+        line_all = range(self.num_bit)
 
         node_list = []
-        for b, y in zip(brush, position_node):
+        for b, line, t in zip(brush, position, text):
+            # get the position to place bits, and the aplied bits.
+            if isinstance(line, slice):
+                y = (line.stop - line.start)/2. + 0.5
+                line = line_all[line]
+            elif hasattr(line, '__len__'):
+                if len(line) == 1:
+                    line = y = line[0]
+                else:
+                    y = np.mean(position)
+            else:
+                y = line
+
+            # place the node
             node = b >> self.get_position(y)
 
             # connect nodes
             if len(node_list) >= 1:
                 self.edge >> (node_list[-1], node)
-            if position_node is position:
+            if y is line:
                 self.edge >> (self.node_dict[y][-1], node)
                 self.node_dict[y].append(node)
             else:
-                for y in position:
-                    prenode = self.node_dict[y][-1]
+                for yline in line:
+                    prenode = self.node_dict[yline][-1]
                     lnode = node.pin('left', align=prenode)
                     rnode = node.pin('right', align=prenode)
-                    self.node_dict[y].append(lnode)
-                    self.node_dict[y].append(rnode)
+                    self.node_dict[yline].append(lnode)
+                    self.node_dict[yline].append(rnode)
                     self.edge >> (prenode, lnode)
             node_list.append(node)
 
-        if text is not None:
-            node.text(text, fontsize=fontsize)
+            # text node
+            if text != '':
+                node.text(t, fontsize=fontsize)
         return node_list if return_list else node_list[0]
 
     def block(self, boxbrush, linestart, lineend, pad_x=0.35, pad_y=0.35):

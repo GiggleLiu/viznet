@@ -18,3 +18,10 @@ Meta Informations used for Display
 * OFFSETX: float
 * TEXT: int, str
 * VISIBLE: bool
+
+## Reserved strings
+* "--"
+* ","
+* "&"
+* ";"
+* "/COMMAND"

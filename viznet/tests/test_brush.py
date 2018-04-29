@@ -247,10 +247,10 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
+    test_ghz()
     test_grid()
     test_connect()
     test_tebd()
     test_edge()
-    test_ghz()
     test_edgenode()
     test_pin()
