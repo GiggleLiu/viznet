@@ -1,0 +1,56 @@
+PLOTLEVEL: 2
+DISP0: true
+name: "Circuit"
+blocks:
+    -
+        VISIBLE: true
+        name: "Rotation"
+        nline: 7
+        blocks:
+            - "X; 1"
+            - "$\\sqrt(2)$; 2"
+            - "/C; 3"
+            - "/Swap; 4, 7"
+            - "/Measure; 6"
+            - "/NC; 7"
+            - "/NOT; 5"
+            - "/Focus; 4, 2, 3,1"
+            -
+                VISIBLE: false
+                name: "R1"
+                nline: 4
+                blocks:
+                    - "Rot; 1"
+                    - "/Block; 2-4; Math"
+
+    -
+        VISIBLE: true
+        blocks:
+            - block:
+                VISIBLE: false
+                name: "R1"
+                nline: 4
+                blocks:
+                    - "Rot; 1"
+                    - "/Block; 2-3; Math"
+    - "/Measure; all"
+
+    -  # v2
+        VISIBLE: true
+        name: "Rotation"
+        nline: 6
+        blocks:
+            - ["X", 1]
+            - ["$\\sqrt(2)$" ,2]
+            - ["/C", 2]
+            - ["/X", 3]
+            - ["/Measure", 4]
+            - ["/NC", 5]
+            - ["/NOT", 6]
+            - subblock:
+                VISIBLE: false
+                name: "R1"
+                nline: 1
+                blocks:
+                    - ""
+                    - "/Block-2-Math"

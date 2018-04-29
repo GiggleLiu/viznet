@@ -8,8 +8,8 @@ DISTNAME = 'viznet'
 DESCRIPTION = descr
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
     LONG_DESCRIPTION = f.read()
-MAINTAINER = 'Giggle Liu',
-MAINTAINER_EMAIL = 'cacate0129@gmail.com',
+MAINTAINER = 'Giggle Liu'
+MAINTAINER_EMAIL = 'cacate0129@gmail.com'
 URL = 'https://github.com/GiggleLiu/viznet'
 LICENSE = 'MIT'
 DOWNLOAD_URL = URL

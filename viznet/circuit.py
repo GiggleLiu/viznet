@@ -91,7 +91,7 @@ class QuantumCircuit(object):
         strike out a block.
 
         Args:
-            boxbrush (NodeBrush): a brush of style 'box', 'art.rbox' or something rectangular.
+            boxbrush (NodeBrush): a brush of style 'box' or something rectangular.
             linestart (int): the starting line.
             lineend (int): the ending line > starting line.
             pad_x (float): x padding between gates and box.

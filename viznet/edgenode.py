@@ -144,7 +144,7 @@ class Node(EdgeNode):
         elif isinstance(self.obj, (plt.Rectangle, patches.FancyBboxPatch)):
             x, y = self.obj.get_x(), self.obj.get_y()
             return np.array([x + self.obj.get_width() / 2., y + self.obj.get_height() / 2.])
-        elif isinstance(self.obj, plt.Polygon):
+        elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
             return self.path[:-1].mean(axis=0)
         else:
             raise
@@ -158,7 +158,7 @@ class Node(EdgeNode):
             return self.obj.get_height()
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_height() + 2*self.obj.get_boxstyle().pad
-        elif isinstance(self.obj, plt.Polygon):
+        elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
             ys = self.path[:-1, 1]
             return abs(ys - ys.mean()).max() * 2
         else:
@@ -173,7 +173,7 @@ class Node(EdgeNode):
             return self.obj.get_width()
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_width() + 2*self.obj.get_boxstyle().pad
-        elif isinstance(self.obj, plt.Polygon):
+        elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
             xs = self.path[:-1, 0]
             return abs(xs - xs.mean()).max() * 2
         else:

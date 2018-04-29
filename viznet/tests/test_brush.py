@@ -113,10 +113,9 @@ def test_tebd():
     with DynamicShow() as ds:
         # define a set of brushes.
         size = 'large'
-        mps = NodeBrush('tn.mps', ds.ax, size=size)
+        mps = NodeBrush('tn.mps', ds.ax, size=0.3)
         invisible_mps = NodeBrush('invisible', ds.ax, size=size)
-        mpo2 = NodeBrush('tn.mpo', ds.ax, size=size)
-        mpo2.size = (0.7, 0.3)
+        mpo2 = NodeBrush('tn.mpo', ds.ax, size=(0.7, 0.25))
         edge = EdgeBrush('->-', ds.ax, lw=2.)
         undirected_edge = EdgeBrush('---', ds.ax, lw=2.)
 
@@ -173,11 +172,11 @@ def test_grid():
     grid = Grid((2.0, 1.2), offset=(2,2))
     brush = grid.node_brush('basic')
     edge = EdgeBrush('->', lw=2., color='r')
-    box = NodeBrush('art.rbox')
+    box = NodeBrush('box', roundness=0.2)
 
     # define an mpo
-    mpo10 = grid.node_brush('art.rbox', color='g').gridwise(1, 0)
-    mpo11 = grid.node_brush('art.rbox', color='g').gridwise(1, 1)
+    mpo10 = grid.node_brush('box', color='g', roundness=0.2).gridwise(1, 0)
+    mpo11 = grid.node_brush('box', color='g', roundness=0.2).gridwise(1, 1)
 
     brushes = []
     with DynamicShow() as ds:
@@ -248,10 +247,10 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
+    test_grid()
+    test_connect()
+    test_tebd()
     test_edge()
     test_ghz()
     test_edgenode()
     test_pin()
-    test_tebd()
-    test_grid()
-    test_connect()

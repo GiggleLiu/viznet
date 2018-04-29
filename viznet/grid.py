@@ -15,7 +15,6 @@ from matplotlib.patches import Circle, Polygon
 
 from .edgenode import Pin
 from .brush import EdgeBrush, NodeBrush
-from .setting import node_setting
 
 __all__ = ['Grid', 'GridNodeBrush']
 
@@ -51,7 +50,7 @@ class Grid(object):
         strike out a block.
 
         Args:
-            brush (NodeBrush): a brush of style 'box', 'art.rbox' or something rectangular.
+            brush (NodeBrush): a brush of style 'box' or something rectangular.
             ij1 (tuple): left-bottom site.
             ij2 (tuple): top-right site.
             pad_x (float): x padding between gates and box.
@@ -92,7 +91,7 @@ class GridNodeBrush(NodeBrush):
         if geo[:9] != 'rectangle' and geo[:9] != 'routangle':
             raise AttributeError('style %s does not support gridwise resize.'%(self.style,))
         ij = np.array([i, j])
-        dxy = (ij-self.gridspan)*self.grid.dxy/2./node_setting['basesize']
+        dxy = (ij-self.gridspan)*self.grid.dxy/2.
         self.size = (self._size + dxy)
         self.gridspan = ij
         return self

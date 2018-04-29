@@ -24,7 +24,6 @@ global text setting
 node_setting = {
     'lw': 0.7,
     'edgecolor': 'k',
-    'basesize': 1.0,
 
     'inner_lw': 0.7,
     'inner_edgecolor': 'k',

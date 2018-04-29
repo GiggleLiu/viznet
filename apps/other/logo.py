@@ -65,7 +65,7 @@ def logo4(partly):
     viznet.setting.node_setting['inner_lw'] = 0
     viznet.setting.node_setting['lw'] = 2
     with viznet.DynamicShow(figsize=(4,4), filename='_logo4.svg') as ds:
-        dot = viznet.NodeBrush('art.rbox', size=0.5)
+        dot = viznet.NodeBrush('box', size=0.5, roundness=0.2)
         tall = 5
         xs = np.zeros(tall)
         ys = np.arange(tall)

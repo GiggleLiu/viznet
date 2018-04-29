@@ -19,7 +19,7 @@ NODE_THEME_DICT = {
     'invisible': (None, 'circle', 'none'),
     'basic': (NONE, 'circle', 'none'),
     'box': (NONE, 'rectangle', 'none'),
-    'pin': (None, '', 'none'),
+    'pin': (None, 'empty', 'none'),
 
     'nn.backfed': (YELLOW, 'circle', 'circle'),
     'nn.input': (YELLOW, 'circle', 'none'),
@@ -43,14 +43,12 @@ NODE_THEME_DICT = {
 
     'qc.basic': (NONE, 'square', 'none'),
     'qc.wide': (NONE, 'golden', 'none'),
-    'qc.C': (None, '', 'dot'),
-    'qc.cross': (None, '', 'cross'),
+    'qc.C': (None, 'empty', 'dot'),
+    'qc.cross': (None, 'empty', 'cross'),
     'qc.NOT': (NONE, 'circle', 'plus'),
     'qc.measure': (NONE, 'golden', 'measure'),
-    'qc.end': (None, '', 'vbar'),
+    'qc.end': (None, 'empty', 'vbar'),
     'qc.box': (NONE, 'rectangle', 'none'),
-
-    'art.rbox': (NONE, 'rectangle-round', 'none'),
 }
 '''
 A table of theme for nodes.

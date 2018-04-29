@@ -10,6 +10,7 @@ from .edgenode import Edge, Node, Pin
 from .theme import NODE_THEME_DICT, BLUE
 from .utils import rotate
 from .setting import node_setting, edge_setting
+from .import shapes
 
 __all__ = ['Brush', 'NodeBrush', 'EdgeBrush', 'CLinkBrush']
 
@@ -38,7 +39,7 @@ class NodeBrush(Brush):
         'tiny': 0.09,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', zorder=0, rotate=0., ls='-'):
+    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', args=()):
         self.style = style
         self.size = size
         self.ax = ax
@@ -47,6 +48,8 @@ class NodeBrush(Brush):
         self.rotate = rotate
         self.ls = ls
         self.node_handler = basicgeometry_handler
+        self.args = args
+        self.roundness = roundness
 
     @property
     def _size(self):
@@ -68,22 +71,18 @@ class NodeBrush(Brush):
         '''
         # color priority: brush color > theme color
         ax = plt.gca() if self.ax is None else self.ax
-        lw = self.setting['lw']
-        edgecolor = self.setting['edgecolor']
-        inner_fc = self.setting['inner_facecolor']
-        inner_ec = self.setting['inner_edgecolor']
-        inner_lw = self.setting['inner_lw']
-        basesize = self.setting['basesize']
         # override color
         if self.color is not None:
             color = self.color
 
         theme_code = self._style
-        objs = self.node_handler(theme_code, xy, basesize*self._size, self.color, edgecolor, lw, self.ls, self.zorder, self.rotate, inner_lw, inner_ec, inner_fc)
+        objs = self.node_handler(theme_code, xy, self._size, self.roundness, facecolor=self.color,
+                ls=self.ls, zorder=self.zorder, angle=self.rotate, args=self.args)
 
         # add patches
         for p in objs:
             ax.add_patch(p)
+            #shapes.affine(p, offset=xy, scale=np.atleast_1d(self._size)[0], angle=self.rotate)
         node = Node(objs, theme_code)
         return node
 
@@ -341,97 +340,21 @@ def _line(ax, ls, path, lw, color, zorder, use_path):
         _plot_line(path)
     return objs
 
-
-def _basicgeometry(xy, geo, size, color, edgecolor, lw, ls, zorder, angle):
+def _basicgeometry(xy, geo, size, angle, roundness, args, **kwargs):
     '''basic geometric handler.'''
-    is_rect = geo[:9] == 'rectangle'
-    if geo == 'circle':
-        c = plt.Circle(xy, size, edgecolor=edgecolor, ls=ls,
-                       facecolor=color, lw=lw, zorder=zorder)
-    elif geo == 'square':
-        xy = xy[0] - size, xy[1] - size
-        c = plt.Rectangle(xy, 2 * size, 2 * size, edgecolor=edgecolor, ls=ls,
-                          facecolor=color, lw=lw, zorder=zorder)
-    elif geo[:8] == 'triangle':
-        tri_path = np.array(
-            [[-0.5 * np.sqrt(3), -0.5], [0.5 * np.sqrt(3), -0.5], [0, 1]])
-        tri_path = rotate(tri_path, angle)
-        c = plt.Polygon(xy=tri_path * size + xy, edgecolor=edgecolor, ls=ls,
-                        facecolor=color, lw=lw, zorder=zorder)
-    elif geo == 'diamond':
-        dia_path = np.array([[-1, 0], [0, -1], [1, 0], [0, 1]])
-        dia_path = rotate(dia_path, angle)
-        c = plt.Polygon(xy=dia_path * size + xy, edgecolor=edgecolor, ls=ls,
-                        facecolor=color, lw=lw, zorder=zorder)
-    elif is_rect or geo == 'golden':
-        remain = geo[9:]
-        if geo == 'golden':
-            height = size * 2
-            width = height * 1.3
-        else:
-            width = size[0] * 2
-            height = size[1] * 2
-        xy_ = xy[0] - width / 2., xy[1] - height / 2.
-        if remain == '-round':
-            pad = 0.15*min(width, height)
-            c = patches.FancyBboxPatch(xy_+np.array([pad,pad]), width-pad*2, height-pad*2, zorder=zorder,
-                              edgecolor=edgecolor, facecolor=color, lw=lw, ls=ls,
-                              boxstyle=patches.BoxStyle("Round", pad=pad))
-        else:
-            c = plt.Rectangle(xy_, width, height, edgecolor=edgecolor, ls=ls,
-                              facecolor=color, lw=lw, zorder=zorder)
-    elif geo == 'dot':
-        c = plt.Circle(xy, 0.15 * size, edgecolor=edgecolor,
-                       facecolor=edgecolor, lw=lw, zorder=zorder)
-    elif geo in ['cross', 'plus', 'vbar', 'measure']:
-        objs = []
-        radi = size
-        inner_fc = 'none'
-        if geo == 'plus':
-            path_list = [Path([(-radi, 0), (radi, 0)]), Path([(0, -radi), (0, radi)])]
-        elif geo == 'vbar':
-            path_list = [Path([(0, -radi), (0, radi)])]
-        elif geo == 'measure':
-            bottom, top, left, right, radi = np.array([-0.3, 0.6, -0.9, 0.9, 1.0])*size
-            # the line
-            # the curve
-            x = np.linspace(left, right, 100)
-            y = np.sqrt(radi**2 - x**2)
-            path_list = [Path([(0, bottom), (right, top)]),
-                        Path(list(zip(x, y - radi + 0.1)))]
-        else:
-            radi_ = radi / np.sqrt(2.)
-            path_list = [Path([(-radi_, -radi_), (radi_, radi_)]),
-                    Path([(radi_, -radi_), (-radi_, radi_)])]
-        for pp in path_list:
-            pp = rotate_translate_path(pp, angle, xy)
-            objs.append(patches.PathPatch(pp, facecolor='none', edgecolor=edgecolor, lw=lw, zorder=zorder))
-        return objs
-    elif geo == '':
-        c = plt.Circle(xy, 0, edgecolor='none', facecolor='none', ls=ls)
-    else:
-        raise ValueError('Geometry %s not defined!' % geo)
-    return [c]
+    return eval('shapes.%s'%geo)(xy, size, angle, roundness, args=args, **kwargs)
 
-def basicgeometry_handler(theme_code, xy, size,  color, edgecolor, lw, ls, zorder, angle, inner_lw, inner_ec, inner_fc):
+def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, zorder, angle, args):
     '''basic geometry node handler.'''
     default_color, geo, inner_geo = theme_code
-    if color is None:
-        color = default_color
-    if color is None:  # both color and default color is None
-        color = 'none'
+    edgecolor = node_setting['edgecolor']
+    if facecolor is None:
+        facecolor = default_color
+    if facecolor is None:  # both color and default color is None
+        facecolor = 'none'
         edgecolor = 'none'
 
-    # the size of node
-    is_rect = geo[:9] == 'rectangle'
-    if is_rect:
-        if not hasattr(size, '__iter__'):
-            size = (size,) * 2
-        assert(len(size) == 2)
-    else:
-        assert(isinstance(size, numbers.Number))
-
-    objs = _basicgeometry(xy, geo, size, color, edgecolor, lw, ls, zorder, angle)
+    objs = _basicgeometry(xy, geo, size, angle,roundness, args, facecolor=facecolor, edgecolor=edgecolor, ls=ls, zorder=zorder)
 
     # add a geometric patch at the top of circle.
     if inner_geo != 'none':
@@ -440,10 +363,14 @@ def basicgeometry_handler(theme_code, xy, size,  color, edgecolor, lw, ls, zorde
             inner_size = size
         else:
             inner_size = 0.7 * size
-        objs += _basicgeometry(xy, inner_geo, inner_size, inner_fc, inner_ec, inner_lw, ls, zorder+1, angle)
+
+        inner_fc = node_setting['inner_facecolor']
+        inner_ec = node_setting['inner_edgecolor']
+        inner_lw = node_setting['inner_lw']
+        objs += _basicgeometry(xy, inner_geo, inner_size, angle, roundness, args, facecolor=inner_fc, edgecolor=inner_ec, lw=inner_lw, ls=ls, zorder=zorder+1)
 
     # for BLUE nodes, add a self-loop (Stands for Recurrent Unit)
-    if color == BLUE and theme_code == 'nn.':
+    if facecolor == BLUE and theme_code == 'nn.':
         loop = plt.Circle((xy[0], xy[1] + 1.2 * size), 0.5 * size,
                           edgecolor=edgecolor, facecolor=inner_fc, lw=lw, zorder=-5)
         objs.append(loop)

@@ -27,7 +27,7 @@ def blockfocus():
         NOT = NodeBrush('qc.NOT', size='small')
         END = NodeBrush('qc.end')
         M = NodeBrush('qc.measure')
-        block = NodeBrush('art.rbox', size=(2, 2), ls='--')
+        block = NodeBrush('box', size=(2, 2), ls='--', roundness=0.2)
 
         handler = QuantumCircuit(num_bit=num_bit)
         handler.x += 0.8
