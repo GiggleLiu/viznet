@@ -42,7 +42,7 @@ def _as_list(line):
         line = list(range(line.start, line.stop + 1))
     return list(np.atleast_1d(line))
 
-def vizcode(handler, code):
+def vizcode(handler, code, blockdict={}):
     '''visualize a code'''
     code = code.strip(' ')
     offsetx = 0
@@ -58,6 +58,9 @@ def vizcode(handler, code):
         if not res:
             raise ValueError('Invalid Code %s'%code)
         command = res.group(1)
+        if command == 'Include':
+            parsecircuit(blockdict[res.group(2)], handler=handler, blockdict=blockdict)
+            return
         args = res.group(2).split(',')
         line = _parse_lines(args.pop(0))
 
@@ -137,10 +140,11 @@ def vizcode(handler, code):
     handler.gate(commands, lines, texts, fontsize=setting['fontsize'])
     handler.x += offsetx
 
-def parsecircuit(datamap, handler=None):
+def parsecircuit(datamap, handler=None, blockdict=None):
     if handler is None: # top level
         num_bit = datamap['nline']
         handler = QuantumCircuit(num_bit=num_bit)
+        blockdict = dict(datamap)
 
         # text |0>s
         for i in range(num_bit):
@@ -148,7 +152,7 @@ def parsecircuit(datamap, handler=None):
         handler.x += 0.8
 
     if isinstance(datamap, str):
-        vizcode(handler, datamap)
+        vizcode(handler, datamap, blockdict=blockdict)
     else:
         for block in datamap['blocks']:
-            parsecircuit(block, handler)
+            parsecircuit(block, handler, blockdict)
