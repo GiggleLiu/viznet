@@ -27,21 +27,20 @@ def blockfocus():
         NOT = NodeBrush('qc.NOT', size='small')
         END = NodeBrush('qc.end')
         M = NodeBrush('qc.measure')
-        block = NodeBrush('box', size=(2, 2), ls='--', roundness=0.2)
 
         handler = QuantumCircuit(num_bit=num_bit)
         handler.x += 0.8
         handler.gate(basic, 0, 'X')
         for i in range(1, num_bit):
             handler.gate(basic, i, 'H')
-        handler.x += 0.8
-        with handler.block(block, 0, num_bit-1, pad_x=0.1) as b:
+        handler.x += 1.2
+        with handler.block(slice(0, num_bit-1), pad_x=0.1) as b:
             handler.focus([4, 2, 1, 3])
         b[0].text('focus', 'top')
-        handler.x += 0.8
+        handler.x += 1.2
 
         # entangler block
-        with handler.block(block, 0, 3) as b:
+        with handler.block(slice(0, 3)) as b:
             handler.gate((C, NOT), (1, 0))
             handler.gate((C, NOT), (3, 2))
             handler.x += 0.7
@@ -50,7 +49,7 @@ def blockfocus():
             handler.gate((C, NOT), (3, 2))
         b[0].text('entangler', 'top')
 
-        handler.x += 1
+        handler.x += 1.2
         for i in range(num_bit):
             handler.gate(basic, i, 'H')
         handler.x += 1

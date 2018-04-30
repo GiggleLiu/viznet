@@ -9,21 +9,7 @@ Examples
 
 ----------------------
 
-The first example is a graph for Boltzmann Machine,
-
-.. literalinclude:: ../apps/nn/bm.py
-	:tab-width: 2
-
-.. code-block:: bash
-
-	$ python apps/nn/bm.py
-
-The output is 
-
-.. image:: images/bm.png
-    :align: center
-
-The second example is a feed forward network
+The first example is a feed forward network
 
 .. literalinclude:: ../apps/nn/feed_forward.py
 	:tab-width: 2
@@ -37,7 +23,7 @@ The output is
 .. image:: images/feed_forward_example.png
     :align: center
 
-The third example is tensor network TEBD algorithm, it is also a good example to learn the grid system.
+The second example is tensor network TEBD algorithm, it is also a good example to learn the grid system.
 
 .. literalinclude:: ../apps/tn/tebd.py
 	:tab-width: 2
@@ -52,7 +38,7 @@ The output is
     :align: center
 
 
-The fourth example is a quantum circuit
+The third example is a quantum circuit
 
 .. literalinclude:: ../apps/qc/ghz.py
 	:tab-width: 2

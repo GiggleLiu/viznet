@@ -17,24 +17,28 @@ def affine(pp, offset=(0,0), scale=1, angle=0):
     '''rotate path/patch by angle'''
     if isinstance(pp, (np.ndarray, list, tuple)):
         return rotate(pp, angle)*scale + offset
+    
+    # define the transformation
     _affine = transforms.Affine2D()
-
     if angle!=0: _affine.rotate(angle)
     if scale!=1: _affine.scale(scale)
     if not np.allclose(offset, 0): _affine.translate(*offset)
+
     if hasattr(pp, 'vertices'):
+        # for path
         pp = pp.transformed(_affine)
     else:
+        # for patch
         pp.set_transform(_affine+plt.gca().transData)
     return pp
 
 def rounded_path(vertices, roundness, close=False):
     '''make rounded path from vertices.'''
     vertices = np.asarray(vertices)
+    if roundness == 0:
+        return Path(vertices if not close else np.concatenate([vertices, vertices[:1]],axis=0))
     if close:
         vertices = np.concatenate([vertices, vertices[:2]], axis=0)
-    if roundness == 0:
-        return Path(vertices)
 
     codes = [Path.MOVETO]
     vertices_new = [vertices[0]]

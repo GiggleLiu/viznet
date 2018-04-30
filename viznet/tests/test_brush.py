@@ -170,26 +170,25 @@ def test_connect():
 def test_grid():
     from ..grid import Grid
     grid = Grid((2.0, 1.2), offset=(2,2))
-    brush = grid.node_brush('basic')
+    brush = NodeBrush('basic')
     edge = EdgeBrush('->', lw=2., color='r')
-    box = NodeBrush('box', roundness=0.2)
+    box = NodeBrush('box', roundness=0.2, size='large')
 
     # define an mpo
-    mpo10 = grid.node_brush('box', color='g', roundness=0.2).gridwise(1, 0)
-    mpo11 = grid.node_brush('box', color='g', roundness=0.2).gridwise(1, 1)
+    mpo = NodeBrush('box', color='g', roundness=0.2)
 
     brushes = []
     with DynamicShow() as ds:
         for i in range(4):
             for j in range(4):
-                brushes.append(brush >> (i, j))
+                brushes.append(brush >> grid[i, j])
         for i in range(15):
             edge >> (brushes[i], brushes[i+1])
-        grid.block(box, [1,1], [2,2])
+        box >> grid[1:2, 1:2]
 
         # generate two mpos
-        A = mpo10 >> (4.5, 0)
-        B = mpo11 >> (4.5, 2.5)
+        A = mpo >> grid[4:5, 0:0]
+        B = mpo >> grid[4:5, 2:3]
 
         # connect left legs.
         edge >> (A.pin('top', align = grid[4, 0]), B.pin('bottom', align = grid[4, 0]))
@@ -247,8 +246,8 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
-    test_ghz()
     test_grid()
+    test_ghz()
     test_connect()
     test_tebd()
     test_edge()

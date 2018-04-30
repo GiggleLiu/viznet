@@ -42,7 +42,10 @@ class QuantumCircuit(object):
     def get_position(self, line, x=None):
         '''get the position of specific line'''
         if x is None: x=self.x
-        return (x, self.y0-line*self.line_space)
+        if isinstance(line, slice):
+            return (x, slice(self.get_position(line.start)[1], self.get_position(line.stop)[1]))
+        else:
+            return (x, self.y0-line*self.line_space)
 
     def gate(self, brush, position, text='', fontsize=18):
         '''
@@ -59,19 +62,19 @@ class QuantumCircuit(object):
                 text = [text]*len(brush)
         if len(brush) != len(position) or len(text)!=len(brush):
             raise ValueError('number of gate-position-text mismatch!')
-        line_all = range(self.num_bit)
+        line_all = list(range(self.num_bit))
 
         node_list = []
         for b, line, t in zip(brush, position, text):
             # get the position to place bits, and the aplied bits.
             if isinstance(line, slice):
-                y = (line.stop + line.start)/2. - 0.5
-                line = line_all[line]
-            elif hasattr(line, '__len__'):
+                y = (line.stop + line.start)/2.
+                line = line_all[line.start: line.stop+1]
+            if hasattr(line, '__len__'):
                 if len(line) == 1:
                     line = y = line[0]
                 else:
-                    y = np.mean(line)
+                    y = slice(min(line),max(line))
             else:
                 y = line
 
@@ -81,9 +84,9 @@ class QuantumCircuit(object):
             # connect nodes
             if len(node_list) >= 1:
                 self.edge >> (node_list[-1], node)
-            if y is line:
-                self.edge >> (self.node_dict[y][-1], node)
-                self.node_dict[y].append(node)
+            if not isinstance(y, slice):
+                self.edge >> (self.node_dict[line][-1], node)
+                self.node_dict[line].append(node)
             else:
                 for yline in line:
                     prenode = self.node_dict[yline][-1]
@@ -99,20 +102,20 @@ class QuantumCircuit(object):
                 node.text(t, fontsize=fontsize)
         return node_list if return_list else node_list[0]
 
-    def block(self, boxbrush, linestart, lineend, pad_x=0.35, pad_y=0.35):
+    def block(self, sls, pad_x=0.35, pad_y=0.35, brush=None):
         '''
         strike out a block.
 
         Args:
-            boxbrush (NodeBrush): a brush of style 'box' or something rectangular.
-            linestart (int): the starting line.
-            lineend (int): the ending line > starting line.
+            sls (int): the slice for starting and ending lines.
             pad_x (float): x padding between gates and box.
             pad_y (float): y padding between gates and box.
+            brush (NodeBrush|None): the brush used to paint this box.
 
         Returns:
             context: context that return boxes.
         '''
+        if brush is None: brush = NodeBrush('box', ls='--', roundness=0.2)
         class Context():
             def __enter__(ctx, *args):
                 ctx.xstart = self.x
@@ -125,8 +128,7 @@ class QuantumCircuit(object):
                     return False
                 xend = self.x
                 xstart = ctx.xstart
-                boxbrush.size = ((xend - xstart)/2. + pad_x, (lineend - linestart)/2.*self.line_space + pad_y)
-                b = boxbrush >> ((xstart+xend)/2., -(linestart + lineend)/2.*self.line_space)
+                b = brush >> (slice(xstart-pad_x, xend+pad_x), slice(self.get_position(sls.start)[1], self.get_position(sls.stop)[1]))
                 self.boxes.append(b)
                 return True
         return Context()
@@ -153,14 +155,3 @@ class QuantumCircuit(object):
             self.edge >> (opos, pi)
             pins.append(pi)
         return pins
-
-    def boxbrush(self, num_line, style='qc.box', width=0.5, **kwargs):
-        '''
-        create a box brush that across multiple lines.
-
-        Args:
-            num_line (int): number of lines.
-            width (float): the width.
-        '''
-        bb = NodeBrush(style, size=(width, (num_line-1)*self.line_space/2.+0.3), **kwargs)
-        return bb

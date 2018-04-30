@@ -65,18 +65,21 @@ class Node(EdgeNode):
 
     Attributes:
         objs(list): a list matplotlib patch object, with the first the primary object.
-        style (tuple): style.
+        brush (NodeBrush): brush.
     '''
 
-    def __init__(self, objs, style):
-        self.style = style
+    def __init__(self, objs, brush):
+        self.brush = brush
         self.objs = objs
-        obj = objs[0]
+
+    @property
+    def path(self):
+        obj = self.obj
         trans = obj.get_transform()
         path = trans.transform_path(obj.get_path())
         if obj.axes is not None:
             path = obj.axes.transData.inverted().transform_path(path)
-        self.path = path.vertices
+        return path.vertices
 
     @property
     def obj(self):
@@ -123,6 +126,7 @@ class Node(EdgeNode):
             offset_dict = self._offset_dict
             loc = offset_dict[direction] + self.position
             if align is not None:
+                align = _node(align)
                 target = align.position
                 if direction in ['bottom', 'top']:
                     loc[0] = target[0]
@@ -138,7 +142,7 @@ class Node(EdgeNode):
     @property
     def position(self):
         '''center of a node'''
-        shape = self.style[1]
+        shape = self.brush.style[1]
         if isinstance(self.obj, plt.Circle):
             return np.array(self.obj.center)
         elif isinstance(self.obj, (plt.Rectangle, patches.FancyBboxPatch)):
@@ -151,7 +155,7 @@ class Node(EdgeNode):
 
     @property
     def height(self):
-        shape = self.style[1]
+        shape = self.brush.style[1]
         if isinstance(self.obj, plt.Circle):
             return self.obj.radius * 2
         elif isinstance(self.obj, plt.Rectangle):
@@ -166,7 +170,7 @@ class Node(EdgeNode):
 
     @property
     def width(self):
-        shape = self.style[1]
+        shape = self.brush.style[1]
         if isinstance(self.obj, plt.Circle):
             return self.obj.radius * 2
         elif isinstance(self.obj, plt.Rectangle):
@@ -184,7 +188,7 @@ class Node(EdgeNode):
         Args:
             direction (1darray): unit vector pointing to target direction.
         '''
-        shape = self.style[1]
+        shape = self.brush.style[1]
         if shape == 'circle':
             return self.obj.center + self.obj.radius * direction
         else:
@@ -214,16 +218,25 @@ class Edge(EdgeNode):
         end_xy (tuple): end position.
         start (EdgeNode): start node.
         end (EdgeNode): end node.
-        ax (:obj:`Axes`): matplotlib Axes instance.
+        brush (:obj:`EdgeBrush`): brush.
     '''
 
-    def __init__(self, obj, start_xy, end_xy, start, end, ax):
-        self.obj = obj
+    def __init__(self, objs, start_xy, end_xy, start, end, brush):
+        self.objs = objs
         self.start = start
         self.end = end
         self.start_xy = np.asarray(start_xy)
         self.end_xy = np.asarray(end_xy)
-        self.ax = ax
+        self.brush = brush
+
+    @property
+    def ax(self):
+        '''get the primary object.'''
+        return self.obj.axes
+
+    @property
+    def obj(self):
+        return self.objs[0]
 
     @property
     def position(self):
@@ -288,3 +301,10 @@ class Pin(np.ndarray, EdgeNode):
     @property
     def position(self):
         return tuple(self)
+
+def _node(node):
+    if not hasattr(node, 'position'):
+        return Pin(node)
+    else:
+        return node
+

@@ -22,3 +22,4 @@ build/
 viznet.egg-info/
 __pycache__/
 _deprecated/
+.ipynb_checkpoints/

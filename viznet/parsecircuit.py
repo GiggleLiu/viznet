@@ -12,6 +12,7 @@ NOT = NodeBrush('qc.NOT', size='small')
 END = NodeBrush('qc.end')
 MEASURE = NodeBrush('qc.measure')
 CORSS = NodeBrush('qc.cross')
+BOX = NodeBrush('qc.box')
 
 GATEMAP = {'C':C, 'NC': NC, 'NOT': NOT, 'Measure':MEASURE, 'X':GATE, 'Y':GATE,
         'Z':GATE, 'H':GATE, 'Rot': WIDE, 'Rx': WIDE, 'Ry':WIDE, 'Rz':WIDE, 'End':END}
@@ -38,7 +39,7 @@ def _parse_params(linecode):
 
 def _as_list(line):
     if isinstance(line, slice):
-        line = list(range(line.start, line.stop))
+        line = list(range(line.start, line.stop + 1))
     return list(np.atleast_1d(line))
 
 def vizcode(handler, code):
@@ -106,8 +107,7 @@ def vizcode(handler, code):
                 text += param_text
             texts.append(text)
 
-            b = handler.boxbrush(nline, width=_text_width(text))
-            commands.append(b)
+            commands.append(BOX)
 
         elif command in ['Measure', 'End']:
             b = GATEMAP[command]

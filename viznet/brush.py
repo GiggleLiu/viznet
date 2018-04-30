@@ -6,7 +6,7 @@ from matplotlib import patches, transforms
 from matplotlib.path import Path
 from numpy.linalg import norm
 
-from .edgenode import Edge, Node, Pin
+from .edgenode import Edge, Node, Pin, _node
 from .theme import NODE_THEME_DICT, BLUE
 from .utils import rotate
 from .setting import node_setting, edge_setting
@@ -52,11 +52,17 @@ class NodeBrush(Brush):
         self.roundness = roundness
 
     @property
+    def is_rectangular(self):
+        return self._style[1] in ['rectangle']
+
+    @property
     def _size(self):
         if isinstance(self.size, str):
             size = self.size_dict[self.size]
         else:
             size = self.size
+        if self.is_rectangular and np.ndim(size)==0:
+            size = [size, size]
         return np.asarray(size)
 
     def __rshift__(self, xy):
@@ -76,20 +82,36 @@ class NodeBrush(Brush):
             color = self.color
 
         theme_code = self._style
-        objs = self.node_handler(theme_code, xy, self._size, self.roundness, facecolor=self.color,
+
+        # get the size and position
+        size = self._size
+        if np.ndim(size) == 1 and len(size) == 2:
+            xstart, xstop = self._get_range(xy[0])
+            ystart, ystop = self._get_range(xy[1])
+            size = (size[0] + abs(xstop - xstart)/2., size[1] + abs(ystop - ystart)/2.)
+            xy = (xstop + xstart)/2., (ystart + ystop)/2.
+
+        objs = self.node_handler(theme_code, xy, size, self.roundness, facecolor=self.color,
                 ls=self.ls, zorder=self.zorder, angle=self.rotate, args=self.args)
 
         # add patches
         for p in objs:
             ax.add_patch(p)
             #shapes.affine(p, offset=xy, scale=np.atleast_1d(self._size)[0], angle=self.rotate)
-        node = Node(objs, theme_code)
+        node = Node(objs, self)
         return node
 
     @property
     def _style(self):
         return NODE_THEME_DICT[self.style]
 
+    def _get_range(self, x):
+        if isinstance(x, slice):   # gridwise operation.
+            if not self.is_rectangular:
+                raise ValueError('Only Rectangular support slice plot!')
+            return x.start, x.stop
+        else:
+            return x, x
 
 class EdgeBrush(Brush):
     '''
@@ -131,11 +153,7 @@ class EdgeBrush(Brush):
         head_width = self.setting['arrow_head_width'] * lw
 
         # get start position and end position
-        start, end = startend
-        if isinstance(start, tuple):
-            start = Pin(start)
-        if isinstance(end, tuple):
-            end = Pin(end)
+        start, end = _node(startend[0]), _node(startend[1])
         sxy, exy = np.asarray(start.position), np.asarray(end.position)
         d = exy - sxy
         unit_d = d / norm(d)
@@ -145,7 +163,7 @@ class EdgeBrush(Brush):
         arrows, lines = self.line_handler(sxy, exy, self.style, head_length)
         objs = _arrows(ax, arrows, head_width=head_width, head_length=head_length, lw=lw, zorder=self.zorder, color=self.color)
         objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=False)
-        return Edge(objs, sxy, exy, start, end, ax=ax)
+        return Edge(objs, sxy, exy, start, end, brush=self)
 
 class CLinkBrush(EdgeBrush):
     '''
@@ -176,17 +194,13 @@ class CLinkBrush(EdgeBrush):
         head_width = self.setting['arrow_head_width'] * lw
 
         # get start position and end position
-        start, end = startend
-        if isinstance(start, tuple):
-            start = Pin(start)
-        if isinstance(end, tuple):
-            end = Pin(end)
+        start, end = _node(startend[0]), _node(startend[1])
         sxy, exy = np.asarray(start.position), np.asarray(end.position)
-
+        
         arrows, lines, (sxy_, exy_) = self.line_handler(sxy, exy, self.style, self.offsets, self.roundness, head_length)
         objs = _arrows(ax, arrows, head_width=head_width, head_length=head_length, lw=lw, zorder=self.zorder, color=self.color)
         objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=True)
-        return Edge(objs, sxy_, exy_, start, end, ax=ax)
+        return Edge(objs, sxy_, exy_, start, end, brush=self)
 
 def clink_handler(sxy, exy, style, offsets, roundness, head_length):
     '''a C style link between two edges.'''
