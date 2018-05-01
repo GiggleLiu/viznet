@@ -12,8 +12,6 @@ from .utils import rotate
 from .setting import node_setting, edge_setting
 from .import shapes
 
-__all__ = ['Brush', 'NodeBrush', 'EdgeBrush', 'CLinkBrush']
-
 class Brush(object):
     '''Base Class of brushes.'''
     pass
@@ -27,7 +25,7 @@ class NodeBrush(Brush):
         style (str): refer keys for `viznet.theme.NODE_THEME_DICT`.
         ax (:obj:`Axes`): matplotlib Axes instance.
         color (str|None): the color of painted node by this brush, it will overide theme color if is not `None`.
-        size ('huge'|'large'|'normal'|'small'|'tiny'|tuple|float): size of node.
+        size ('huge'|'large'|'normal'|'small'|'tiny'|'dot'|tuple|float): size of node.
     '''
     setting = node_setting
 
@@ -37,9 +35,10 @@ class NodeBrush(Brush):
         'normal': 0.3,
         'small': 0.21,
         'tiny': 0.09,
+        'dot': 0.05,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', args=()):
+    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', props=None):
         self.style = style
         self.size = size
         self.ax = ax
@@ -48,7 +47,7 @@ class NodeBrush(Brush):
         self.rotate = rotate
         self.ls = ls
         self.node_handler = basicgeometry_handler
-        self.args = args
+        self.props = props if props is not None else {}
         self.roundness = roundness
 
     @property
@@ -92,7 +91,7 @@ class NodeBrush(Brush):
             xy = (xstop + xstart)/2., (ystart + ystop)/2.
 
         objs = self.node_handler(theme_code, xy, size, self.roundness, facecolor=self.color,
-                ls=self.ls, zorder=self.zorder, angle=self.rotate, args=self.args)
+                ls=self.ls, zorder=self.zorder, angle=self.rotate, props=self.props)
 
         # add patches
         for p in objs:
@@ -103,7 +102,10 @@ class NodeBrush(Brush):
 
     @property
     def _style(self):
-        return NODE_THEME_DICT[self.style]
+        if isinstance(self.style, str):
+            return NODE_THEME_DICT[self.style]
+        else:
+            return self.style
 
     def _get_range(self, x):
         if isinstance(x, slice):   # gridwise operation.
@@ -329,7 +331,7 @@ def _line(ax, ls, path, lw, color, zorder, use_path):
     def _plot_line(path_):
         if not use_path:
             sxy_, exy_ = path_
-            objs.append(ax.plot([sxy_[0], exy_[0]], [
+            objs.extend(ax.plot([sxy_[0], exy_[0]], [
                                sxy_[1], exy_[1]], lw=lw, color=color,
                                zorder=zorder, ls=ls, solid_capstyle='butt'))
         else:
@@ -354,21 +356,22 @@ def _line(ax, ls, path, lw, color, zorder, use_path):
         _plot_line(path)
     return objs
 
-def _basicgeometry(xy, geo, size, angle, roundness, args, **kwargs):
+def _basicgeometry(xy, geo, size, angle, roundness, props, **kwargs):
     '''basic geometric handler.'''
-    return eval('shapes.%s'%geo)(xy, size, angle, roundness, args=args, **kwargs)
+    return eval('shapes.%s'%geo)(xy, size, angle, roundness, props=props, **kwargs)
 
-def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, zorder, angle, args):
+def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, zorder, angle, props):
     '''basic geometry node handler.'''
     default_color, geo, inner_geo = theme_code
     edgecolor = node_setting['edgecolor']
+    lw = node_setting['lw']
     if facecolor is None:
         facecolor = default_color
     if facecolor is None:  # both color and default color is None
         facecolor = 'none'
         edgecolor = 'none'
 
-    objs = _basicgeometry(xy, geo, size, angle,roundness, args, facecolor=facecolor, edgecolor=edgecolor, ls=ls, zorder=zorder)
+    objs = _basicgeometry(xy, geo, size, angle,roundness, props, facecolor=facecolor, edgecolor=edgecolor, ls=ls, zorder=zorder, lw=lw)
 
     # add a geometric patch at the top of circle.
     if inner_geo != 'none':
@@ -381,7 +384,7 @@ def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, zorder
         inner_fc = node_setting['inner_facecolor']
         inner_ec = node_setting['inner_edgecolor']
         inner_lw = node_setting['inner_lw']
-        objs += _basicgeometry(xy, inner_geo, inner_size, angle, roundness, args, facecolor=inner_fc, edgecolor=inner_ec, lw=inner_lw, ls=ls, zorder=zorder+1)
+        objs += _basicgeometry(xy, inner_geo, inner_size, angle, roundness, props, facecolor=inner_fc, edgecolor=inner_ec, lw=inner_lw, ls=ls, zorder=zorder+1)
 
     # for BLUE nodes, add a self-loop (Stands for Recurrent Unit)
     if facecolor == BLUE and theme_code == 'nn.':

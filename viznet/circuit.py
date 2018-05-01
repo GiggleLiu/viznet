@@ -16,8 +16,6 @@ from matplotlib.patches import Circle, Polygon
 from .edgenode import Pin
 from .brush import EdgeBrush, NodeBrush
 
-__all__ = ['QuantumCircuit']
-
 
 class QuantumCircuit(object):
     '''

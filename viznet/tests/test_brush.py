@@ -51,7 +51,7 @@ def test_ghz():
     NOT = NodeBrush('qc.NOT', size='small')
     END = NodeBrush('qc.end')
     M = NodeBrush('qc.measure')
-    BOX = handler.boxbrush(4)
+    BOX = NodeBrush('qc.box')
     with DynamicShow() as ds:
         handler.x += 0.5
         handler.gate(basic, 0, 'X')
@@ -167,6 +167,12 @@ def test_connect():
         edge >> (n1, n2)
         edge >> (n1, (3, 3))
 
+def test_polygon():
+    with DynamicShow() as ds:
+        path = [(-1,0), (0, -1), (2,2)]
+        geo = NodeBrush(('#981255', 'polygon', 'odot'), size=0.3, props={'path':path})
+        geo >> (2, 2)
+
 def test_grid():
     from ..grid import Grid
     grid = Grid((2.0, 1.2), offset=(2,2))
@@ -246,8 +252,9 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
-    test_grid()
     test_ghz()
+    test_polygon()
+    test_grid()
     test_connect()
     test_tebd()
     test_edge()

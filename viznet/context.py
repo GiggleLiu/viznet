@@ -1,9 +1,6 @@
 import pdb
 from matplotlib import pyplot as plt
 
-__all__ = ['DynamicShow']
-
-
 class DynamicShow():
     '''
     Dynamic plot context, intended for displaying geometries.

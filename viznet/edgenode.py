@@ -10,9 +10,6 @@ from matplotlib import patches
 from .setting import annotate_setting
 from .utils import intersection
 
-__all__ = ['Edge', 'Node', 'Pin']
-
-
 class EdgeNode(object):
     def text(self, text, position='center', fontsize=None, color='k', text_offset=None):
         '''
@@ -163,8 +160,7 @@ class Node(EdgeNode):
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_height() + 2*self.obj.get_boxstyle().pad
         elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            ys = self.path[:-1, 1]
-            return abs(ys - ys.mean()).max() * 2
+            return abs(self.path[:,1] - self.position[1]).max() * 2
         else:
             raise
 
@@ -178,8 +174,7 @@ class Node(EdgeNode):
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_width() + 2*self.obj.get_boxstyle().pad
         elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            xs = self.path[:-1, 0]
-            return abs(xs - xs.mean()).max() * 2
+            return abs(self.path[:,1] - self.position[0]).max() * 2
         else:
             raise
 

@@ -7,7 +7,7 @@ from . import NodeBrush, DynamicShow, QuantumCircuit, Pin
 GATE = NodeBrush('qc.basic')
 WIDE = NodeBrush('qc.wide')
 C = NodeBrush('qc.C')
-NC = NodeBrush('qc.NC', size = 'tiny')
+NC = NodeBrush('qc.NC')
 NOT = NodeBrush('qc.NOT', size='small')
 END = NodeBrush('qc.end')
 MEASURE = NodeBrush('qc.measure')
@@ -43,7 +43,14 @@ def _as_list(line):
     return list(np.atleast_1d(line))
 
 def vizcode(handler, code, blockdict={}):
-    '''visualize a code'''
+    '''
+    visualize a code
+
+    Args:
+        handler (QuantumCircuit): circuit handler.
+        code (str): the string defining a primitive gate.
+        blockdict (dict, default={}): the refence dict for block includes.
+    '''
     code = code.strip(' ')
     offsetx = 0
     if code[-1] == ';':
@@ -59,7 +66,7 @@ def vizcode(handler, code, blockdict={}):
             raise ValueError('Invalid Code %s'%code)
         command = res.group(1)
         if command == 'Include':
-            parsecircuit(blockdict[res.group(2)], handler=handler, blockdict=blockdict)
+            dict2circuit(blockdict[res.group(2)], handler=handler, blockdict=blockdict, putstart=False)
             return
         args = res.group(2).split(',')
         line = _parse_lines(args.pop(0))
@@ -140,14 +147,22 @@ def vizcode(handler, code, blockdict={}):
     handler.gate(commands, lines, texts, fontsize=setting['fontsize'])
     handler.x += offsetx
 
-def parsecircuit(datamap, handler=None, blockdict=None):
-    if handler is None: # top level
-        num_bit = datamap['nline']
-        handler = QuantumCircuit(num_bit=num_bit)
-        blockdict = dict(datamap)
+def dict2circuit(datamap, handler=None, blockdict=None, putstart=None):
+    '''
+    parse a dict (probabily from a yaml file) to a circuit.
 
+    Args:
+        datamap (dict): the dictionary defining a circuit.
+        handler (None|QuantumCircuit): the handler.
+        blockdict (dict, default=datamap): the dictionary for block includes.
+        putstart (bool, default=handler==None): put a start at the begining if True.
+    '''
+    if putstart is None: putstart = handler is None
+    if handler is None: handler = QuantumCircuit(num_bit=datamap['nline'])
+    if blockdict is None: blockdict = dict(datamap)
+    if putstart:
         # text |0>s
-        for i in range(num_bit):
+        for i in range(datamap['nline']):
             plt.text(-0.4, -i, r'$\vert0\rangle$', va='center', ha='center', fontsize=setting['fontsize'])
         handler.x += 0.8
 
@@ -155,4 +170,4 @@ def parsecircuit(datamap, handler=None, blockdict=None):
         vizcode(handler, datamap, blockdict=blockdict)
     else:
         for block in datamap['blocks']:
-            parsecircuit(block, handler, blockdict)
+            dict2circuit(block, handler, blockdict, putstart=False)

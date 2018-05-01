@@ -10,8 +10,6 @@ feature list:
 import numpy as np
 import pdb
 
-__all__ = ['node_sequence', 'node_ring', 'connect121', 'connecta2a', 'text_cluster']
-
 
 def node_sequence(brush, num_node, center, space=(1,0)):
     '''

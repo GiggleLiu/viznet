@@ -2,9 +2,6 @@
 defines themes for neural network and tensor networks.
 '''
 
-__all__ = ['NONE', 'YELLOW', 'GREEN', 'RED',
-           'BLUE', 'VIOLET', 'NODE_THEME_DICT']
-
 # A TABLE OF PREDEFINED COLORS
 NONE = 'none'
 YELLOW = '#FFFF77'
@@ -43,8 +40,8 @@ NODE_THEME_DICT = {
 
     'qc.basic': (NONE, 'square', 'none'),
     'qc.wide': (NONE, 'golden', 'none'),
-    'qc.C': (None, 'empty', 'dot'),
-    'qc.NC': ('none', 'circle', 'none'),
+    'qc.C': (BLACK, 'dot', 'none'),
+    'qc.NC': ('none', 'odot', 'none'),
     'qc.cross': (None, 'empty', 'cross'),
     'qc.NOT': (NONE, 'circle', 'plus'),
     'qc.measure': (NONE, 'golden', 'measure'),

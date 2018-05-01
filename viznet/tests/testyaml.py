@@ -3,7 +3,7 @@ import numpy as np
 from numpy.testing import dec, assert_, assert_raises, assert_almost_equal, assert_allclose
 import matplotlib.pyplot as plt
 
-from ..parsecircuit import _parse_lines, parsecircuit, vizcode
+from ..parsecircuit import _parse_lines, dict2circuit, vizcode
 from .. import NodeBrush, DynamicShow, QuantumCircuit, Pin
 
 def test_codes():
@@ -25,7 +25,7 @@ def test_parse():
         datamap = yaml.safe_load(f)
     print(datamap)
     with DynamicShow(figsize=(6,6)) as ds:
-        parsecircuit(datamap)
+        dict2circuit(datamap)
 
 if __name__ == '__main__':
     test_parse()

@@ -3,9 +3,6 @@ import pdb
 
 from scipy.interpolate import interp1d
 
-__all__ = ['rotate']
-
-
 def rotate(vec, theta):
     '''
     rotate a 2D vector.

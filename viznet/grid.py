@@ -9,8 +9,6 @@ feature list:
 
 import numpy as np
 
-__all__ = ['Grid']
-
 class Grid(object):
     '''
     Grid for affine transformation.
