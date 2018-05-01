@@ -41,7 +41,7 @@ NODE_THEME_DICT = {
     'qc.basic': (NONE, 'square', 'none'),
     'qc.wide': (NONE, 'golden', 'none'),
     'qc.C': (BLACK, 'dot', 'none'),
-    'qc.NC': (BLACK, 'odot', 'none'),
+    'qc.NC': ('none', 'dot', 'none'),
     'qc.cross': (None, 'empty', 'cross'),
     'qc.NOT': (NONE, 'circle', 'plus'),
     'qc.measure': (NONE, 'golden', 'measure'),

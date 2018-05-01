@@ -152,6 +152,8 @@ class Node(EdgeNode):
                     loc[0] = target[0]
                 elif direction in ['left', 'right']:
                     loc[1] = target[1]
+                elif direction =='center':
+                    pass
                 else:
                     raise
         else:
@@ -160,18 +162,14 @@ class Node(EdgeNode):
         return Pin(loc)
 
     @property
-    def center(self):
-        '''center of a node'''
+    def mass_center(self):
+        '''mass center of a node'''
         shape = self.brush.style[1]
-        if isinstance(self.obj, plt.Circle):
-            return np.array(self.obj.center)
-        elif isinstance(self.obj, (plt.Rectangle, patches.FancyBboxPatch)):
-            x, y = self.obj.get_x(), self.obj.get_y()
-            return np.array([x + self.obj.get_width() / 2., y + self.obj.get_height() / 2.])
-        elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            return self._clean_path.mean(axis=0)
+        if isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
+            pos = self._clean_path.mean(axis=0)
         else:
-            raise
+            pos = self.position
+        return Pin(pos)
 
     @property
     def height(self):
@@ -266,7 +264,7 @@ class Edge(EdgeNode):
         return 0.
 
     @property
-    def center(self):
+    def mass_center(self):
         return Pin(self.position)
 
     def head(self):

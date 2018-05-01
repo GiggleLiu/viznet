@@ -157,7 +157,7 @@ def test_pin():
         n2 = mpo >> (2, 2.2)
         n3 = mps >> (1, 3)
         e1 = edge1 >> (n1, n2.pin(5*np.pi / 4., align=n1))
-        edge2 >> (n3.pin(np.pi / 2, align=e1), e1.center)
+        edge2 >> (n3.pin(np.pi / 2, align=e1), e1.mass_center)
 
 
 def test_connect():
@@ -172,7 +172,7 @@ def test_polygon():
     with DynamicShow() as ds:
         path = [(-1,0), (0, -1), (2,2)]
         # node theme can be define as (color, geometry, and inner-geometry) tuple. polygon requires 'path' property.
-        geo = NodeBrush(('#981255', 'polygon', 'odot'), roundness=0.2, props={'path':path})
+        geo = NodeBrush(('#981255', 'polygon', 'dot'), roundness=0.2, props={'path':path})
         paths = [[(-1, -1), (0, -1), (0, 1)], [(-1,0), (1, 0)]]
 
         # another flexible definition of node is lines, it take multiple paths.
