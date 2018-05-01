@@ -65,15 +65,17 @@ class Node(EdgeNode):
         brush (NodeBrush): brush.
     '''
 
-    def __init__(self, objs, brush):
+    def __init__(self, objs, position, brush):
         self.brush = brush
+        self.position = np.asarray(position)
         self.objs = objs
 
     @property
     def path(self):
         obj = self.obj
         trans = obj.get_transform()
-        path = trans.transform_path(obj.get_path())
+        path = obj.get_path()
+        path = trans.transform_path(path)
         if obj.axes is not None:
             path = obj.axes.transData.inverted().transform_path(path)
         return path.vertices
@@ -98,6 +100,13 @@ class Node(EdgeNode):
             'right': np.array([w / 2., 0]),
         }
         return offset_dict
+
+    @property
+    def _clean_path(self):
+        path = self.path
+        if np.allclose(path[-1], path[0]):
+            path = path[:-1]
+        return path
 
     def __getattr__(self, name):
         try:
@@ -137,7 +146,7 @@ class Node(EdgeNode):
         return Pin(loc)
 
     @property
-    def position(self):
+    def center(self):
         '''center of a node'''
         shape = self.brush.style[1]
         if isinstance(self.obj, plt.Circle):
@@ -146,7 +155,7 @@ class Node(EdgeNode):
             x, y = self.obj.get_x(), self.obj.get_y()
             return np.array([x + self.obj.get_width() / 2., y + self.obj.get_height() / 2.])
         elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            return self.path[:-1].mean(axis=0)
+            return self._clean_path.mean(axis=0)
         else:
             raise
 
@@ -160,7 +169,8 @@ class Node(EdgeNode):
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_height() + 2*self.obj.get_boxstyle().pad
         elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            return abs(self.path[:,1] - self.position[1]).max() * 2
+            y = self.path[:,1]
+            return y.max() - y.min()
         else:
             raise
 
@@ -174,7 +184,8 @@ class Node(EdgeNode):
         elif isinstance(self.obj, patches.FancyBboxPatch):
             return self.obj.get_width() + 2*self.obj.get_boxstyle().pad
         elif isinstance(self.obj, (plt.Polygon, patches.PathPatch)):
-            return abs(self.path[:,1] - self.position[0]).max() * 2
+            x = self.path[:,0]
+            return x.max() - x.min()
         else:
             raise
 
@@ -197,11 +208,6 @@ class Node(EdgeNode):
             distance = candidates_.dot(
                 direction) - abs(candidates_.dot(vdirection))
             return candidates[np.argmax(distance)]
-
-    @property
-    def center(self):
-        return Pin(self.position)
-
 
 class Edge(EdgeNode):
     '''

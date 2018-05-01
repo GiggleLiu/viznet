@@ -31,9 +31,15 @@ def intersection(line, theta, align):
     Returns:
         tuple: the nearest intersection point.
     '''
+    def trans(line, theta):
+        return rotate(line, - theta)[...,::-1]
+
+    def trans_r(line, theta):
+        return rotate(np.asarray(line)[...,::-1], theta)
+
     # rotate to y-axis
-    rotated_line = rotate(line, np.pi / 2. - theta)
-    rotated_xy = rotate(align, np.pi / 2. - theta)
+    rotated_line = trans(line, theta)
+    rotated_xy = trans(align, theta)
 
     # get segments
     p_pre = rotated_line[0]
@@ -63,6 +69,8 @@ def intersection(line, theta, align):
             pass
 
     # interpolate x
-    index = np.argmin(ys)
-    p = rotate([x, ys[index]], theta - np.pi / 2)
+    if len(ys) == 0:
+        raise Exception('Can not find connection point!')
+    index = np.argmax(ys)
+    p = trans_r([x, ys[index]], theta)
     return p

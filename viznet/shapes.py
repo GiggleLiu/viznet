@@ -36,7 +36,8 @@ def rounded_path(vertices, roundness, close=False):
     '''make rounded path from vertices.'''
     vertices = np.asarray(vertices)
     if roundness == 0:
-        return Path(vertices if not close else np.concatenate([vertices, vertices[:1]],axis=0))
+        vertices = vertices if not close else np.concatenate([vertices, vertices[:1]],axis=0)
+        return Path(vertices, codes=[Path.MOVETO]+[Path.LINETO]*(len(vertices)-1))
     if close:
         vertices = np.concatenate([vertices, vertices[:2]], axis=0)
 
@@ -72,11 +73,17 @@ def circle(xy, size, angle=None, roundness=0, props={}, **kwargs):
 def lines(xy, size, angle, roundness, props, **kwargs):
     vertices_list = props['paths']
     kwargs['facecolor'] = 'none'
-    objs = []
-    for vertices in np.asarray(vertices_list):
+    codes = []
+    verts = np.zeros([0, 2])
+    for iv, vertices in enumerate(np.asarray(vertices_list)):
         pp = rounded_path(affine(vertices, xy, size, angle), roundness, close=False)
-        objs.append(patches.PathPatch(pp, **_fix(kwargs)))
-    return objs
+        verts = np.concatenate([verts, pp.vertices], axis=0)
+        if iv == 0:
+            codes =  pp.codes
+        else:
+            codes =  np.concatenate([codes, [Path.MOVETO], pp.codes[1:]])
+    c = patches.PathPatch(Path(verts, codes), **_fix(kwargs))
+    return [c]
 
 def polygon(xy, size, angle, roundness, props, **kwargs):
     vertices = props['path']

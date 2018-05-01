@@ -154,9 +154,9 @@ def test_pin():
         edge1 = EdgeBrush('->', ds.ax, lw=2., color='r')
         edge2 = EdgeBrush('<->', ds.ax, lw=2., color='r')
         n1 = mpo >> (0, 0)
-        n2 = mpo >> (2, 2)
+        n2 = mpo >> (2, 2.2)
         n3 = mps >> (1, 3)
-        e1 = edge1 >> (n1, n2.pin(np.pi / 4., align=n1))
+        e1 = edge1 >> (n1, n2.pin(5*np.pi / 4., align=n1))
         edge2 >> (n3.pin(np.pi / 2, align=e1), e1.center)
 
 
@@ -168,10 +168,23 @@ def test_connect():
         edge >> (n1, (3, 3))
 
 def test_polygon():
+    edge = EdgeBrush('->', lw=2., color='r')
     with DynamicShow() as ds:
         path = [(-1,0), (0, -1), (2,2)]
-        geo = NodeBrush(('#981255', 'polygon', 'odot'), size=0.3, props={'path':path})
-        geo >> (2, 2)
+        # node theme can be define as (color, geometry, and inner-geometry) tuple. polygon requires 'path' property.
+        geo = NodeBrush(('#981255', 'polygon', 'odot'), roundness=0.2, props={'path':path})
+        paths = [[(-1, -1), (0, -1), (0, 1)], [(-1,0), (1, 0)]]
+
+        # another flexible definition of node is lines, it take multiple paths.
+        lines = NodeBrush(('#981255', 'lines', 'none'), roundness=0.2, props={'paths':paths})
+        g = geo >> (0, 0)
+        l = lines >> (1,2)
+        edge >> (g, l)
+
+        # when using pin,
+        edge >> (g.pin(np.pi/2.), l.pin('left'))
+        l.text('left-side', 'left')
+        l.text('bottom-side', 'bottom')
 
 def test_grid():
     from ..grid import Grid
@@ -252,11 +265,11 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
-    test_ghz()
     test_polygon()
+    test_pin()
+    test_ghz()
     test_grid()
     test_connect()
     test_tebd()
     test_edge()
     test_edgenode()
-    test_pin()

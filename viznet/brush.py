@@ -97,7 +97,7 @@ class NodeBrush(Brush):
         for p in objs:
             ax.add_patch(p)
             #shapes.affine(p, offset=xy, scale=np.atleast_1d(self._size)[0], angle=self.rotate)
-        node = Node(objs, self)
+        node = Node(objs, xy, self)
         return node
 
     @property
