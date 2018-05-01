@@ -184,7 +184,7 @@ def test_polygon():
         # when using pin,
         edge >> (g.pin(np.pi/2.), l.pin('left'))
         l.text('left-side', 'left')
-        l.text('bottom-side', 'bottom')
+        l.text('bottom-side', -np.pi/2.)
 
 def test_grid():
     from ..grid import Grid

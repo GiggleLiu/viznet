@@ -17,7 +17,7 @@ class EdgeNode(object):
 
         Args:
             text (str): the text shown.
-            position ('center'|'left'|'right'|'top'|'bottom', default='center'): position of text.
+            position ('center'|'left'|'right'|'top'|'bottom'|float, default='center'): position of text.
             fontsize (int|None, default=None): override default fontsize.
             color (str,default='k'): color.
             text_offset (float|None,default=None): the displacement of text.
@@ -53,6 +53,20 @@ class EdgeNode(object):
                 va = 'top'
             else:
                 raise
+        else:
+            # a float number
+            uvec = np.array([np.cos(position), np.sin(position)])
+            x, y = uvec
+            if y > 1e-5:
+                va = 'bottom'
+            elif y < -1e-5:
+                va = 'top'
+            if x < -1e-5:
+                ha = 'right'
+            elif x > 1e-5:
+                ha = 'left'
+            position = self.pin(position)
+            position = position + text_offset*uvec
         return self.ax.text(position[0], position[1], text, va=va, ha=ha, fontsize=fontsize, color=color)
 
 
