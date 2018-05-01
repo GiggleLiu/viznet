@@ -119,10 +119,12 @@ square = lambda xy, size, *args, **kwargs: rectangle(xy, (size, size), *args, **
 golden = lambda xy, size, *args, **kwargs: rectangle(xy, (1.3* size, size), *args, **kwargs)
 
 def dot(xy, size, *args, **kwargs):
-    kwargs['facecolor'] = kwargs['edgecolor']
+    kwargs['edgecolor'] = 'none'
     return circle(xy, 0.3*size, *args, **kwargs)
 
 def odot(xy, size, *args, **kwargs):
+    if 'facecolor' in kwargs:
+        kwargs['edgecolor'] = kwargs['facecolor']
     kwargs['facecolor'] = 'none'
     return circle(xy, 0.3*size, *args, **kwargs)
 
