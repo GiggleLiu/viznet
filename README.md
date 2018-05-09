@@ -43,5 +43,5 @@ The theme for quantum circuits follows from [ProjectQ](https://github.com/Projec
 The first release of viznet (v0.1) was developed by [Jin-Guo Liu](https://giggleliu.github.io/)  in the group of Lei Wang at IOP China.
 
 ## Documentation
-
-Click [here](http://viznet.readthedocs.io/en/latest/) to read the docs!
+* Go through notebook `viznet_basic.ipynb` ([online](https://drive.google.com/file/d/1mP9DOoTR4JEhd-ILVXfggpBJOyGatiws/view?usp=sharing)) as a quick introduction
+* Click [here](http://viznet.readthedocs.io/en/latest/) to read the docs!
