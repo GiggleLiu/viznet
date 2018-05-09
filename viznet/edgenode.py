@@ -112,6 +112,7 @@ class Node(EdgeNode):
             'bottom': np.array([0, -h / 2.]),
             'left': np.array([-w / 2., 0]),
             'right': np.array([w / 2., 0]),
+            'center': np.array([0., 0]),
         }
         return offset_dict
 
