@@ -126,7 +126,7 @@ class QuantumCircuit(object):
                     return False
                 xend = self.x
                 xstart = ctx.xstart
-                b = brush >> (slice(xstart-pad_x, xend+pad_x), slice(self.get_position(sls.start)[1], self.get_position(sls.stop)[1]))
+                b = brush >> (slice(xstart-pad_x, xend+pad_x), slice(self.get_position(sls.start)[1]+pad_y, self.get_position(sls.stop)[1]-pad_y))
                 self.boxes.append(b)
                 return True
         return Context()

@@ -11,15 +11,13 @@ from .setting import annotate_setting
 from .utils import intersection
 
 class EdgeNode(object):
-    def text(self, text, position='center', fontsize=None, color='k', text_offset=None):
+    def text(self, text, position='center', fontsize=None, text_offset=None, **kwargs):
         '''
         text an Edge|Node|Pin.
 
         Args:
             text (str): the text shown.
             position ('center'|'left'|'right'|'top'|'bottom'|float, default='center'): position of text.
-            fontsize (int|None, default=None): override default fontsize.
-            color (str,default='k'): color.
             text_offset (float|None,default=None): the displacement of text.
 
         Returns:
@@ -67,7 +65,7 @@ class EdgeNode(object):
                 ha = 'left'
             position = self.pin(position)
             position = position + text_offset*uvec
-        return self.ax.text(position[0], position[1], text, va=va, ha=ha, fontsize=fontsize, color=color)
+        return self.ax.text(position[0], position[1], text, va=va, ha=ha, fontsize=fontsize, **kwargs)
 
 
 class Node(EdgeNode):
