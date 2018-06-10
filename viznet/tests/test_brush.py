@@ -213,6 +213,34 @@ def test_grid():
         edge >> (A.pin('top', align = grid[4, 0]), B.pin('bottom', align = grid[4, 0]))
         edge >> (B.pin('bottom', align = grid[5, 0]), A.pin('top', align = grid[5, 0]))
 
+def test_grid3D():
+    from ..grid import Grid
+    grid = Grid(([2.0, 1.0], [0, 1.2]), offset=(2,2))
+    brush = NodeBrush('basic')
+    edge = EdgeBrush('->', lw=2., color='r')
+    box = NodeBrush('box', roundness=0.2, size='large')
+
+    # define an mpo
+    mpo = NodeBrush('box', color='g', roundness=0.2)
+
+    brushes = []
+    with DynamicShow() as ds:
+        for i in range(4):
+            for j in range(4):
+                brushes.append(brush >> grid[i, j])
+        for i in range(15):
+            edge >> (brushes[i], brushes[i+1])
+        box >> grid[1:2, 1:2]
+
+        # generate two mpos
+        A = mpo >> grid[4:5, 0:0]
+        B = mpo >> grid[4:5, 2:3]
+
+        # connect left legs.
+        edge >> (A.pin('top', align = grid[4, 0]), B.pin('bottom', align = grid[4, 0]))
+        edge >> (B.pin('bottom', align = grid[5, 0]), A.pin('top', align = grid[5, 0]))
+
+
 class TestShow():
     '''
     Dynamic plot context, intended for displaying geometries.
@@ -265,6 +293,7 @@ class TestShow():
             pdb.set_trace()
 
 if __name__ == '__main__':
+    test_grid3D()
     test_polygon()
     test_pin()
     test_ghz()

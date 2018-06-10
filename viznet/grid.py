@@ -31,9 +31,13 @@ class Grid(object):
             if i.start is None or j.start is None:
                 raise ValueError('slice not valid!')
             dx, dy = self.dxy
-            ox, oy = self.offset
             istart, jstart = self[i.start, j.start]
             istop, jstop = self[i.stop, j.stop]
             return slice(istart, istop), slice(jstart, jstop)
         else:
-            return self.offset+self.dxy*ij
+            if np.ndim(self.dxy) == 1:
+                return self.offset + self.dxy*ij
+            elif np.ndim(self.dxy) == 2:
+                return self.offset + self.dxy[0]*i + self.dxy[1]*j
+            else:
+                raise
