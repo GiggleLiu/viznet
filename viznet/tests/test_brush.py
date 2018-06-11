@@ -215,31 +215,26 @@ def test_grid():
 
 def test_grid3D():
     from ..grid import Grid
-    grid = Grid(([2.0, 1.0], [0, 1.2]), offset=(2,2))
-    brush = NodeBrush('basic')
-    edge = EdgeBrush('->', lw=2., color='r')
+    from ..cluster import connect121
+    grid = Grid(([2.0, 0.0], [1.0, 1.2], [0.0, 1.3]), offset=(2,2))
+    brush = NodeBrush('basic', lw=3, zorder=100)
+    edge = EdgeBrush('<.>', lw=1., color='#CC1133')
     box = NodeBrush('box', roundness=0.2, size='large')
 
     # define an mpo
     mpo = NodeBrush('box', color='g', roundness=0.2)
 
-    brushes = []
+    nodes = np.zeros([4,4,2], dtype="O")
     with DynamicShow() as ds:
         for i in range(4):
             for j in range(4):
-                brushes.append(brush >> grid[i, j])
-        for i in range(15):
-            edge >> (brushes[i], brushes[i+1])
-        box >> grid[1:2, 1:2]
-
-        # generate two mpos
-        A = mpo >> grid[4:5, 0:0]
-        B = mpo >> grid[4:5, 2:3]
-
-        # connect left legs.
-        edge >> (A.pin('top', align = grid[4, 0]), B.pin('bottom', align = grid[4, 0]))
-        edge >> (B.pin('bottom', align = grid[5, 0]), A.pin('top', align = grid[5, 0]))
-
+                for k in range(2):
+                    brush.color = 'r' if k==0 else 'g'
+                    brush.zorder = k
+                    nodes[i,j,k] = brush >> grid[i, j, k]
+        for D in range(3):
+            for i in range(nodes.shape[D]-1):
+                connect121(np.take(nodes, i, D).ravel(), np.take(nodes, i+1, D).ravel(), edge)
 
 class TestShow():
     '''

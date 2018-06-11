@@ -1,4 +1,5 @@
 import numpy as np
+import pdb
 from viznet import NodeBrush, DynamicShow, EdgeBrush
 
 
@@ -43,6 +44,7 @@ def add_circled_node_sequence(num_node, brush, radius, offset=(0, 0)):
     i = 0
     for xy in xylist:
         node_list.append(brush >> xy)
+        pdb.set_trace()
         i += 1
     return node_list
 

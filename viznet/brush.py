@@ -26,6 +26,11 @@ class NodeBrush(Brush):
         ax (:obj:`Axes`): matplotlib Axes instance.
         color (str|None): the color of painted node by this brush, it will overide theme color if is not `None`.
         size ('huge'|'large'|'normal'|'small'|'tiny'|'dot'|tuple|float): size of node.
+        roundness (float): the roundness of edges.
+        zorder (int): same to matplotlib zorder.
+        rotate (float): angle for rotation.
+        ls (str): line style.
+        props (dict): other arguments passed to handler.
     '''
     setting = node_setting
 
@@ -38,7 +43,7 @@ class NodeBrush(Brush):
         'dot': 0.05,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', props=None):
+    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', lw=None, props=None):
         self.style = style
         self.size = size
         self.ax = ax
@@ -46,6 +51,7 @@ class NodeBrush(Brush):
         self.zorder = zorder
         self.rotate = rotate
         self.ls = ls
+        self.lw = lw
         self.node_handler = basicgeometry_handler
         self.props = props if props is not None else {}
         self.roundness = roundness
@@ -79,6 +85,9 @@ class NodeBrush(Brush):
         # override color
         if self.color is not None:
             color = self.color
+        lw = self.lw
+        if lw is None:
+            lw = self.setting['lw']
 
         theme_code = self._style
 
@@ -91,7 +100,7 @@ class NodeBrush(Brush):
             xy = (xstop + xstart)/2., (ystart + ystop)/2.
 
         objs = self.node_handler(theme_code, xy, size, self.roundness, facecolor=self.color,
-                ls=self.ls, zorder=self.zorder, angle=self.rotate, props=self.props)
+                lw = lw, ls=self.ls, zorder=self.zorder, angle=self.rotate, props=self.props)
 
         # add patches
         for p in objs:
@@ -360,11 +369,10 @@ def _basicgeometry(xy, geo, size, angle, roundness, props, **kwargs):
     '''basic geometric handler.'''
     return eval('shapes.%s'%geo)(xy, size, angle, roundness, props=props, **kwargs)
 
-def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, zorder, angle, props):
+def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, lw, zorder, angle, props):
     '''basic geometry node handler.'''
     default_color, geo, inner_geo = theme_code
     edgecolor = node_setting['edgecolor']
-    lw = node_setting['lw']
     if facecolor is None:
         facecolor = default_color
     if facecolor is None:  # both color and default color is None
