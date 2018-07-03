@@ -42,7 +42,7 @@ class DynamicShow():
             print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
                   self.filename)
             pdb.set_trace()
-            plt.savefig(self.filename, dpi=300)
+            plt.savefig(self.filename, dpi=300, transparent=True)
         else:
             pdb.set_trace()
         return True
