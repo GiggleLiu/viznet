@@ -43,7 +43,7 @@ class NodeBrush(Brush):
         'dot': 0.05,
     }
 
-    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', lw=None, props=None):
+    def __init__(self, style, ax=None, color=None, size='normal', roundness=0, zorder=0, rotate=0., ls='-', lw=None, edgecolor=None, props=None):
         self.style = style
         self.size = size
         self.ax = ax
@@ -52,6 +52,7 @@ class NodeBrush(Brush):
         self.rotate = rotate
         self.ls = ls
         self.lw = lw
+        self.edgecolor = edgecolor
         self.node_handler = basicgeometry_handler
         self.props = props if props is not None else {}
         self.roundness = roundness
@@ -86,8 +87,11 @@ class NodeBrush(Brush):
         if self.color is not None:
             color = self.color
         lw = self.lw
+        edgecolor = self.edgecolor
         if lw is None:
             lw = self.setting['lw']
+        if edgecolor is None:
+            edgecolor = self.setting['edgecolor']
 
         theme_code = self._style
 
@@ -100,7 +104,7 @@ class NodeBrush(Brush):
             xy = (xstop + xstart)/2., (ystart + ystop)/2.
 
         objs = self.node_handler(theme_code, xy, size, self.roundness, facecolor=self.color,
-                lw = lw, ls=self.ls, zorder=self.zorder, angle=self.rotate, props=self.props)
+                lw = lw, edgecolor=edgecolor, ls=self.ls, zorder=self.zorder, angle=self.rotate, props=self.props)
 
         # add patches
         for p in objs:
@@ -140,13 +144,14 @@ class EdgeBrush(Brush):
     '''
     setting = edge_setting
 
-    def __init__(self, style, ax=None, lw=1, color='k', zorder=0):
+    def __init__(self, style, ax=None, lw=1, color='k', zorder=0, solid_capstyle='butt'):
         self.lw = lw
         self.color = color
         self.ax = ax
         self.style = style
         self.zorder = zorder
         self.line_handler = basicline_handler
+        self.solid_capstyle = solid_capstyle
 
     def __rshift__(self, startend):
         '''
@@ -173,7 +178,7 @@ class EdgeBrush(Brush):
 
         arrows, lines = self.line_handler(sxy, exy, self.style, head_length)
         objs = _arrows(ax, arrows, head_width=head_width, head_length=head_length, lw=lw, zorder=self.zorder, color=self.color)
-        objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=False)
+        objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=False, solid_capstyle=self.solid_capstyle)
         return Edge(objs, sxy, exy, start, end, brush=self)
 
 class CLinkBrush(EdgeBrush):
@@ -183,8 +188,8 @@ class CLinkBrush(EdgeBrush):
     Attributes:
         style (str): e.g. '<->', right-side grow with respect to the line direction.
     '''
-    def __init__(self, style, ax=None, offsets=(0.2,), roundness=0, lw=1, color='k', zorder=0):
-        super(CLinkBrush, self).__init__(style, ax=ax, lw=lw, color=color, zorder=zorder)
+    def __init__(self, style, ax=None, offsets=(0.2,), roundness=0, lw=1, color='k', zorder=0, solid_capstyle='butt'):
+        super(CLinkBrush, self).__init__(style, ax=ax, lw=lw, color=color, zorder=zorder, solid_capstyle=solid_capstyle)
         self.roundness = roundness
         self.offsets = list(offsets)
         self.line_handler = clink_handler
@@ -210,7 +215,7 @@ class CLinkBrush(EdgeBrush):
         
         arrows, lines, (sxy_, exy_) = self.line_handler(sxy, exy, self.style, self.offsets, self.roundness, head_length)
         objs = _arrows(ax, arrows, head_width=head_width, head_length=head_length, lw=lw, zorder=self.zorder, color=self.color)
-        objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=True)
+        objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=True, solid_capstyle=self.solid_capstyle)
         return Edge(objs, sxy_, exy_, start, end, brush=self)
 
 def clink_handler(sxy, exy, style, offsets, roundness, head_length):
@@ -334,7 +339,7 @@ def _arrow(ax, mxy, direction, head_width, head_length, lw, zorder, color):
               length_includes_head=False, lw=lw, edgecolor=color, zorder=zorder)
     return obj
 
-def _line(ax, ls, path, lw, color, zorder, use_path):
+def _line(ax, ls, path, lw, color, zorder, use_path, solid_capstyle):
     '''draw a line connecting sxy and exy.'''
     objs = []
     def _plot_line(path_):
@@ -342,7 +347,7 @@ def _line(ax, ls, path, lw, color, zorder, use_path):
             sxy_, exy_ = path_
             objs.extend(ax.plot([sxy_[0], exy_[0]], [
                                sxy_[1], exy_[1]], lw=lw, color=color,
-                               zorder=zorder, ls=ls, solid_capstyle='butt'))
+                               zorder=zorder, ls=ls, solid_capstyle=solid_capstyle))
         else:
             obj = patches.PathPatch(path_, lw=lw, facecolor='none', edgecolor=color,
                                zorder=zorder, ls=ls)
@@ -369,10 +374,9 @@ def _basicgeometry(xy, geo, size, angle, roundness, props, **kwargs):
     '''basic geometric handler.'''
     return eval('shapes.%s'%geo)(xy, size, angle, roundness, props=props, **kwargs)
 
-def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, lw, zorder, angle, props):
+def basicgeometry_handler(theme_code, xy, size, roundness, facecolor, ls, lw, edgecolor, zorder, angle, props):
     '''basic geometry node handler.'''
     default_color, geo, inner_geo = theme_code
-    edgecolor = node_setting['edgecolor']
     if facecolor is None:
         facecolor = default_color
     if facecolor is None:  # both color and default color is None

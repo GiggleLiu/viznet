@@ -1,15 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import viznet
-from viznet import NodeBrush, EdgeBrush
+from viznet import NodeBrush, EdgeBrush, Pin
 
 RED = '#FF2200'
 BLUE = '#333333'
 YELLOW= '#BBBBBB'
-topc = NodeBrush('basic', color=RED, size=0.1, lw=0, zorder=90)
-leaf = NodeBrush('basic', color=BLUE, size='tiny', lw=0)
+viznet.setting.node_setting["inner_lw"] = 3
+topc = NodeBrush('qc.cross', color=RED, size=0.1, lw=0, zorder=101)
+leaf = NodeBrush('basic', color=BLUE, size='tiny', lw=0, edgecolor=BLUE)
 base = NodeBrush('basic', color=YELLOW, size='normal', lw=4)
-hedge = EdgeBrush('-', lw=5, color=BLUE, zorder=-1)
+hedge = EdgeBrush('-', lw=5, color=BLUE, zorder=-1, solid_capstyle='round')
 vedge = EdgeBrush('-', lw=3, color=RED, zorder=100)
 
 dz = 0.6
@@ -34,9 +35,15 @@ def grow(brush, nodes, dr, angle, vbar, size):
 
 
 def mera():
-    nodes = [viznet.Pin([0,-1e-8])]
+    #nodes = [viznet.Pin([0,-1e-8])]
     plt.figure(figsize=(8,6))
-    for angle, dr, size in zip([np.pi, np.pi*0.8, np.pi*0.6, 0.4*np.pi], [0.6, 1.0, 0.8, 0.8], [0.3, 0.25, 0.2, 0.15]):
+    initial = base >> (0, 0.001)
+    pin1 = topc >> (-0.1, dz)
+    pin2 = topc >> (0.1, dz)
+    vedge >> (pin1, Pin([-0.1, 0]))
+    vedge >> (pin2, Pin([0.1, 0]))
+    nodes = [initial]
+    for angle, dr, size in zip([np.pi, np.pi*0.9, np.pi*0.7, 0.4*np.pi], [0.9, 1.0, 0.8, 0.8], [0.3, 0.25, 0.2, 0.15]):
         nodes = grow(base, nodes, dr=dr, angle=angle, vbar=True, size=size)
     grow(leaf, nodes, dr=0.6, angle=0.4*np.pi, vbar=False, size=topc.size)
     plt.axis('off')
