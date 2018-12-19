@@ -11,7 +11,7 @@ NC = NodeBrush('qc.NC')
 NOT = NodeBrush('qc.NOT', size='small')
 END = NodeBrush('qc.end')
 MEASURE = NodeBrush('qc.measure')
-CORSS = NodeBrush('qc.cross')
+CROSS = NodeBrush('qc.cross')
 BOX = NodeBrush('qc.box')
 
 GATEMAP = {'C':C, 'NC': NC, 'NOT': NOT, 'Measure':MEASURE, 'X':GATE, 'Y':GATE,
@@ -132,7 +132,7 @@ def vizcode(handler, code, blockdict={}):
                 handler.x += offsetx
                 return
         elif command == 'Swap':
-            commands.extend([CORSS]*2)
+            commands.extend([CROSS]*2)
             if len(line)!=2:
                 raise ValueError('Swap Gate Defintion Error: %s'%code)
             lines.extend(line)

@@ -24,11 +24,12 @@ class QuantumCircuit(object):
         num_bit (int): number of bits.
         y0 (float): the y offset.
     '''
-    line_space = 1.0
-
-    def __init__(self, num_bit, ax=None, x=0, y0=0, **kwargs):
+    def __init__(self, num_bit, ax=None, x=0, y0=0, locs=None, **kwargs):
         self.x = x
         self.y0 = y0
+        if locs is None:
+            locs = self.y0-np.arange(num_bit)
+        self.locs = locs
         self.node_dict = dict(
             zip(range(num_bit), [[Pin(self.get_position(i))] for i in range(num_bit)]))
         self.edge = EdgeBrush('---', ax, **kwargs)
@@ -43,7 +44,7 @@ class QuantumCircuit(object):
         if isinstance(line, slice):
             return (x, slice(self.get_position(line.start)[1], self.get_position(line.stop)[1]))
         else:
-            return (x, self.y0-line*self.line_space)
+            return (x, self.locs[line])
 
     def gate(self, brush, position, text='', fontsize=18):
         '''
@@ -117,8 +118,8 @@ class QuantumCircuit(object):
         class Context():
             def __enter__(ctx, *args):
                 ctx.xstart = self.x
-                self.boxes = []
-                return self.boxes
+                ctx.boxes = []
+                return ctx.boxes
 
             def __exit__(ctx, type, value, tb):
                 if tb is not None:
@@ -127,7 +128,7 @@ class QuantumCircuit(object):
                 xend = self.x
                 xstart = ctx.xstart
                 b = brush >> (slice(xstart-pad_x, xend+pad_x), slice(self.get_position(sls.start)[1]+pad_y, self.get_position(sls.stop)[1]-pad_y))
-                self.boxes.append(b)
+                ctx.boxes.append(b)
                 return True
         return Context()
 

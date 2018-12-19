@@ -8,3 +8,4 @@ from .parsecircuit import dict2circuit, vizcode
 
 from . import theme, setting, shapes
 from . import parsecircuit
+from .version import __version__
