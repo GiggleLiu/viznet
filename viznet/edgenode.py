@@ -267,7 +267,7 @@ class Edge(EdgeNode):
         return Pin(self.position)
 
     def head(self):
-        return Pin(self.tail_xy)
+        return Pin(self.end_xy)
 
     def tail(self):
         return Pin(self.start_xy)
