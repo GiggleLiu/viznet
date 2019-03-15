@@ -6,7 +6,7 @@ from viznet import parsecircuit as _
 def ghz4():
     '''4 bit GHZ circuit, applicable on ibmqx4 circuit.'''
     num_bit = 4
-    with DynamicShow((5, 3), '_exact_ghz4_circuit.pdf') as ds:
+    with DynamicShow((5, 3), '_exact_ghz4_circuit.png') as ds:
         handler = QuantumCircuit(num_bit=4, y0=2.)
         handler.x += 0.5
         handler.gate(_.GATE, 0, 'X')

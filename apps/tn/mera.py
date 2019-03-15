@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import viznet
-from viznet import NodeBrush, EdgeBrush, Pin
+from viznet import NodeBrush, EdgeBrush, Pin, DynamicShow
 
 RED = '#FF2200'
 BLUE = '#333333'
@@ -35,19 +35,16 @@ def grow(brush, nodes, dr, angle, vbar, size):
 
 
 def mera():
-    #nodes = [viznet.Pin([0,-1e-8])]
-    plt.figure(figsize=(8,6))
-    initial = base >> (0, 0.001)
-    pin1 = topc >> (-0.1, dz)
-    pin2 = topc >> (0.1, dz)
-    vedge >> (pin1, Pin([-0.1, 0]))
-    vedge >> (pin2, Pin([0.1, 0]))
-    nodes = [initial]
-    for angle, dr, size in zip([np.pi, np.pi*0.9, np.pi*0.7, 0.4*np.pi], [0.9, 1.0, 0.8, 0.8], [0.3, 0.25, 0.2, 0.15]):
-        nodes = grow(base, nodes, dr=dr, angle=angle, vbar=True, size=size)
-    grow(leaf, nodes, dr=0.6, angle=0.4*np.pi, vbar=False, size=topc.size)
-    plt.axis('off')
-    plt.savefig("_mera.png")
+    with DynamicShow((8, 6), filename='_mera.png') as ds:
+        initial = base >> (0, 0.001)
+        pin1 = topc >> (-0.1, dz)
+        pin2 = topc >> (0.1, dz)
+        vedge >> (pin1, Pin([-0.1, 0]))
+        vedge >> (pin2, Pin([0.1, 0]))
+        nodes = [initial]
+        for angle, dr, size in zip([np.pi, np.pi*0.9, np.pi*0.7, 0.4*np.pi], [0.9, 1.0, 0.8, 0.8], [0.3, 0.25, 0.2, 0.15]):
+            nodes = grow(base, nodes, dr=dr, angle=angle, vbar=True, size=size)
+        grow(leaf, nodes, dr=0.6, angle=0.4*np.pi, vbar=False, size=topc.size)
 
 if __name__ == "__main__":
     mera()

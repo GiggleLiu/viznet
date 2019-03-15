@@ -6,7 +6,9 @@ from viznet import parsecircuit as _
 def diffcircuit():
     '''illustration of block-focus scheme.'''
     num_bit = 4
+    depth = 3
     with DynamicShow((10, 4), '_differentiable.png') as ds:
+        plt.text(5, -4, "Differentiable Circuit of Size 4, depth 2")
         handler = QuantumCircuit(num_bit=num_bit)
         handler.x += 1.0
         with handler.block(slice(0, num_bit-1), pad_x=0.2, pad_y=0.1) as b:
@@ -18,10 +20,11 @@ def diffcircuit():
             entangle_gate(handler)
         b[0].text('Entangler', 'top')
 
-        handler.x += 1.0
-        rot_gate(handler, 2, mask=[1,1,1])
-        handler.x += 1.0
-        entangle_gate(handler)
+        for i in range(depth-2):
+            handler.x += 1.0
+            rot_gate(handler, 2, mask=[1,1,1])
+            handler.x += 1.0
+            entangle_gate(handler)
         handler.x += 1.0
         rot_gate(handler, 3, mask=[1,1,0])
 
@@ -48,12 +51,13 @@ def rot_gate(handler, l, mask=[True]*3):
     if any(mask): handler.x-=1.2
 
 def entangle_gate(handler):
-    handler.gate((_.C, _.NOT), (1, 0))
-    handler.gate((_.C, _.NOT), (3, 2))
+    for i,j in [(1,2), (3,4)]:
+        handler.gate((_.C, _.NOT), (i-1, j-1))
     handler.x += 0.7
-    handler.gate((_.C, _.NOT), (2, 0))
+    for i,j in [(1,2)]:
+        handler.gate((_.C, _.NOT), (i, j%6))
     handler.x += 0.7
-    handler.gate((_.C, _.NOT), (3, 2))
+    handler.gate((_.C, _.NOT), (3, 0))
 
 if __name__ == '__main__':
     diffcircuit()

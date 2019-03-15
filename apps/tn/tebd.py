@@ -1,4 +1,4 @@
-from viznet import theme, EdgeBrush, DynamicShow, Grid
+from viznet import theme, EdgeBrush, DynamicShow, Grid, NodeBrush
 
 
 def tebd():
@@ -11,11 +11,11 @@ def tebd():
     # EdgeBrush can connect two Nodes (or Pin as a special Node),
     # like `edge_brush >> node_a, node_b`, and will return an Edge instance.
     size = 'normal'
-    mps = grid.node_brush('tn.mps', size=size)
+    mps = NodeBrush('tn.mps', size=size)
     # invisible node can be used as a placeholder
-    invisible_mps = grid.node_brush('invisible', size=size)
+    invisible_mps = NodeBrush('invisible', size=size)
     # define a two site mpo, which will occupy 1 column, 0 rows.
-    mpo21 = grid.node_brush('tn.mpo', size=size).gridwise(1, 0)
+    mpo21 = NodeBrush('tn.mpo', size=size)
     edge = EdgeBrush('-', lw=2.)
 
     with DynamicShow((6, 4), filename='_tebd.png') as ds:
@@ -36,7 +36,8 @@ def tebd():
             for i, (mps_l, mps_r) in enumerate(zip(mps_list[start::2],
                                                    mps_list[start + 1::2])):
                 # place an two site mpo slightly above the center of two mps nodes
-                mpo_list.append(mpo21 >> grid[(mps_l.position + mps_r.position) / 2. + (0, layer + 1)])
+                y = mps_l.position[1]+layer + 1
+                mpo_list.append(mpo21 >> grid[mps_l.position[0]:mps_r.position[0], y:y])
                 if layer == 0:
                     # if this is the first mpo layer, connect mps and newly added mpo.
                     pin_l = mps_l
