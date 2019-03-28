@@ -1,5 +1,6 @@
 import pdb
 from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 class DynamicShow():
     '''
@@ -21,10 +22,12 @@ class DynamicShow():
             ds.ax.add_patch(c)
     '''
 
-    def __init__(self, figsize=(6, 4), filename=None, dpi=300):
+    def __init__(self, figsize=(6, 4), filename=None, dpi=300, fps=1):
         self.figsize = figsize
         self.filename = filename
         self.ax = None
+        self.steps = []
+        self.fps = fps
 
     def __enter__(self):
         plt.ion()
@@ -38,7 +41,17 @@ class DynamicShow():
         plt.axis('equal')
         plt.axis('off')
         plt.tight_layout()
-        if self.filename is not None:
+        if self.filename[-4:] in [".gif", ".mp4"]:
+            nframe = len(self.steps)+1
+
+            def update(i):
+                if i!=0:
+                    self.steps[i-1]()
+
+            anim = FuncAnimation(plt.gcf(), update, frames=range(nframe), repeat=False)
+            pdb.set_trace()
+            anim.save(self.filename, writer="imagemagick", fps=self.fps)
+        elif self.filename is not None:
             print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
                   self.filename)
             pdb.set_trace()
