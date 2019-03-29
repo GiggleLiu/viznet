@@ -65,8 +65,17 @@ class EdgeNode(object):
                 ha = 'left'
             position = self.pin(position)
             position = position + text_offset*uvec
-        return self.ax.text(position[0], position[1], text, va=va, ha=ha, fontsize=fontsize, **kwargs)
+        t = self.ax.text(position[0], position[1], text, va=va, ha=ha, fontsize=fontsize, **kwargs)
+        self.objs.append(t)
+        return t
 
+    def remove(self):
+        for obj in self.objs:
+            try:
+                obj.remove()
+            except:
+                return False
+        return True
 
 class Node(EdgeNode):
     '''

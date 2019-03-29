@@ -41,7 +41,7 @@ class DynamicShow():
         plt.axis('equal')
         plt.axis('off')
         plt.tight_layout()
-        if self.filename[-4:] in [".gif", ".mp4"]:
+        if self.filename[-4:] == ".gif":
             nframe = len(self.steps)+1
 
             def update(i):
@@ -49,9 +49,12 @@ class DynamicShow():
                     self.steps[i-1]()
 
             anim = FuncAnimation(plt.gcf(), update, frames=range(nframe), repeat=False)
-            pdb.set_trace()
+            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
+                    self.filename)
             anim.save(self.filename, writer="imagemagick", fps=self.fps)
         elif self.filename is not None:
+            for f in self.steps:
+                f()
             print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
                   self.filename)
             pdb.set_trace()
