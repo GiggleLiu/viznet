@@ -30,9 +30,9 @@ Boltzmann Machine       | TEBD
 ----------------------- | -------------------------
 ![](docs/images/bm.png) | ![](docs/images/tebd.png)
 
-| quantum circuit           |
-| --------------------------|
-| ![](docs/images/ghz4.png) |
+ Quantum Circuit           |  Graph Theory
+ --------------------------| -------------------------------
+ ![](docs/images/ghz4.png) | ![](docs/images/contract.gif)
 
 The theme for neural network follows from [Neural Network Zoo Page](http://www.asimovinstitute.org/neural-network-zoo/),
 
