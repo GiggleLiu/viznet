@@ -218,6 +218,54 @@ class CLinkBrush(EdgeBrush):
         objs += _lines(ax, lines, lw=lw, color=self.color, zorder=self.zorder, use_path=True, solid_capstyle=self.solid_capstyle)
         return Edge(objs, sxy_, exy_, start, end, brush=self)
 
+class CurveBrush(Brush):
+    '''
+    a brush for drawing edges.
+
+    Attributes:
+        style (str): the style of edge, same as arrowprops in https://matplotlib.org/api/_as_gen/matplotlib.pyplot.annotate.html.
+        ax (:obj:`Axes`): matplotlib Axes instance.
+        lw (float): line width.
+        color (str): the color of painted edge by this brush.
+    '''
+    setting = edge_setting
+
+    def __init__(self, style, ax=None, lw=1, color='k', zorder=0, solid_capstyle='butt', ls='-'):
+        self.lw = lw
+        self.ls = ls
+        self.color = color
+        self.ax = ax
+        self.style = style
+        self.zorder = zorder
+        self.solid_capstyle = solid_capstyle
+
+    def __rshift__(self, startend):
+        '''
+        connect start node and end node
+
+        Args:
+            startend (tuple): start node (position) and end node (position).
+
+        Returns:
+            :obj:`Edge`: edge object.
+        '''
+        ax = plt.gca() if self.ax is None else self.ax
+        lw = self.lw
+        head_length = self.setting['arrow_head_length'] * lw
+        head_width = self.setting['arrow_head_width'] * lw
+
+        # get start position and end position
+        start, end = _node(startend[0]), _node(startend[1])
+        rad = startend[2]
+        text = "" if len(startend) <= 3 else startend[3]
+        sxy, exy = np.asarray(start.position), np.asarray(end.position)
+
+        arrowprops=dict(patchA=getattr(start, "obj", None), patchB = getattr(end, "obj", None),
+                                   connectionstyle="arc3,rad=%f"%rad,
+                                   arrowstyle=self.style, lw=self.lw, ls=self.ls, color=self.color)
+        
+        obj = ax.annotate(text, exy, sxy, xycoords='data', textcoords='data', zorder=self.zorder, arrowprops=arrowprops)
+        return Edge([obj], sxy, exy, start, end, brush=self)
 def clink_handler(sxy, exy, style, offsets, roundness, head_length):
     '''a C style link between two edges.'''
     nturn = len(offsets)

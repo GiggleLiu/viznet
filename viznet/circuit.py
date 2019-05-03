@@ -46,7 +46,7 @@ class QuantumCircuit(object):
         else:
             return (x, self.locs[line])
 
-    def gate(self, brush, position, text='', fontsize=18):
+    def gate(self, brush, position, text='', fontsize=18, noline=False):
         '''
         place a gate at specific position.
         '''
@@ -84,7 +84,7 @@ class QuantumCircuit(object):
             if len(node_list) >= 1:
                 self.edge >> (node_list[-1], node)
             if not isinstance(y, slice):
-                self.edge >> (self.node_dict[line][-1], node)
+                if not noline: self.edge >> (self.node_dict[line][-1], node)
                 self.node_dict[line].append(node)
             else:
                 for yline in line:
