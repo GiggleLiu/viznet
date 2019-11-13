@@ -457,3 +457,5 @@ def rotate_translate_path(path, angle, dxy=(0,0)):
     '''rotate path by angle'''
     affine = transforms.Affine2D()
     return path.transformed(affine.rotate(angle)).transformed(affine.translate(*dxy))
+
+pin = NodeBrush('pin')

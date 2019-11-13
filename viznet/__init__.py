@@ -1,6 +1,6 @@
 from .context import DynamicShow
 from .edgenode import Edge, Node, Pin
-from .brush import Brush, NodeBrush, EdgeBrush, CLinkBrush, CurveBrush
+from .brush import Brush, NodeBrush, EdgeBrush, CLinkBrush, CurveBrush, pin
 from .cluster import node_sequence, node_ring, connect121, connecta2a
 from .circuit import QuantumCircuit
 from .grid import Grid

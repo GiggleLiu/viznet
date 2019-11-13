@@ -295,6 +295,7 @@ class Pin(np.ndarray, EdgeNode):
             dim = np.ndim(param)
             obj = np.asarray(param, *args, **kwargs).view(subtype)
         obj._ax = ax
+        obj.objs = []
         return obj
 
     def __array_finalize__(self, obj):

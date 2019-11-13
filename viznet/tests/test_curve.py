@@ -13,6 +13,7 @@ def graphs(tp='pdf'):
         nb = NodeBrush('basic', size='tiny', color='k')
         cb = CurveBrush('-', color='k', lw=2)
         loop = NodeBrush("basic", size="small", zorder=-1, lw=2)
+        en = NodeBrush("tn.mpo", size=0.05, color='k')
 
         ax = plt.subplot(141)
         A = nb >> (0,0)
@@ -63,14 +64,18 @@ def graphs(tp='pdf'):
         cb >> (A, B, 0.2)
         cb.color = 'C4'
         cb >> (A, B, -0.2)
+        E4 = en >> (-0.1, 0.5)
         cb.color = 'C1'
-        cb >> (A, C, -0.2)
+        cb >> (A, E4, -0.2)
+        cb >> (E4, C, -0.2)
         cb.color = 'C2'
         cb >> (C, B, -0.2)
         cb.color = 'C1'
-        cb >> (B, D, -0.2)
-        loop.edgecolor = 'C5'
-        loop >> (D.position[0], D.position[1] + loop._size)
+        cb >> (B, E4, -0.2)
+        cb >> (E4, D, -0.2)
+        cb.color = 'C5'
+        E1 = en >> (-0.9, 0.3)
+        cb >> (D, E1, 0.2)
         plt.text(0, -0.3, "Hypergraph", fontsize=10, va="center", ha="center")
         plt.axis("equal")
         plt.axis("off")
@@ -97,4 +102,4 @@ def graphs(tp='pdf'):
         plt.axis("off")
 
 if __name__ == "__main__":
-    graphs()
+    graphs("png")

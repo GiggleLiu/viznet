@@ -11,8 +11,10 @@ NC = NodeBrush('qc.NC')
 NOT = NodeBrush('qc.NOT', size='small')
 END = NodeBrush('qc.end')
 MEASURE = NodeBrush('qc.measure')
-CROSS = NodeBrush('qc.cross')
+CROSS = NodeBrush('qc.cross', size="small")
 BOX = NodeBrush('qc.box')
+INIT = NodeBrush("tn.tri", size=0.36, color="none", rotate=np.pi/6)
+PIN = NodeBrush("pin")
 
 GATEMAP = {'C':C, 'NC': NC, 'NOT': NOT, 'Measure':MEASURE, 'X':GATE, 'Y':GATE,
         'Z':GATE, 'H':GATE, 'Rot': WIDE, 'Rx': WIDE, 'Ry':WIDE, 'Rz':WIDE, 'End':END}
