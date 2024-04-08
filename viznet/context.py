@@ -41,24 +41,27 @@ class DynamicShow():
         plt.axis('equal')
         plt.axis('off')
         plt.tight_layout()
-        if self.filename[-4:] == ".gif":
-            nframe = len(self.steps)+1
-
-            def update(i):
-                if i!=0:
-                    self.steps[i-1]()
-
-            anim = FuncAnimation(plt.gcf(), update, frames=range(nframe), repeat=False)
-            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
-                    self.filename)
-            anim.save(self.filename, writer="imagemagick", fps=self.fps)
-        elif self.filename is not None:
-            for f in self.steps:
-                f()
-            print('Press `c` to save figure to "%s", `Ctrl+d` to break >>' %
-                  self.filename)
-            pdb.set_trace()
-            plt.savefig(self.filename, dpi=300, transparent=True)
+        
+        if self.filename is None:
+            plt.show()
         else:
-            pdb.set_trace()
+            if self.filename[-4:] == ".gif":
+                nframe = len(self.steps)+1
+
+                def update(i):
+                    if i!=0:
+                        self.steps[i-1]()
+
+                anim = FuncAnimation(plt.gcf(), update, frames=range(nframe), repeat=False)
+                print('Saving the figure to "%s"' % self.filename)
+                anim.save(self.filename, writer="imagemagick", fps=self.fps)
+            else:
+                for f in self.steps:
+                    f()
+                print('Saving the figure to "%s"' % self.filename)
+                # pdb.set_trace()
+                plt.savefig(self.filename, dpi=300, transparent=True)
+
+                
+                
         return True
